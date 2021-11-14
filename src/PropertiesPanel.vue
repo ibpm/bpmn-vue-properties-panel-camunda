@@ -1,7 +1,7 @@
 <!-- 属性面板 -->
 <template>
-  <div style="background-color: #F2F6FC">
-    <div v-if="element">
+  <div class="panelStyle">
+    <div v-if="element" class="titleStyle">
       {{ element.businessObject.name || element.id }}
     </div>
     <component
@@ -89,5 +89,11 @@ export default {
 </script>
 
 <style scoped>
+  .panelStyle {
+    background-color: #F2F6FC
+  }
 
+  .titleStyle {
+    margin: 15px 0 15px 0;
+  }
 </style>

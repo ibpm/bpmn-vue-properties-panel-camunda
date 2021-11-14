@@ -1,52 +1,48 @@
 <template>
-  <el-form ref="processForm" v-model="form" label-width="80px" size="mini">
-    <IdProp v-model="form.id" @up="updateProperties" />
-    <NameProp v-model="form.name" @up="updateProperties" />
-    <el-form-item :label="$customTranslate('Version Tag')" prop="versionTag">
-      <el-input v-model="form.versionTag" />
-    </el-form-item>
-    <el-form-item :label="$customTranslate('Executable')" prop="isExecutable">
-      <el-switch v-model="form.isExecutable" />
-    </el-form-item>
-    <DocumentationProp v-model="form.documentation" :modeler="modeler" @up="updateProperties" />
-  </el-form>
+  <Base :form="form" @updateElement="updateProperties">
+    <template v-slot:general>
+      <el-form-item :label="$customTranslate('Version Tag')" prop="versionTag">
+        <el-input v-model="form.versionTag" />
+      </el-form-item>
+      <el-form-item :label="$customTranslate('Executable')" prop="isExecutable">
+        <el-switch v-model="form.isExecutable" />
+      </el-form-item>
+      <el-form-item :label="$customTranslate('Candidate Starter Groups')" prop="candidateStarterGroups">
+        <el-input v-model="form.candidateStarterGroups" :placeholder="$customTranslate('Specify more than one group as a comma separated list.')" />
+      </el-form-item>
+      <el-form-item :label="$customTranslate('Candidate Starter Users')" prop="candidateStarterUsers">
+        <el-input v-model="form.candidateStarterUsers" :placeholder="$customTranslate('Specify more than one user as a comma separated list.')" />
+      </el-form-item>
+      <el-form-item :label="$customTranslate('History Time To Live')" prop="historyTimeToLive">
+        <el-input v-model="form.historyTimeToLive" />
+      </el-form-item>
+      <el-form-item :label="$customTranslate('Task Priority')" prop="taskPriority">
+        <el-input v-model="form.taskPriority" />
+      </el-form-item>
+      <el-form-item :label="$customTranslate('Job Priority')" prop="jobPriority">
+        <el-input v-model="form.jobPriority" />
+      </el-form-item>
+      <el-form-item :label="$customTranslate('Startable')" prop="isStartableInTasklist">
+        <el-switch v-model="form.isStartableInTasklist" />
+      </el-form-item>
+    </template>
+  </Base>
 </template>
 
 <script>
-import IdProp from '@/components/part/common/IdProp'
-import NameProp from '@/components/part/common/NameProp'
 import elementHelper from '@/mixins/elementHelper'
-import DocumentationProp from '@/components/part/common/DocumentationProp'
+import Base from '@/components/bpmn/Base'
 
 export default {
   name: 'Process',
   components: {
-    DocumentationProp,
-    IdProp,
-    NameProp
+    Base
   },
   mixins: [elementHelper],
-  data() {
-    return {
-      form: {
-        id: null,
-        name: null,
-        versionTag: null,
-        isExecutable: true,
-        documentation: null
-      }
-    }
-  },
-  watch: {
-    'form.versionTag'(val) {
-      this.updateProperties({ versionTag: val })
-    },
-    'form.isExecutable'(val) {
-      this.updateProperties({ isExecutable: val })
-    }
-  },
   created() {
-    this.form = this.updateForm()
+    if (!this.form.isStartableInTasklist) {
+      this.form.isStartableInTasklist = true
+    }
   }
 }
 </script>

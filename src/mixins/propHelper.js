@@ -7,7 +7,7 @@ export default {
   },
   watch: {
     value_(val) {
-      this.$emit('up', { [this.PROP_NAME]: val })
+      this.$emit('updateBase', { [this.PROP_NAME]: val })
     }
   }
 }

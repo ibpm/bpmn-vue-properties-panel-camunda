@@ -28,11 +28,4 @@ export const
   },
   addZero = (key) => {
     return key < 10 ? '0' + key : '' + key
-  },
-  commonParse = (element) => {
-    const result = {
-      ...element.businessObject,
-      ...element.businessObject.$attrs
-    }
-    return result
   }

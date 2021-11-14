@@ -35,7 +35,7 @@
       </el-aside>
     </el-container>
     <el-drawer :visible.sync="drawer" size="60%" direction="btt" :with-header="false">
-      <span>{{ xml }}</span>
+      <el-input v-model="xml" type="textarea" autosize @input="openDiagram(xml)" />
     </el-drawer>
   </div>
 </template>
@@ -52,12 +52,11 @@ export default {
   components: { PropertiesPanel },
   data() {
     return {
-      process: {},
       modeler: null,
-      zoom: 1,
       element: null,
+      xml: '',
       drawer: false,
-      xml: ''
+      zoom: 1
     }
   },
   mounted() {
@@ -91,8 +90,6 @@ export default {
         this.modeler.get('canvas').zoom('fit-viewport')
         if (warnings.length > 0) {
           this.$message.warning(warnings)
-        } else {
-          this.xml = xml
         }
       } catch (err) {
         this.$message.error(err.message + err.warnings)
@@ -115,6 +112,7 @@ export default {
         if (download) {
           this.downloadFile(`${this.getExportFileName()}.bpmn`, xml, 'application/xml')
         }
+        this.xml = xml
         return xml
       } catch (err) {
         this.$message.error(err)
@@ -140,7 +138,7 @@ export default {
       }
     },
     async showXML() {
-      this.xml = await this.exportBPMN()
+      await this.exportBPMN()
       this.drawer = true
     },
     initWidget() {

@@ -1,6 +1,6 @@
 <template>
-  <el-form-item :label="$customTranslate('Name')" :prop="PROP_NAME">
-    <el-input v-model="value_" :rows="1" type="textarea" />
+  <el-form-item :label="$customTranslate('Documentation')" :prop="PROP_NAME">
+    <el-input v-model="value_" :autosize="{ maxRows: 10}" type="textarea" />
   </el-form-item>
 </template>
 
@@ -8,7 +8,7 @@
 import propHelper from '@/mixins/propHelper'
 
 export default {
-  name: 'NameProp',
+  name: 'DocumentationProp',
   mixins: [propHelper],
   props: {
     value: {
@@ -17,7 +17,7 @@ export default {
     }
   },
   created() {
-    this.PROP_NAME = 'name'
+    this.PROP_NAME = 'doc'
   }
 }
 </script>
