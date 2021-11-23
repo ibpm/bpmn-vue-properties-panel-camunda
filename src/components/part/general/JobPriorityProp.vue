@@ -1,5 +1,5 @@
 <template>
-  <el-form-item :label="$customTranslate('Id')" :prop="PROP_NAME">
+  <el-form-item :label="$customTranslate('Job Priority')" :prop="PROP_NAME">
     <el-input v-model="value_" clearable />
   </el-form-item>
 </template>
@@ -8,10 +8,16 @@
 import propHelper from '@/mixins/propHelper'
 
 export default {
-  name: 'IdProp',
+  name: 'JobPriorityProp',
   mixins: [propHelper],
+  props: {
+    value: {
+      type: String,
+      default: null
+    }
+  },
   created() {
-    this.PROP_NAME = 'id'
+    this.PROP_NAME = 'jobPriority'
   }
 }
 </script>

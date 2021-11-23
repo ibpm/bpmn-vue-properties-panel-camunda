@@ -1,4 +1,10 @@
 export default {
+  props: {
+    value: {
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
       PROP_NAME: null,
@@ -7,7 +13,7 @@ export default {
   },
   watch: {
     value_(val) {
-      this.$emit('updateBase', { [this.PROP_NAME]: val })
+      this.$emit('serialize', { [this.PROP_NAME]: val })
     }
   }
 }

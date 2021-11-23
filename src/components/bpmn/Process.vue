@@ -1,6 +1,6 @@
 <template>
-  <Base :form="form" @updateElement="updateProperties">
-    <template v-slot:general>
+  <Base :form="form" @serialize="serialize">
+    <template #custom>
       <el-form-item :label="$customTranslate('Version Tag')" prop="versionTag">
         <el-input v-model="form.versionTag" />
       </el-form-item>
@@ -19,9 +19,7 @@
       <el-form-item :label="$customTranslate('Task Priority')" prop="taskPriority">
         <el-input v-model="form.taskPriority" />
       </el-form-item>
-      <el-form-item :label="$customTranslate('Job Priority')" prop="jobPriority">
-        <el-input v-model="form.jobPriority" />
-      </el-form-item>
+      <JobPriorityProp v-model="form.jobPriority" @serialize="serialize" />
       <el-form-item :label="$customTranslate('Startable')" prop="isStartableInTasklist">
         <el-switch v-model="form.isStartableInTasklist" />
       </el-form-item>
@@ -30,13 +28,15 @@
 </template>
 
 <script>
+import Base from '@/components/embbed/Base'
+import JobPriorityProp from '@/components/part/general/JobPriorityProp'
 import elementHelper from '@/mixins/elementHelper'
-import Base from '@/components/bpmn/Base'
 
 export default {
   name: 'Process',
   components: {
-    Base
+    Base,
+    JobPriorityProp
   },
   mixins: [elementHelper],
   created() {
