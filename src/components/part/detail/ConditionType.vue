@@ -1,40 +1,36 @@
 <template>
   <div>
     <el-form-item :label="$customTranslate('Condition Type')" prop="conditionType">
-      <el-select v-model="form_.conditionType" @change="changeConditionType">
+      <el-select v-model="form_.conditionType">
         <el-option :label="$customTranslate('Expression')" value="expression" />
         <el-option :label="$customTranslate('Script')" value="script" />
         <el-option label="" value="" />
       </el-select>
     </el-form-item>
-    <el-form-item v-if="showExpression" :label="$customTranslate('Expression')" prop="expression">
-      <el-input v-model="form_.expression" />
-    </el-form-item>
+    <FormItemInput v-if="showExpression" v-model="form_.expression" :label="$customTranslate('Expression')" prop="expression" />
     <template v-if="showScript">
       <el-form-item :label="$customTranslate('Script Format')" prop="scriptFormat">
         <el-input v-model="form_.scriptFormat" />
       </el-form-item>
       <el-form-item :label="$customTranslate('Script Type')" prop="scriptType">
-        <el-select v-model="form_.scriptType" @change="changeScriptType">
+        <el-select v-model="form_.scriptType">
           <el-option :label="$customTranslate('Inline Script')" value="inlineScript" />
           <el-option :label="$customTranslate('External Resource')" value="externalResource" />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="!showResource" :label="$customTranslate('Script')" prop="script">
-        <el-input v-model="form_.script" />
-      </el-form-item>
-      <el-form-item v-else :label="$customTranslate('Resource')" prop="resource">
-        <el-input v-model="form_.resource" />
-      </el-form-item>
+      <FormItemInput v-if="!showResource" v-model="form_.script" :label="$customTranslate('Script')" prop="script" />
+      <FormItemInput v-else v-model="form_.resource" :label="$customTranslate('Resource')" prop="resource" />
     </template>
   </div>
 </template>
 <script>
+import FormItemInput from '@/components/ui/FormItemInput'
 import areaHelper from '@/mixins/areaHelper'
 import { isExpression, isScript, isResource } from '@/utils/helper'
 
 export default {
   name: 'ConditionType',
+  components: { FormItemInput },
   mixins: [areaHelper],
   computed: {
     showExpression() {
@@ -47,28 +43,46 @@ export default {
       return isResource(this.form_.scriptType)
     }
   },
-  methods: {
-    changeConditionType(val) {
-      if (this.showExpression) {
-        delete this.form_.script
-        delete this.form_.resource
-        delete this.form_.scriptType
-        delete this.form_.scriptFormat
-      } else if (this.showScript) {
-        delete this.form_.expression
-      } else {
-        delete this.form_.script
-        delete this.form_.resource
-        delete this.form_.scriptType
-        delete this.form_.scriptFormat
-        delete this.form_.expression
-      }
+  watch: {
+    'form_.expression': function(val) {
+      const props = val ? this.moddle.create('bpmn:FormalExpression', { body: val }) : null
+      this.write({ conditionExpression: props })
     },
-    changeScriptType() {
-      if (this.showResource) {
-        delete this.form_.script
-      } else {
-        delete this.form_.resource
+    'form_.script': function(val) {
+      const props = val ? this.moddle.create('bpmn:FormalExpression', {
+        body: this.form_.script,
+        language: this.form_.scriptFormat
+      }) : null
+      this.write({ conditionExpression: props })
+    },
+    'form_.resource': function(val) {
+      const props = val ? this.moddle.create('bpmn:FormalExpression', {
+        'camunda:resource': this.form_.resource,
+        language: this.form_.scriptFormat
+      }) : null
+      this.write({ conditionExpression: props })
+    }
+  },
+  created() {
+    this.read()
+  },
+  methods: {
+    read() {
+      if (this.form.conditionExpression) {
+        if (this.form.conditionExpression.language) {
+          this.form_.conditionType = 'script'
+          this.form_.scriptFormat = this.form.conditionExpression.language
+          if (this.form.conditionExpression.body) {
+            this.form_.script = this.form.conditionExpression.body
+            this.form_.scriptType = 'inlineScript'
+          } else {
+            this.form_.resource = this.form.conditionExpression.resource
+            this.form_.scriptType = 'externalResource'
+          }
+        } else {
+          this.form_.conditionType = 'expression'
+          this.form_.expression = this.form.conditionExpression.body
+        }
       }
     }
   }

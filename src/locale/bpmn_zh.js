@@ -171,7 +171,7 @@ export default {
   'History Configuration': '历史配置',
   'History Time To Live': '历史存活时间',
   'Tasklist Configuration': '任务列表配置',
-  'Startable': '可启动的',
+  'Startable': '可发起',
   'Specify more than one group as a comma separated list.': '指定多个组时以,隔开',
   'Specify more than one user as a comma separated list.': '指定多个用户时以,隔开',
   // 用户任务 start

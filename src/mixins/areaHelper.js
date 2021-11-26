@@ -1,5 +1,9 @@
 export default {
   props: {
+    moddle: {
+      type: Object,
+      required: true
+    },
     form: {
       type: Object,
       required: true
@@ -10,18 +14,9 @@ export default {
       form_: this.form
     }
   },
-  watch: {
-    form_: {
-      handler: function(val) {
-        this.serialize(val)
-      },
-      deep: true
-    }
-  },
   methods: {
-    serialize(properties) {
-      console.log(properties)
-      this.$emit('serialize', properties)
+    write(properties) {
+      this.$emit('write', properties)
     }
   }
 }

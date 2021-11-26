@@ -4,12 +4,16 @@
     <div v-if="element" class="titleStyle">
       {{ element.businessObject.name || element.id }}
     </div>
-    <component
-      :is="getComponent"
-      v-if="element"
-      :modeler="modeler"
-      :element="element"
-    />
+    <keep-alive>
+      <component
+        :is="getComponent"
+        v-if="element"
+        :key="element.id"
+        :element="element"
+        :modeling="modeling"
+        :moddle="moddle"
+      />
+    </keep-alive>
   </div>
 </template>
 
@@ -47,6 +51,12 @@ export default {
   computed: {
     getComponent() {
       return this.element?.type.split(':')[1]
+    },
+    modeling() {
+      return this.modeler.get('modeling')
+    },
+    moddle() {
+      return this.modeler.get('moddle')
     }
   },
   mounted() {

@@ -1,46 +1,60 @@
 <template>
-  <Base :form="form" @serialize="serialize">
+  <Base :moddle="moddle" :form="form" @write="write">
     <template #custom>
-      <el-form-item :label="$customTranslate('Version Tag')" prop="versionTag">
-        <el-input v-model="form.versionTag" />
-      </el-form-item>
-      <el-form-item :label="$customTranslate('Executable')" prop="isExecutable">
-        <el-switch v-model="form.isExecutable" />
-      </el-form-item>
-      <el-form-item :label="$customTranslate('Candidate Starter Groups')" prop="candidateStarterGroups">
-        <el-input v-model="form.candidateStarterGroups" :placeholder="$customTranslate('Specify more than one group as a comma separated list.')" />
-      </el-form-item>
-      <el-form-item :label="$customTranslate('Candidate Starter Users')" prop="candidateStarterUsers">
-        <el-input v-model="form.candidateStarterUsers" :placeholder="$customTranslate('Specify more than one user as a comma separated list.')" />
-      </el-form-item>
-      <el-form-item :label="$customTranslate('History Time To Live')" prop="historyTimeToLive">
-        <el-input v-model="form.historyTimeToLive" />
-      </el-form-item>
-      <el-form-item :label="$customTranslate('Task Priority')" prop="taskPriority">
-        <el-input v-model="form.taskPriority" />
-      </el-form-item>
-      <JobPriorityProp v-model="form.jobPriority" @serialize="serialize" />
-      <el-form-item :label="$customTranslate('Startable')" prop="isStartableInTasklist">
-        <el-switch v-model="form.isStartableInTasklist" />
-      </el-form-item>
+      <FormItemInput v-model="form.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
+      <FormItemSwitch v-model="form.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />
+      <FormItemInput v-model="form.candidateStarterGroups" :label="$customTranslate('Candidate Starter Groups')" prop="candidateStarterGroups" />
+      <FormItemInput v-model="form.candidateStarterUsers" :label="$customTranslate('Candidate Starter Users')" prop="candidateStarterUsers" />
+      <FormItemInput v-model="form.historyTimeToLive" :label="$customTranslate('History Time To Live')" prop="historyTimeToLive" />
+      <FormItemInput v-model="form.taskPriority" :label="$customTranslate('Task Priority')" prop="taskPriority" />
+      <FormItemInput v-model="form.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
+      <FormItemSwitch v-model="form.isStartableInTasklist" :label="$customTranslate('Startable')" prop="isStartableInTasklist" />
     </template>
   </Base>
 </template>
 
 <script>
 import Base from '@/components/embbed/Base'
-import JobPriorityProp from '@/components/part/general/JobPriorityProp'
+import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
+import FormItemSwitch from '@/components/ui/FormItemSwitch'
 
 export default {
   name: 'Process',
   components: {
     Base,
-    JobPriorityProp
+    FormItemSwitch,
+    FormItemInput
   },
   mixins: [elementHelper],
+  watch: {
+    'form.versionTag'(val) {
+      this.write({ versionTag: val })
+    },
+    'form.isExecutable'(val) {
+      this.write({ isExecutable: val })
+    },
+    'form.candidateStarterGroups'(val) {
+      this.write({ candidateStarterGroups: val })
+    },
+    'form.candidateStarterUsers'(val) {
+      this.write({ candidateStarterUsers: val })
+    },
+    'form.historyTimeToLive'(val) {
+      this.write({ historyTimeToLive: val })
+    },
+    'form.taskPriority'(val) {
+      this.write({ taskPriority: val })
+    },
+    'form.jobPriority'(val) {
+      this.write({ jobPriority: val })
+    },
+    'form.isStartableInTasklist'(val) {
+      this.write({ isStartableInTasklist: val })
+    }
+  },
   created() {
-    if (!this.form.isStartableInTasklist) {
+    if (this.form.isStartableInTasklist === null || this.form.isStartableInTasklist === undefined) {
       this.form.isStartableInTasklist = true
     }
   }

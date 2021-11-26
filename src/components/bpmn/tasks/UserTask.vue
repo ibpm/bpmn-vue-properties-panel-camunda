@@ -1,29 +1,36 @@
 <template>
-  <Common :form="form" @serialize="serialize">
+  <Common :moddle="moddle" :form="form" @write="write">
     <template #detail>
-      <el-form-item :label="$customTranslate('Due Date')" prop="dueDate">
-        <el-input v-model="form.dueDate" />
-      </el-form-item>
-      <el-form-item :label="$customTranslate('Follow Up Date')" prop="followUpDate">
-        <el-input v-model="form.followUpDate" />
-      </el-form-item>
-      <el-form-item :label="$customTranslate('Priority')" prop="priority">
-        <el-input v-model="form.priority" />
-      </el-form-item>
+      <FormItemInput v-model="form.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
+      <FormItemInput v-model="form.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
+      <FormItemInput v-model="form.priority" :label="$customTranslate('Priority')" prop="priority" />
     </template>
   </Common>
 </template>
 
 <script>
-import elementHelper from '@/mixins/elementHelper'
 import Common from '@/components/embbed/Common'
+import FormItemInput from '@/components/ui/FormItemInput'
+import elementHelper from '@/mixins/elementHelper'
 
 export default {
   name: 'UserTask',
   components: {
-    Common
+    Common,
+    FormItemInput
   },
-  mixins: [elementHelper]
+  mixins: [elementHelper],
+  watch: {
+    'form.dueDate'(val) {
+      this.write({ dueDate: val })
+    },
+    'form.followUpDate'(val) {
+      this.write({ followUpDate: val })
+    },
+    'form.priority'(val) {
+      this.write({ priority: val })
+    }
+  }
 }
 </script>
 

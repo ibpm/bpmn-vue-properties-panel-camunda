@@ -1,5 +1,5 @@
 <template>
-  <Common :form="form" @serialize="serialize" />
+  <Common :moddle="moddle" :form="form" @write="write" />
 </template>
 
 <script>
