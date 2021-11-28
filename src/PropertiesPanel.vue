@@ -61,26 +61,22 @@ export default {
   },
   mounted() {
     this.modeler.on('root.added', e => {
-      this.reset(e)
+      this.reset(e.element)
     })
     this.modeler.on('element.click', e => {
-      this.reset(e)
+      this.reset(e.element)
     })
     this.modeler.on('selection.changed', e => {
-      this.element = null
       if (e.newSelection && e.newSelection[0]) {
-        this.$nextTick().then(() => {
-          this.element = e.newSelection[0]
-        })
+        this.reset(e.newSelection[0])
       }
     })
   },
   methods: {
-    reset(event) {
-      this.element = null
-      this.$nextTick().then(() => {
-        this.element = event.element
-      })
+    reset(newElement) {
+      if (!this.element || this.element.id !== newElement.id) {
+        this.element = newElement
+      }
     }
   }
 }

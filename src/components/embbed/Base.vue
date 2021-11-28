@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="form" v-model="form_" :rules="rules" label-width="100px" size="mini">
+  <el-form ref="form" :model="form_" :rules="rules_" label-width="100px" size="mini">
     <FormItemInput v-model="form_.id" :label="$customTranslate('Id')" prop="id" />
     <FormItemTextArea v-model="form_.name" :label="$customTranslate('Name')" prop="name" />
     <slot name="custom" />
@@ -23,7 +23,7 @@ export default {
     return {
       rules_: {
         id: [
-          { required: true, message: '请输入Id', trigger: 'blur', range: { max: 255 }}
+          { required: true, message: this.$customTranslate('Id'), trigger: 'blur', range: { max: 255 }}
         ]
       }
     }
@@ -42,10 +42,10 @@ export default {
     }
   },
   created() {
-    this.readDoc()
+    this.read()
   },
   methods: {
-    readDoc() {
+    read() {
       if (this.form.documentation?.length) {
         this.form_.doc = this.form.documentation[0].text
       }
