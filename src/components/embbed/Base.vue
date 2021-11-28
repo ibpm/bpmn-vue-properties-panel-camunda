@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="form" v-model="form_" label-width="100px" size="mini">
+  <el-form ref="form" v-model="form_" :rules="rules" label-width="100px" size="mini">
     <FormItemInput v-model="form_.id" :label="$customTranslate('Id')" prop="id" />
     <FormItemTextArea v-model="form_.name" :label="$customTranslate('Name')" prop="name" />
     <slot name="custom" />
@@ -8,9 +8,9 @@
 </template>
 
 <script>
-import areaHelper from '@/mixins/areaHelper'
 import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
+import areaHelper from '@/mixins/areaHelper'
 
 export default {
   name: 'Base',
@@ -19,6 +19,15 @@ export default {
     FormItemTextArea
   },
   mixins: [areaHelper],
+  data() {
+    return {
+      rules_: {
+        id: [
+          { required: true, message: '请输入Id', trigger: 'blur', range: { max: 255 }}
+        ]
+      }
+    }
+  },
   watch: {
     'form_.id': function(val) {
       this.write({ id: val })
