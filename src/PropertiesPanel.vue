@@ -8,7 +8,7 @@
       <component
         :is="getComponent"
         v-if="element"
-        :key="element.id"
+        :key="element.eid"
         :element="element"
         :modeling="modeling"
         :moddle="moddle"
@@ -25,6 +25,11 @@ import EndEvent from '@/components/bpmn/events/EndEvent'
 import SequenceFlow from '@/components/bpmn/SequenceFlow'
 import Task from '@/components/bpmn/tasks/Task'
 import UserTask from '@/components/bpmn/tasks/UserTask'
+import IdGenerator from 'ids'
+
+const
+  seed = [32, 10],
+  idGenerator = new IdGenerator(seed)
 
 export default {
   name: 'PropertiesPanel',
@@ -74,9 +79,11 @@ export default {
   },
   methods: {
     reset(newElement) {
-      if (!this.element || this.element.id !== newElement.id) {
+      this.element = null
+      this.$nextTick().then(() => {
         this.element = newElement
-      }
+        this.element.eid = idGenerator.next()
+      })
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <Base :moddle="moddle" :form="form" @write="write">
+  <Base :moddle="moddle" :form="form" :rules="rules" @write="write">
     <template #custom>
       <FormItemInput v-model="form.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
       <FormItemSwitch v-model="form.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />
@@ -27,6 +27,15 @@ export default {
     FormItemInput
   },
   mixins: [elementHelper],
+  computed: {
+    rules() {
+      return {
+        versionTag: [
+          { message: this.$customTranslate('Version Tag'), trigger: 'blur', max: 64 }
+        ]
+      }
+    }
+  },
   watch: {
     'form.versionTag'(val) {
       this.write({ versionTag: val })

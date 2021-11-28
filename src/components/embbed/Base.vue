@@ -19,12 +19,19 @@ export default {
     FormItemTextArea
   },
   mixins: [areaHelper],
-  data() {
-    return {
-      rules_: {
+  computed: {
+    rules_() {
+      return {
         id: [
-          { required: true, message: this.$customTranslate('Id'), trigger: 'blur', range: { max: 255 }}
-        ]
+          { required: true, message: this.$customTranslate('Element must have an unique id.'), trigger: 'blur', range: { max: 255 }}
+        ],
+        name: [
+          { message: this.$customTranslate('Name'), trigger: 'blur', max: 255 }
+        ],
+        doc: [
+          { message: this.$customTranslate('Documentation'), trigger: 'blur', max: 4000 }
+        ],
+        ...this.rules
       }
     }
   },

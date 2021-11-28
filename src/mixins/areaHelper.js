@@ -7,6 +7,10 @@ export default {
     form: {
       type: Object,
       required: true
+    },
+    rules: {
+      type: Object,
+      required: true
     }
   },
   data() {
