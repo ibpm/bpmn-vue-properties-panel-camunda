@@ -1,7 +1,8 @@
-import zh from '@/locale/bpmn_zh'
+import zh from '@/locale/zh'
+import { getLocale } from '@/utils/tools'
 
 export default function customTranslate(template, replacements) {
-  const lang = localStorage.getItem('language') || 'zh'
+  const lang = getLocale() || 'zh'
   if (lang.startsWith('zh')) {
     // Translate
     template = zh[template] || template

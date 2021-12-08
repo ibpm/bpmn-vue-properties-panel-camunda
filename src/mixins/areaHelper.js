@@ -10,7 +10,8 @@ export default {
     },
     rules: {
       type: Object,
-      required: true
+      required: false,
+      default: () => {}
     }
   },
   data() {

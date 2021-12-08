@@ -1,6 +1,6 @@
 <template>
   <el-form-item :label="label" :prop="prop">
-    <el-input v-model="value_" clearable @input="input" />
+    <el-input v-model="value_" clearable :placeholder="placeholder" @input="input" />
   </el-form-item>
 </template>
 
@@ -18,7 +18,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

@@ -7,6 +7,14 @@ export default {
     label: {
       type: String,
       default: null
+    },
+    placeholder: {
+      type: String,
+      default: null
+    },
+    rules: {
+      type: Array,
+      default: null
     }
   },
   data() {

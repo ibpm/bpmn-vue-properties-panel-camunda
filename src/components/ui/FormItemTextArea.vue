@@ -1,6 +1,6 @@
 <template>
   <el-form-item :label="label" :prop="prop">
-    <el-input v-model="value_" :autosize="{ maxRows: maxRows }" type="textarea" clearable @input="input" />
+    <el-input v-model="value_" :autosize="{ maxRows: maxRows }" type="textarea" clearable :placeholder="placeholder" @input="input" />
   </el-form-item>
 </template>
 
@@ -22,7 +22,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

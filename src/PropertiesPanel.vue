@@ -1,6 +1,6 @@
 <!-- 属性面板 -->
 <template>
-  <div class="panelStyle">
+  <div>
     <div v-if="element" class="titleStyle">
       {{ element.businessObject.name || element.id }}
     </div>
@@ -25,11 +25,7 @@ import EndEvent from '@/components/bpmn/events/EndEvent'
 import SequenceFlow from '@/components/bpmn/SequenceFlow'
 import Task from '@/components/bpmn/tasks/Task'
 import UserTask from '@/components/bpmn/tasks/UserTask'
-import IdGenerator from 'ids'
-
-const
-  seed = [32, 10],
-  idGenerator = new IdGenerator(seed)
+import { next } from '@/utils/tools'
 
 export default {
   name: 'PropertiesPanel',
@@ -46,6 +42,22 @@ export default {
     modeler: {
       type: Object,
       required: true
+    },
+    candidateUsers: {
+      type: Array,
+      default: null
+    },
+    candidateGroups: {
+      type: Array,
+      default: null
+    },
+    executionListenerClasses: {
+      type: Array,
+      default: null
+    },
+    taskListenerClasses: {
+      type: Array,
+      default: null
     }
   },
   data() {
@@ -82,7 +94,7 @@ export default {
       this.element = null
       this.$nextTick().then(() => {
         this.element = newElement
-        this.element.eid = idGenerator.next()
+        this.element.eid = next()
       })
     }
   }
@@ -90,11 +102,7 @@ export default {
 </script>
 
 <style scoped>
-  .panelStyle {
-    background-color: #F2F6FC
-  }
-
   .titleStyle {
-    margin: 15px 0 15px 0;
+    margin: 10px 0 5px 0;
   }
 </style>

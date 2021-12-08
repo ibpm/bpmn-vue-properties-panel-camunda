@@ -1,4 +1,11 @@
+import IdGenerator from 'ids'
+
 export const
+  seed = [32, 10],
+  idGenerator = new IdGenerator(seed),
+  next = () => {
+    return idGenerator.next()
+  },
   getLocale = () => {
     const lang = localStorage.getItem('locale') || sessionStorage.getItem('locale') ||
         localStorage.getItem('lang') || sessionStorage.getItem('lang') ||

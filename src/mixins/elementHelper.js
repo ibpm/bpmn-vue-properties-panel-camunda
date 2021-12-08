@@ -24,7 +24,7 @@ export default {
   methods: {
     read() {
       this.form = { ...this.element.businessObject }
-      delete this.form.$type
+      // delete this.form.$type
       delete this.form.flowElements
       delete this.form.di
       delete this.form.sourceRef

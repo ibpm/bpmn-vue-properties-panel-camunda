@@ -4,18 +4,18 @@
 @import '~bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
 @import '~diagram-js-minimap/assets/diagram-js-minimap.css';
 
-.properties-panel-parent {
+.panel {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 260px;
-  z-index: 10;
+  top: 5px;
+  bottom: 5px;
+  right: 5px;
+  min-width: 260px;
   border-left: 1px solid #ccc;
   overflow: auto;
+  background-color: #F2F6FC;
 }
 
-.canvas{
+.canvas {
   position: absolute;
   top: 0;
   left: 0;
@@ -35,14 +35,14 @@
   top: 5px;
 }
 
-.buttons{
+.buttons {
   position: absolute;
   left: 110px;
   bottom: 5px;
-  &>li{
-    display:inline-block;
-    margin: 5px;
-  }
+}
+
+.listenerStyle {
+  min-width: 900px;
 }
 
 a[href="http://bpmn.io"] {

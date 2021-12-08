@@ -14,7 +14,3 @@ export default {
   mixins: [elementHelper]
 }
 </script>
-
-<style scoped>
-
-</style>

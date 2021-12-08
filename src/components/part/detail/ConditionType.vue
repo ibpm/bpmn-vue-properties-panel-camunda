@@ -9,28 +9,27 @@
     </el-form-item>
     <FormItemInput v-if="showExpression" v-model="form_.expression" :label="$customTranslate('Expression')" prop="expression" />
     <template v-if="showScript">
-      <el-form-item :label="$customTranslate('Script Format')" prop="scriptFormat">
-        <el-input v-model="form_.scriptFormat" />
-      </el-form-item>
+      <FormItemInput v-model="form_.scriptFormat" :label="$customTranslate('Script Format')" prop="scriptFormat" />
       <el-form-item :label="$customTranslate('Script Type')" prop="scriptType">
         <el-select v-model="form_.scriptType">
           <el-option :label="$customTranslate('Inline Script')" value="inlineScript" />
           <el-option :label="$customTranslate('External Resource')" value="externalResource" />
         </el-select>
       </el-form-item>
-      <FormItemInput v-if="!showResource" v-model="form_.script" :label="$customTranslate('Script')" prop="script" />
+      <FormItemTextArea v-if="!showResource" v-model="form_.script" :label="$customTranslate('Script')" prop="script" />
       <FormItemInput v-else v-model="form_.resource" :label="$customTranslate('Resource')" prop="resource" />
     </template>
   </div>
 </template>
 <script>
 import FormItemInput from '@/components/ui/FormItemInput'
+import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import areaHelper from '@/mixins/areaHelper'
 import { isExpression, isScript, isResource } from '@/utils/helper'
 
 export default {
   name: 'ConditionType',
-  components: { FormItemInput },
+  components: { FormItemInput, FormItemTextArea },
   mixins: [areaHelper],
   computed: {
     showExpression() {
@@ -44,23 +43,28 @@ export default {
     }
   },
   watch: {
-    'form_.expression': function(val) {
+    'form_.expression'(val) {
       const props = val ? this.moddle.create('bpmn:FormalExpression', { body: val }) : null
       this.write({ conditionExpression: props })
     },
-    'form_.script': function(val) {
+    'form_.script'(val) {
       const props = val ? this.moddle.create('bpmn:FormalExpression', {
         body: this.form_.script,
         language: this.form_.scriptFormat
       }) : null
       this.write({ conditionExpression: props })
     },
-    'form_.resource': function(val) {
+    'form_.resource'(val) {
       const props = val ? this.moddle.create('bpmn:FormalExpression', {
         'camunda:resource': this.form_.resource,
         language: this.form_.scriptFormat
       }) : null
       this.write({ conditionExpression: props })
+    },
+    'form_.conditionType'() {
+      if (this.showExpression && !this.showResource) {
+        this.form_.scriptType = 'inlineScript'
+      }
     }
   },
   created() {
@@ -88,7 +92,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

@@ -4,25 +4,25 @@
       <el-main>
         <div ref="canvas" class="canvas" />
         <ul class="buttons">
-          <el-tooltip :content="$t('core.flow.title.undo')">
+          <el-tooltip :content="$customTranslate('Undo')">
             <el-button icon="el-icon-back" @click="modeler.get('commandStack').undo()" />
           </el-tooltip>
-          <el-tooltip :content="$t('core.flow.title.redo')">
+          <el-tooltip :content="$customTranslate('Redo')">
             <el-button icon="el-icon-right" @click="modeler.get('commandStack').redo()" />
           </el-tooltip>
-          <el-tooltip :content="$t('core.flow.title.fit')">
+          <el-tooltip :content="$customTranslate('Fit Size')">
             <el-button icon="el-icon-rank" @click="fitViewport" />
           </el-tooltip>
-          <el-tooltip :content="$t('core.flow.title.zoomBig')">
+          <el-tooltip :content="$customTranslate('Zoom Big')">
             <el-button icon="el-icon-zoom-in" @click="zoomViewport(true)" />
           </el-tooltip>
-          <el-tooltip :content="$t('core.flow.title.zoomSmall')">
+          <el-tooltip :content="$customTranslate('Zoom Small')">
             <el-button icon="el-icon-zoom-out" @click="zoomViewport(false)" />
           </el-tooltip>
-          <el-tooltip :content="$t('core.flow.title.bpmn')">
+          <el-tooltip :content="$customTranslate('Export as BPMN')">
             <el-button icon="el-icon-download" @click="exportBPMN(true)" />
           </el-tooltip>
-          <el-tooltip :content="$t('core.flow.title.svg')">
+          <el-tooltip :content="$customTranslate('Export as SVG')">
             <el-button icon="el-icon-picture" @click="exportSVG(true)" />
           </el-tooltip>
           <el-tooltip content="XML">
