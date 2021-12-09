@@ -94,7 +94,8 @@ export default {
       this.element = null
       this.$nextTick().then(() => {
         this.element = newElement
-        this.element.eid = next()
+        if (!this.element.eid)
+          this.element.eid = next()
       })
     }
   }
