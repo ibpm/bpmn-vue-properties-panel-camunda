@@ -25,7 +25,7 @@
 import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import areaHelper from '@/mixins/areaHelper'
-import { isExpression, isScript, isResource } from '@/utils/helper'
+import { isExpression, isScript, isResource, customize } from '@/utils/helper'
 
 export default {
   name: 'ConditionType',
@@ -56,13 +56,13 @@ export default {
     },
     'form_.resource'(val) {
       const props = val ? this.moddle.create('bpmn:FormalExpression', {
-        'camunda:resource': this.form_.resource,
+        [ customize('resource') ]: this.form_.resource,
         language: this.form_.scriptFormat
       }) : null
       this.write({ conditionExpression: props })
     },
     'form_.conditionType'() {
-      if (this.showExpression && !this.showResource) {
+      if (this.showScript && !this.showResource) {
         this.form_.scriptType = 'inlineScript'
       }
     }

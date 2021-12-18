@@ -14,7 +14,13 @@
         <FormItemInput v-model="form.priority" :label="$customTranslate('Priority')" prop="priority" />
       </template>
     </Common>
-    <TaskListener v-if="dialogName === 'taskListenerDialog'" :moddle="moddle" :form="form" @close="finishTaskListener" />
+    <TaskListener
+      v-if="dialogName === 'taskListenerDialog'"
+      :moddle="moddle"
+      :form="form"
+      @write="write"
+      @close="finishTaskListener"
+    />
   </div>
 </template>
 
@@ -23,6 +29,7 @@ import Common from '@/components/embbed/Common'
 import TaskListener from '@/components/part/listener/TaskListener'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
+import { typeMatch } from '@/utils/helper'
 
 export default {
   name: 'UserTask',
@@ -56,7 +63,7 @@ export default {
     },
     computedTaskListenerLength() {
       this.taskListenerLength = this.element.businessObject.extensionElements?.values
-        ?.filter(item => item.$type.split(':')[1] === 'TaskListener').length ?? 0
+        ?.filter(item => typeMatch(item.$type, 'TaskListener')).length ?? 0
     }
   }
 }

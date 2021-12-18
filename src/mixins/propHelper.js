@@ -17,9 +17,14 @@ export default {
       default: null
     }
   },
-  data() {
-    return {
-      value_: this.value
+  computed: {
+    value_: {
+      get() {
+        return this.value
+      },
+      set(newValue) {
+        return newValue
+      }
     }
   },
   methods: {

@@ -3,146 +3,318 @@
     <el-dialog
       :title="$customTranslate('Task Listener')"
       :visible.sync="dialogVisible"
-      class="listenerStyle"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
       @closed="$emit('close')"
     >
-      <el-form ref="listenerForm" :model="listenerForm" size="mini">
-        <el-table :data="listenerForm.tableData" border>
-          <el-table-column prop="eventType" :label="$customTranslate('Event Type')">
+      <el-form ref="subForm" :model="subForm" size="mini">
+        <el-table :data="subForm.records" border>
+          <el-table-column :label="$customTranslate('Event Type')" prop="event">
             <template slot-scope="scope">
-              <el-form-item :prop="'tableData.' + scope.$index + '.eventType'" :rules="[{ required: true, message: $customTranslate('Event Type'), trigger: 'change' }]">
-                <el-select v-model="scope.row.eventType">
-                  <el-option v-for="(item, index) in eventTypes" :key="index" :label="item" :value="item" />
+              <el-form-item :prop="'records.' + scope.$index + '.event'">
+                <el-select v-model="scope.row.event">
+                  <el-option v-for="(item, index) in events" :key="index" :label="$customTranslate(item)" :value="item" />
+                </el-select>
+              </el-form-item>
+              <el-form-item
+                v-if="showTimeout(scope.row.event)"
+                :prop="'records.' + scope.$index + '.timerDefinitionType'"
+                :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
+              >
+                <el-select
+                  v-model="scope.row.timerDefinitionType"
+                  :placeholder="$customTranslate('Timer Definition Type')"
+                >
+                  <el-option
+                    v-for="(item, index) in timerDefinitionTypes"
+                    :key="index"
+                    :label="$customTranslate(item.name)"
+                    :value="item.value"
+                  />
                 </el-select>
               </el-form-item>
             </template>
           </el-table-column>
-          <el-table-column prop="listenerType" :label="$customTranslate('Listener Type')">
+          <el-table-column :label="$customTranslate('Listener Type')" prop="listenerType">
             <template slot-scope="scope">
-              <el-form-item :prop="'tableData.' + scope.$index + '.listenerType'" :rules="[{ required: true, message: $customTranslate('Listener Type'), trigger: 'change' }]">
+              <el-form-item :prop="'records.' + scope.$index + '.listenerType'">
                 <el-select v-model="scope.row.listenerType">
-                  <el-option v-for="(item, index) in listenerTypes" :key="index" :label="$customTranslate(item.label)" :value="item.value" />
+                  <el-option
+                    v-for="(item, index) in listenerTypes"
+                    :key="index"
+                    :label="$customTranslate(item.name)"
+                    :value="item.value"
+                  />
                 </el-select>
               </el-form-item>
+              <FormItemInput
+                v-if="showScript(scope.row.listenerType)"
+                v-model="scope.row.scriptFormat"
+                :prop="'records.' + scope.$index + '.scriptFormat'"
+                :placeholder="$customTranslate('Script Format')"
+                :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column :label="$customTranslate('Config')">
+            <template slot-scope="scope">
+              <!--<el-form-item v-if="!showScript(scope.row.listenerType)" :prop="'records.' + scope.$index + '.config'" :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]">
+                <el-input v-model="scope.row.config" clearable :placeholder="$customTranslate(listenerTypes.find(item => item.value === scope.row.listenerType).name)" />
+              </el-form-item>-->
+              <FormItemInput
+                v-if="!showScript(scope.row.listenerType)"
+                v-model="scope.row.config"
+                :prop="'records.' + scope.$index + '.config'"
+                :placeholder="$customTranslate(listenerTypes.find(item => item.value === scope.row.listenerType).name)"
+                :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
+              />
+              <template v-else>
+                <el-form-item :prop="'records.' + scope.$index + '.scriptType'">
+                  <el-select v-model="scope.row.scriptType" :placeholder="$customTranslate('Script Type')">
+                    <el-option :label="$customTranslate('Inline Script')" value="inlineScript" />
+                    <el-option :label="$customTranslate('External Resource')" value="externalResource" />
+                  </el-select>
+                </el-form-item>
+                <FormItemTextArea
+                  v-if="!showResource(scope.row.scriptType)"
+                  v-model="scope.row.config"
+                  :prop="'records.' + scope.$index + '.config'"
+                  :placeholder="$customTranslate('Script')"
+                />
+                <FormItemInput
+                  v-else
+                  v-model="scope.row.config"
+                  :prop="'records.' + scope.$index + '.config'"
+                  :placeholder="$customTranslate('Resource')"
+                />
+              </template>
             </template>
           </el-table-column>
           <el-table-column prop="listenerId" :label="$customTranslate('Listener Id')">
             <template slot-scope="scope">
               <FormItemGeneratedInput
                 v-model="scope.row.listenerId"
-                :prop="'tableData.' + scope.$index + '.listenerId'"
+                :prop="'records.' + scope.$index + '.listenerId'"
+              />
+              <FormItemInput
+                v-if="showTimeout(scope.row.event)"
+                v-model="scope.row.timerDefinition"
+                :prop="'records.' + scope.$index + '.timerDefinition'"
+                :placeholder="$customTranslate('Timer Definition')"
+                :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
               />
             </template>
           </el-table-column>
-          <el-table-column :label="$customTranslate('Config')">
+          <el-table-column :label="$customTranslate('Fields')">
             <template slot-scope="scope">
-              <FormItemInput
-                v-if="scope.row.listenerType !== 'script'"
-                v-model="scope.row.content"
-                :placeholder="$customTranslate(listenerTypes.find(item => item.value === scope.row.listenerType).label)"
-              />
-              <template v-else>
-                <FormItemInput v-model="scope.row.scriptFormat" :placeholder="$customTranslate('Script Format')" prop="scriptFormat" />
-                <el-form-item prop="scriptType">
-                  <el-select v-model="scope.row.scriptType" :placeholder="$customTranslate('Script Type')">
-                    <el-option :label="$customTranslate('Inline Script')" value="inlineScript" />
-                    <el-option :label="$customTranslate('External Resource')" value="externalResource" />
-                  </el-select>
-                </el-form-item>
-                <FormItemTextArea v-if="!showResource(scope.row.scriptType)" v-model="scope.row.script" :placeholder="$customTranslate('Script')" prop="script" />
-                <FormItemInput v-else v-model="scope.row.resource" :placeholder="$customTranslate('Resource')" prop="resource" />
-              </template>
+              <el-form-item>
+                <el-badge :value="scope.row.fields ? scope.row.fields.length : 0">
+                  <el-button type="primary" @click="configFields(scope.$index)">
+                    {{ $customTranslate('Fields') }}
+                  </el-button>
+                </el-badge>
+              </el-form-item>
             </template>
           </el-table-column>
           <el-table-column :label="$customTranslate('Operation')">
             <template slot-scope="scope">
               <el-form-item>
-                <el-button type="primary" size="mini" icon="el-icon-plus" circle @click.native.prevent="addParamsSetting(scope.$index)" />
-                <el-button type="danger" size="mini" icon="el-icon-minus" circle @click.native.prevent="deleteRow(scope.$index)" />
+                <el-button type="danger" icon="el-icon-minus" circle @click="remove(scope.$index)" />
+                <el-button type="primary" icon="el-icon-arrow-up" circle @click="up(scope.$index)" />
+                <el-button type="primary" icon="el-icon-arrow-down" circle @click="down(scope.$index)" />
               </el-form-item>
             </template>
           </el-table-column>
         </el-table>
       </el-form>
       <span slot="footer">
-        <el-button type="primary" @click="closeDialog">{{ $customTranslate('Confirm') }}</el-button>
+        <el-button type="primary" @click="add()">{{ $customTranslate('Add') }}</el-button>
+        <el-button type="success" @click="save">{{ $customTranslate('Save') }}</el-button>
       </span>
     </el-dialog>
+    <Field v-if="fieldDialogVisible" v-model="currentRow.fields" @close="saveFields" />
   </div>
 </template>
 <script>
-import areaHelper from '@/mixins/areaHelper'
+import Field from '@/components/part/detail/Field'
 import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
-import { isResource } from '@/utils/helper'
+import areaHelper from '@/mixins/areaHelper'
+import { isScript, isResource, typeMatch, customize } from '@/utils/helper'
+import { EVENTS_TASK, LISTENER_TYPES_TASK, TIMER_DEFINITION_TYPES } from '@/utils/constants'
+import { swapArray, next } from '@/utils/tools'
+
+const ELEMENT_NAME = 'TaskListener'
 
 export default {
-  name: 'TaskListener',
-  components: { FormItemInput, FormItemTextArea, FormItemGeneratedInput },
+  name: ELEMENT_NAME,
+  components: { Field, FormItemInput, FormItemTextArea, FormItemGeneratedInput },
   mixins: [areaHelper],
   data() {
     return {
-      eventTypes: [
-        'create',
-        'assignment',
-        'complete',
-        'delete',
-        'update',
-        'timeout'
-      ],
-      listenerTypes: [
-        {
-          label: 'Java Class',
-          value: 'class'
-        },
-        {
-          label: 'Expression',
-          value: 'expression'
-        },
-        {
-          label: 'Delegate Expression',
-          value: 'delegateExpression'
-        },
-        {
-          label: 'Script',
-          value: 'script'
-        }
-      ],
+      events: EVENTS_TASK,
+      listenerTypes: LISTENER_TYPES_TASK,
+      timerDefinitionTypes: TIMER_DEFINITION_TYPES,
       dialogVisible: true,
-      showParamDialog: false,
-      nowIndex: null,
-      listenerForm: { // 呼叫参数设置
-        tableData: [{
-          eventType: 'create',
-          listenerType: 'class'
-        }]
+      fieldDialogVisible: false,
+      currentRow: null,
+      subForm: {
+        records: []
       }
     }
   },
+  created() {
+    this.read()
+  },
   methods: {
+    read() {
+      this.subForm.records = this.form.extensionElements?.values
+        .filter(item => typeMatch(item.$type, ELEMENT_NAME))
+        .map(row => {
+          const data = {
+            event: row.event,
+            listenerId: row.id,
+            fields: row.fields?.map(field => {
+              let fieldType
+              if ('string' in field) fieldType = 'string'
+              else fieldType = 'expression'
+              return {
+                name: field.name,
+                type: fieldType,
+                value: field[fieldType]
+              }
+            }) ?? []
+          }
+          let listenerType, config
+          if ('class' in row) {
+            listenerType = 'class'
+            config = row[listenerType]
+          } else if ('expression' in row) {
+            listenerType = 'expression'
+            config = row[listenerType]
+          } else if ('delegateExpression' in row) {
+            listenerType = 'delegateExpression'
+            config = row[listenerType]
+          } else {
+            listenerType = 'script'
+            data.scriptFormat = row.script.scriptFormat
+            if (row.script.resource) {
+              data.scriptType = 'externalResource'
+              config = row.script.resource
+            } else {
+              data.scriptType = 'inlineScript'
+              config = row.script.value
+            }
+          }
+          data.listenerType = listenerType
+          data.config = config
+          if (row.event === 'timeout' && row.eventDefinitions?.length) {
+            const timerEventDefinition = row.eventDefinitions[0]
+            if ('timeDate' in timerEventDefinition) {
+              data.timerDefinitionType = 'timeDate'
+            } else if ('timeDuration' in timerEventDefinition) {
+              data.timerDefinitionType = 'timeDuration'
+            } else if ('timeCycle' in timerEventDefinition) {
+              data.timerDefinitionType = 'timeCycle'
+            } else {
+              console.warn('Wrong timerDefinitionType in ' + timerEventDefinition + '?')
+            }
+            data.timerDefinition = timerEventDefinition[data.timerDefinitionType]?.body
+          }
+          return data
+        }) ?? []
+    },
+    writeExtension() {
+      let extensionElements = this.form_.extensionElements || this.moddle.create('bpmn:ExtensionElements')
+      extensionElements.values = extensionElements.values?.filter(item => !typeMatch(item.$type, ELEMENT_NAME)) ?? []
+      if (this.subForm.records?.length) {
+        this.subForm.records.forEach(row => {
+          const data = this.moddle.create(customize(ELEMENT_NAME))
+          data.event = row.event
+          if (row.event === 'timeout') {
+            const timerEventDefinition = this.moddle.create('bpmn:TimerEventDefinition', {
+              id: next('TimerEventDefinition'),
+              [row.timerDefinitionType]: this.moddle.create('bpmn:FormalExpression', {
+                body: row.timerDefinition
+              })
+            })
+            data.eventDefinitions = [timerEventDefinition]
+          }
+          if (row.scriptType) {
+            const attrs = {}
+            attrs.scriptFormat = row.scriptFormat
+            if (this.showResource(row.scriptType)) {
+              attrs.resource = row.config
+            } else {
+              attrs.value = row.config
+            }
+            data.script = this.moddle.create(customize('Script'), attrs)
+          } else {
+            data[row.listenerType] = row.config
+          }
+          data.id = row.listenerId
+          if (row.fields?.length) {
+            row.fields.forEach(field => {
+              const fieldElement = this.moddle.create(customize('Field'))
+              fieldElement.name = field.name
+              fieldElement[field.type] = field.value
+              data.get('fields').push(fieldElement)
+            })
+          }
+          extensionElements.values.push(data)
+        })
+      } else if (!extensionElements.values.length) {
+        extensionElements = null
+      }
+      this.form_.extensionElements = extensionElements
+      this.write({ extensionElements: extensionElements })
+    },
+    initRow() {
+      return {
+        event: 'create',
+        listenerType: 'class'
+      }
+    },
+    save() {
+      this.$refs['subForm'].validate().then(() => {
+        this.writeExtension()
+        this.dialogVisible = false
+      }).catch(e => console.error(e))
+    },
+    add() {
+      this.subForm.records.push(this.initRow())
+    },
+    remove(index) {
+      this.subForm.records.splice(index, 1)
+    },
+    up(index) {
+      if (index > 0) {
+        swapArray(this.subForm.records, index, index - 1)
+      }
+    },
+    down(index) {
+      if (index < this.subForm.records.length - 1) {
+        swapArray(this.subForm.records, index, index + 1)
+      }
+    },
+    showScript(listenerType) {
+      return isScript(listenerType)
+    },
     showResource(scriptType) {
       return isResource(scriptType)
     },
-    closeDialog() {
-      this.dialogVisible = false
+    showTimeout(event) {
+      return event === 'timeout'
     },
-    addList() {
-      this.listenerForm.tableData.push({
-        beginTime: '',
-        endTime: ''
-      })
+    configFields(index) {
+      this.currentRow = this.subForm.records[index]
+      this.fieldDialogVisible = true
     },
-    // 新增 有效拨打时间
-    addParamsSetting() {
-      this.addList()
-    },
-    // 删除当前行
-    deleteRow(index) {
-      this.listenerForm.tableData.splice(index, 1)
+    saveFields(fields) {
+      this.currentRow.fields = fields
+      this.fieldDialogVisible = false
     }
   }
 }

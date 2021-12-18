@@ -22,6 +22,7 @@ export default {
   methods: {
     generate() {
       this.value_ = next()
+      this.input(this.value_)
     }
   }
 }

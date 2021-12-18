@@ -13,6 +13,9 @@
   border-left: 1px solid #ccc;
   overflow: auto;
   background-color: #F2F6FC;
+  .el-badge__content.is-fixed {
+    top: 15px;
+  }
 }
 
 .canvas {
@@ -39,10 +42,6 @@
   position: absolute;
   left: 110px;
   bottom: 5px;
-}
-
-.listenerStyle {
-  min-width: 900px;
 }
 
 a[href="http://bpmn.io"] {

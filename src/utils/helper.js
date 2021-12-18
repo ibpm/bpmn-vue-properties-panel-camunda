@@ -1,13 +1,14 @@
-import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
+// import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
 import { isAny } from 'bpmn-js/lib/features/modeling/util/ModelingUtil'
+import { ENGINE, CONDITIONAL_SOURCES } from '@/utils/constants'
 
 export const
-  CONDITIONAL_SOURCES = [
-    'bpmn:Activity',
-    'bpmn:ExclusiveGateway',
-    'bpmn:InclusiveGateway',
-    'bpmn:ComplexGateway'
-  ],
+  typeMatch = (type, suffix) => {
+    return type === customize(suffix)
+  },
+  customize = (suffix) => {
+    return ENGINE + ':' + suffix
+  },
   isConditionalSource = (element) => {
     return isAny(element, CONDITIONAL_SOURCES)
   },
@@ -19,7 +20,7 @@ export const
   },
   isResource = (scriptType) => {
     return scriptType && scriptType === 'externalResource'
-  },
+  }/*,
   getEventDefinition = (element, eventType) => {
     const bo = getBusinessObject(element)
     let eventDefinition = null
@@ -33,4 +34,4 @@ export const
     }
 
     return eventDefinition
-  }
+  }*/
