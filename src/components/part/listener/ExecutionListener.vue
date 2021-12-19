@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      :title="$customTranslate('Task Listener')"
+      :title="$customTranslate('Execution Listener')"
       :visible.sync="dialogVisible"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -15,23 +15,6 @@
               <el-form-item :prop="'records.' + scope.$index + '.event'">
                 <el-select v-model="scope.row.event">
                   <el-option v-for="(item, index) in events" :key="index" :label="$customTranslate(item)" :value="item" />
-                </el-select>
-              </el-form-item>
-              <el-form-item
-                v-if="showTimeout(scope.row.event)"
-                :prop="'records.' + scope.$index + '.timerDefinitionType'"
-                :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
-              >
-                <el-select
-                  v-model="scope.row.timerDefinitionType"
-                  :placeholder="$customTranslate('Timer Definition Type')"
-                >
-                  <el-option
-                    v-for="(item, index) in timerDefinitionTypes"
-                    :key="index"
-                    :label="$customTranslate(item.name)"
-                    :value="item.value"
-                  />
                 </el-select>
               </el-form-item>
             </template>
@@ -88,21 +71,6 @@
               </template>
             </template>
           </el-table-column>
-          <el-table-column prop="listenerId" :label="$customTranslate('Listener Id')">
-            <template slot-scope="scope">
-              <FormItemGeneratedInput
-                v-model="scope.row.listenerId"
-                :prop="'records.' + scope.$index + '.listenerId'"
-              />
-              <FormItemInput
-                v-if="showTimeout(scope.row.event)"
-                v-model="scope.row.timerDefinition"
-                :prop="'records.' + scope.$index + '.timerDefinition'"
-                :placeholder="$customTranslate('Timer Definition')"
-                :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
-              />
-            </template>
-          </el-table-column>
           <el-table-column :label="$customTranslate('Fields')">
             <template slot-scope="scope">
               <el-form-item>
@@ -137,23 +105,21 @@
 import Field from '@/components/part/detail/Field'
 import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
-import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
 import areaHelper from '@/mixins/areaHelper'
 import { isScript, isResource, typeMatch, customize } from '@/utils/helper'
-import { EVENTS_TASK, LISTENER_TYPES, TIMER_DEFINITION_TYPES } from '@/utils/constants'
-import { swapArray, next } from '@/utils/tools'
+import { EVENTS_EXECUTION, LISTENER_TYPES } from '@/utils/constants'
+import { swapArray } from '@/utils/tools'
 
-const ELEMENT_NAME = 'TaskListener'
+const ELEMENT_NAME = 'ExecutionListener'
 
 export default {
   name: ELEMENT_NAME,
-  components: { Field, FormItemInput, FormItemTextArea, FormItemGeneratedInput },
+  components: { Field, FormItemInput, FormItemTextArea },
   mixins: [areaHelper],
   data() {
     return {
-      events: EVENTS_TASK,
+      events: EVENTS_EXECUTION,
       listenerTypes: LISTENER_TYPES,
-      timerDefinitionTypes: TIMER_DEFINITION_TYPES,
       dialogVisible: true,
       fieldDialogVisible: false,
       currentRow: null,
@@ -172,7 +138,6 @@ export default {
         .map(row => {
           const data = {
             event: row.event,
-            listenerId: row.id,
             fields: row.fields?.map(field => {
               let fieldType
               if ('string' in field) fieldType = 'string'
@@ -207,19 +172,6 @@ export default {
           }
           data.listenerType = listenerType
           data.config = config
-          if (row.event === 'timeout' && row.eventDefinitions?.length) {
-            const timerEventDefinition = row.eventDefinitions[0]
-            if ('timeDate' in timerEventDefinition) {
-              data.timerDefinitionType = 'timeDate'
-            } else if ('timeDuration' in timerEventDefinition) {
-              data.timerDefinitionType = 'timeDuration'
-            } else if ('timeCycle' in timerEventDefinition) {
-              data.timerDefinitionType = 'timeCycle'
-            } else {
-              console.warn('Wrong timerDefinitionType in ' + timerEventDefinition + '?')
-            }
-            data.timerDefinition = timerEventDefinition[data.timerDefinitionType]?.body
-          }
           return data
         }) ?? []
     },
@@ -230,15 +182,6 @@ export default {
         this.subForm.records.forEach(row => {
           const data = this.moddle.create(customize(ELEMENT_NAME))
           data.event = row.event
-          if (row.event === 'timeout') {
-            const timerEventDefinition = this.moddle.create('bpmn:TimerEventDefinition', {
-              id: next('TimerEventDefinition'),
-              [row.timerDefinitionType]: this.moddle.create('bpmn:FormalExpression', {
-                body: row.timerDefinition
-              })
-            })
-            data.eventDefinitions = [timerEventDefinition]
-          }
           if (row.scriptType) {
             const attrs = {}
             attrs.scriptFormat = row.scriptFormat
@@ -251,7 +194,6 @@ export default {
           } else {
             data[row.listenerType] = row.config
           }
-          data.id = row.listenerId
           if (row.fields?.length) {
             row.fields.forEach(field => {
               const fieldElement = this.moddle.create(customize('Field'))
@@ -301,9 +243,6 @@ export default {
     },
     showResource(scriptType) {
       return isResource(scriptType)
-    },
-    showTimeout(event) {
-      return event === 'timeout'
     },
     configFields(index) {
       this.currentRow = this.subForm.records[index]

@@ -2,24 +2,24 @@
   <div>
     <Common :moddle="moddle" :form="form" @write="write">
       <template #detail>
+        <FormItemInput v-model="form.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
+        <FormItemInput v-model="form.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
+        <FormItemInput v-model="form.priority" :label="$customTranslate('Priority')" prop="priority" />
         <el-form-item :label="$customTranslate('Task Listener')">
-          <el-badge :value="taskListenerLength">
-            <el-button @click="dialogName = 'taskListenerDialog'">
+          <el-badge :value="listenerLength">
+            <el-button @click="showListener = true">
               {{ $customTranslate('Update') }}
             </el-button>
           </el-badge>
         </el-form-item>
-        <FormItemInput v-model="form.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
-        <FormItemInput v-model="form.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
-        <FormItemInput v-model="form.priority" :label="$customTranslate('Priority')" prop="priority" />
       </template>
     </Common>
     <TaskListener
-      v-if="dialogName === 'taskListenerDialog'"
+      v-if="showListener"
       :moddle="moddle"
       :form="form"
       @write="write"
-      @close="finishTaskListener"
+      @close="finishListener"
     />
   </div>
 </template>
@@ -41,8 +41,8 @@ export default {
   mixins: [elementHelper],
   data() {
     return {
-      dialogName: '',
-      taskListenerLength: 0
+      showListener: false,
+      listenerLength: 0
     }
   },
   watch: {
@@ -57,13 +57,10 @@ export default {
     }
   },
   methods: {
-    finishTaskListener() {
-      this.computedTaskListenerLength()
-      this.dialogName = ''
-    },
-    computedTaskListenerLength() {
-      this.taskListenerLength = this.element.businessObject.extensionElements?.values
+    finishListener() {
+      this.listenerLength = this.form.extensionElements?.values
         ?.filter(item => typeMatch(item.$type, 'TaskListener')).length ?? 0
+      this.showListener = false
     }
   }
 }

@@ -14,7 +14,11 @@ export const
     'update',
     'timeout'// https://docs.camunda.org/manual/latest/reference/bpmn20/events/timer-events/#defining-a-timer
   ],
-  LISTENER_TYPES_TASK = [
+  EVENTS_EXECUTION = [
+    'start',
+    'end'
+  ],
+  LISTENER_TYPES = [
     {
       value: 'class',
       name: 'Java Class'

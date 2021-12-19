@@ -21,8 +21,7 @@ export default {
   },
   methods: {
     generate() {
-      this.value_ = next()
-      this.input(this.value_)
+      this.input(next())
     }
   }
 }
