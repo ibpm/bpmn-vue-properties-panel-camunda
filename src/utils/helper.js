@@ -19,8 +19,12 @@ export const
     return conditionType && conditionType === 'script'
   },
   isResource = (scriptType) => {
-    return scriptType && scriptType === 'externalResource'
-  }/*,
+    return scriptType && scriptType === 'resource'
+  },
+  createFormalExpression = (moddle, props) => {
+    return moddle.create('bpmn:FormalExpression', props)
+  }
+  /*,
   getEventDefinition = (element, eventType) => {
     const bo = getBusinessObject(element)
     let eventDefinition = null

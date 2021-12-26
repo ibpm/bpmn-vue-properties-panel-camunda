@@ -1,15 +1,15 @@
 <template>
-  <Common :moddle="moddle" :form="form" @write="write" />
+  <Activity :moddle="moddle" :form="form" @write="write" />
 </template>
 
 <script>
-import Common from '@/components/embbed/Common'
+import Activity from '@/components/embbed/Activity'
 import elementHelper from '@/mixins/elementHelper'
 
 export default {
   name: 'Task',
   components: {
-    Common
+    Activity
   },
   mixins: [elementHelper]
 }

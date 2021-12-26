@@ -19,13 +19,7 @@
         </template>
       </template>
     </Base>
-    <ExecutionListener
-      v-if="showListener"
-      :moddle="moddle"
-      :form="form"
-      @write="write"
-      @close="finishListener"
-    />
+    <ExecutionListener v-if="showListener" :moddle="moddle" :form="form" @write="write" @close="finishListener" />
   </div>
 </template>
 

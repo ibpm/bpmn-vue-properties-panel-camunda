@@ -25,6 +25,7 @@ import EndEvent from '@/components/bpmn/events/EndEvent'
 import SequenceFlow from '@/components/bpmn/SequenceFlow'
 import Task from '@/components/bpmn/tasks/Task'
 import UserTask from '@/components/bpmn/tasks/UserTask'
+import ScriptTask from '@/components/bpmn/tasks/ScriptTask'
 import { next } from '@/utils/tools'
 
 export default {
@@ -36,7 +37,8 @@ export default {
     EndEvent,
     SequenceFlow,
     Task,
-    UserTask
+    UserTask,
+    ScriptTask
   },
   props: {
     modeler: {

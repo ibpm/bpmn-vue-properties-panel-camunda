@@ -63,7 +63,7 @@ export default {
     }
   },
   created() {
-    if (this.form.isStartableInTasklist === null || this.form.isStartableInTasklist === undefined) {
+    if (!this.form.isStartableInTasklist) {
       this.form.isStartableInTasklist = true
     }
   }

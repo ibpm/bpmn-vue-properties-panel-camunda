@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Common :moddle="moddle" :form="form" @write="write">
+    <Activity :moddle="moddle" :form="form" @write="write">
       <template #detail>
         <FormItemInput v-model="form.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
         <FormItemInput v-model="form.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
@@ -13,19 +13,13 @@
           </el-badge>
         </el-form-item>
       </template>
-    </Common>
-    <TaskListener
-      v-if="showListener"
-      :moddle="moddle"
-      :form="form"
-      @write="write"
-      @close="finishListener"
-    />
+    </Activity>
+    <TaskListener v-if="showListener" :moddle="moddle" :form="form" @write="write" @close="finishListener" />
   </div>
 </template>
 
 <script>
-import Common from '@/components/embbed/Common'
+import Activity from '@/components/embbed/Activity'
 import TaskListener from '@/components/part/listener/TaskListener'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
@@ -34,7 +28,7 @@ import { typeMatch } from '@/utils/helper'
 export default {
   name: 'UserTask',
   components: {
-    Common,
+    Activity,
     TaskListener,
     FormItemInput
   },

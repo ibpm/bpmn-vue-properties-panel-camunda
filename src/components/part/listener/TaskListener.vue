@@ -8,8 +8,8 @@
       :show-close="false"
       @closed="$emit('close')"
     >
-      <el-form ref="subForm" :model="subForm" size="mini">
-        <el-table :data="subForm.records" border>
+      <el-form ref="form_" :model="form_" size="mini">
+        <el-table :data="form_.records" border>
           <el-table-column :label="$customTranslate('Event Type')" prop="event">
             <template slot-scope="scope">
               <el-form-item :prop="'records.' + scope.$index + '.event'">
@@ -139,7 +139,7 @@ import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
 import areaHelper from '@/mixins/areaHelper'
-import { isScript, isResource, typeMatch, customize } from '@/utils/helper'
+import { isScript, isResource, typeMatch, customize, createFormalExpression } from '@/utils/helper'
 import { EVENTS_TASK, LISTENER_TYPES, TIMER_DEFINITION_TYPES } from '@/utils/constants'
 import { swapArray, next } from '@/utils/tools'
 
@@ -157,7 +157,7 @@ export default {
       dialogVisible: true,
       fieldDialogVisible: false,
       currentRow: null,
-      subForm: {
+      form_: {
         records: []
       }
     }
@@ -167,7 +167,7 @@ export default {
   },
   methods: {
     read() {
-      this.subForm.records = this.form.extensionElements?.values
+      this.form_.records = this.form.extensionElements?.values
         .filter(item => typeMatch(item.$type, ELEMENT_NAME))
         .map(row => {
           const data = {
@@ -223,17 +223,17 @@ export default {
           return data
         }) ?? []
     },
-    writeExtension() {
+    writeSub() {
       let extensionElements = this.form_.extensionElements || this.moddle.create('bpmn:ExtensionElements')
       extensionElements.values = extensionElements.values?.filter(item => !typeMatch(item.$type, ELEMENT_NAME)) ?? []
-      if (this.subForm.records?.length) {
-        this.subForm.records.forEach(row => {
+      if (this.form_.records?.length) {
+        this.form_.records.forEach(row => {
           const data = this.moddle.create(customize(ELEMENT_NAME))
           data.event = row.event
           if (row.event === 'timeout') {
             const timerEventDefinition = this.moddle.create('bpmn:TimerEventDefinition', {
               id: next('TimerEventDefinition'),
-              [row.timerDefinitionType]: this.moddle.create('bpmn:FormalExpression', {
+              [row.timerDefinitionType]: createFormalExpression(this.moddle, {
                 body: row.timerDefinition
               })
             })
@@ -265,7 +265,7 @@ export default {
       } else if (!extensionElements.values.length) {
         extensionElements = null
       }
-      this.form_.extensionElements = extensionElements
+      this.form.extensionElements = extensionElements
       this.write({ extensionElements: extensionElements })
     },
     initRow() {
@@ -275,25 +275,25 @@ export default {
       }
     },
     save() {
-      this.$refs['subForm'].validate().then(() => {
-        this.writeExtension()
+      this.$refs['form_'].validate().then(() => {
+        this.writeSub()
         this.dialogVisible = false
       }).catch(e => console.error(e))
     },
     add() {
-      this.subForm.records.push(this.initRow())
+      this.form_.records.push(this.initRow())
     },
     remove(index) {
-      this.subForm.records.splice(index, 1)
+      this.form_.records.splice(index, 1)
     },
     up(index) {
       if (index > 0) {
-        swapArray(this.subForm.records, index, index - 1)
+        swapArray(this.form_.records, index, index - 1)
       }
     },
     down(index) {
-      if (index < this.subForm.records.length - 1) {
-        swapArray(this.subForm.records, index, index + 1)
+      if (index < this.form_.records.length - 1) {
+        swapArray(this.form_.records, index, index + 1)
       }
     },
     showScript(listenerType) {
@@ -306,7 +306,7 @@ export default {
       return event === 'timeout'
     },
     configFields(index) {
-      this.currentRow = this.subForm.records[index]
+      this.currentRow = this.form_.records[index]
       this.fieldDialogVisible = true
     },
     saveFields(fields) {
