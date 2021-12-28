@@ -2,6 +2,7 @@
   <div>
     <Common :moddle="moddle" :form="form_" @write="write">
       <template #detail>
+        <slot name="detail" />
         <el-form-item :label="$customTranslate('Multi Instance')">
           <el-badge :is-dot="Boolean(form.loopCharacteristics)">
             <el-button @click="showMultiInstance = true">
@@ -9,7 +10,6 @@
             </el-button>
           </el-badge>
         </el-form-item>
-        <slot name="detail" />
       </template>
     </Common>
     <MultiInstance v-if="showMultiInstance" :moddle="moddle" :form="form_" @write="write" @close="finishMultiInstance" />

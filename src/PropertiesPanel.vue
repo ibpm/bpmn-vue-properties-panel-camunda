@@ -26,6 +26,7 @@ import SequenceFlow from '@/components/bpmn/SequenceFlow'
 import Task from '@/components/bpmn/tasks/Task'
 import UserTask from '@/components/bpmn/tasks/UserTask'
 import ScriptTask from '@/components/bpmn/tasks/ScriptTask'
+import BusinessRuleTask from '@/components/bpmn/tasks/BusinessRuleTask'
 import { next } from '@/utils/tools'
 
 export default {
@@ -38,7 +39,8 @@ export default {
     SequenceFlow,
     Task,
     UserTask,
-    ScriptTask
+    ScriptTask,
+    BusinessRuleTask
   },
   props: {
     modeler: {

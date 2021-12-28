@@ -3,15 +3,43 @@
   <Activity :moddle="moddle" :form="form" @write="write">
     <template #detail>
       <FormItemInput v-model="form.decisionRef" :label="$customTranslate('Decision Ref')" prop="decisionRef" />
-      <el-form-item :label="$customTranslate('Binding')" prop="binding">
-        <el-select v-model="form.binding">
-          <el-option :label="$customTranslate('latest')" value="latest" />
-          <el-option :label="$customTranslate('deployment')" value="deployment" />
-          <el-option :label="$customTranslate('version')" value="version" />
-          <el-option :label="$customTranslate('versionTag')" value="versionTag" />
+      <el-form-item :label="$customTranslate('Binding')" prop="decisionRefBinding">
+        <el-select v-model="form.decisionRefBinding">
+          <el-option
+            v-for="(item, index) in bindings"
+            :key="index"
+            :label="$customTranslate(item)"
+            :value="item"
+          />
         </el-select>
-        <FormItemInput v-model="form.tenantId" :label="$customTranslate('Tenant Id')" prop="tenantId" />
-        <FormItemInput v-model="form.resultVariable" :label="$customTranslate('Result Variable')" prop="resultVariable" />
+      </el-form-item>
+      <FormItemInput
+        v-if="form.decisionRefBinding === 'version'"
+        v-model="form.decisionRefVersion"
+        :label="$customTranslate('Version')"
+        prop="decisionRefVersion"
+      />
+      <FormItemInput
+        v-if="form.decisionRefBinding === 'versionTag'"
+        v-model="form.decisionRefVersionTag"
+        :label="$customTranslate('Version Tag')"
+        prop="decisionRefVersionTag"
+      />
+      <FormItemInput
+        v-model="form.decisionRefTenantId"
+        :label="$customTranslate('Tenant Id')"
+        prop="decisionRefTenantId"
+      />
+      <FormItemInput v-model="form.resultVariable" :label="$customTranslate('Result Variable')" prop="resultVariable" />
+      <el-form-item :label="$customTranslate('Map Decision Result')" prop="mapDecisionResult">
+        <el-select v-model="form.mapDecisionResult">
+          <el-option
+            v-for="(item, index) in mapDecisionResults"
+            :key="index"
+            :label="$customTranslate(item.name)"
+            :value="item.value"
+          />
+        </el-select>
       </el-form-item>
     </template>
   </Activity>
@@ -21,7 +49,7 @@
 import Activity from '@/components/embbed/Activity'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
-import { customize } from '@/utils/helper'
+import { BINDINGS, MAP_DECISION_RESULTS } from '@/utils/constants'
 
 export default {
   name: 'BusinessRuleTask',
@@ -30,36 +58,33 @@ export default {
     FormItemInput
   },
   mixins: [elementHelper],
-  created() {
-    this.readSub()
+  data() {
+    return {
+      mapDecisionResults: MAP_DECISION_RESULTS,
+      bindings: BINDINGS
+    }
   },
-  methods: {
-    readSub() {
-      this.form.conditionType = 'script'
-      if ('script' in this.form) {
-        this.form.scriptType = 'script'
-        this.form.config = this.form.script
-      } else if ('resource' in this.form) {
-        this.form.scriptType = 'resource'
-        this.form.config = this.form.resource
-      }
+  watch: {
+    'form.decisionRef'(val) {
+      this.write({ decisionRef: val })
     },
-    writeSub(obj) {
-      if (obj.scriptFormat) {
-        if ('script' in obj && obj.script) {
-          this.write({
-            scriptFormat: obj.scriptFormat,
-            script: obj.script,
-            [ customize('resource') ]: null
-          })
-        } else if ('resource' in obj && obj.resource) {
-          this.write({
-            scriptFormat: obj.scriptFormat,
-            script: null,
-            [ customize('resource') ]: obj.resource
-          })
-        }
-      }
+    'form.decisionRefBinding'(val) {
+      this.write({ decisionRefBinding: val })
+    },
+    'form.decisionRefVersion'(val) {
+      this.write({ decisionRefVersion: val })
+    },
+    'form.decisionRefVersionTag'(val) {
+      this.write({ decisionRefVersionTag: val })
+    },
+    'form.decisionRefTenantId'(val) {
+      this.write({ decisionRefTenantId: val })
+    },
+    'form.resultVariable'(val) {
+      this.write({ resultVariable: val })
+    },
+    'form.mapDecisionResult'(val) {
+      this.write({ mapDecisionResult: val })
     }
   }
 }

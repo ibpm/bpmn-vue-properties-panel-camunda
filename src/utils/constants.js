@@ -59,4 +59,28 @@ export const
       value: 'expression',
       name: 'Expression'
     }
+  ],
+  BINDINGS = [
+    'latest',
+    'deployment',
+    'version',
+    'versionTag'
+  ],
+  MAP_DECISION_RESULTS = [
+    {
+      name: 'singleEntry (TypedValue)',
+      value: 'singleEntry'
+    },
+    {
+      name: 'singleResult (Map<String, Object>)',
+      value: 'singleResult'
+    },
+    {
+      name: 'collectEntries (List<Object>)',
+      value: 'collectEntries'
+    },
+    {
+      name: 'resultList (List<Map<String, Object>>)',
+      value: 'resultList'
+    }
   ]
