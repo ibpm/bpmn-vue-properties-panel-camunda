@@ -69,7 +69,12 @@ export default {
   },
   computed: {
     getComponent() {
-      return this.element?.type.split(':')[1]
+      const type = this.element?.type.split(':')[1]
+      if (type === 'ManualTask') {
+        // https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/manual-task/
+        return 'Task'
+      }
+      return type
     },
     modeling() {
       return this.modeler.get('modeling')

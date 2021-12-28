@@ -1,3 +1,4 @@
+<!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/ -->
 <template>
   <Activity :moddle="moddle" :form="form" @write="write" />
 </template>

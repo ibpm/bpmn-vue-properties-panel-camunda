@@ -1,23 +1,33 @@
-<!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/script-task/ -->
+<!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/business-rule-task/ -->
 <template>
   <Activity :moddle="moddle" :form="form" @write="write">
     <template #detail>
-      <Condition :form="form" @writeSub="writeSub" />
+      <FormItemInput v-model="form.decisionRef" :label="$customTranslate('Decision Ref')" prop="decisionRef" />
+      <el-form-item :label="$customTranslate('Binding')" prop="binding">
+        <el-select v-model="form.binding">
+          <el-option :label="$customTranslate('latest')" value="latest" />
+          <el-option :label="$customTranslate('deployment')" value="deployment" />
+          <el-option :label="$customTranslate('version')" value="version" />
+          <el-option :label="$customTranslate('versionTag')" value="versionTag" />
+        </el-select>
+        <FormItemInput v-model="form.tenantId" :label="$customTranslate('Tenant Id')" prop="tenantId" />
+        <FormItemInput v-model="form.resultVariable" :label="$customTranslate('Result Variable')" prop="resultVariable" />
+      </el-form-item>
     </template>
   </Activity>
 </template>
 
 <script>
 import Activity from '@/components/embbed/Activity'
-import Condition from '@/components/part/detail/Condition'
+import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
 import { customize } from '@/utils/helper'
 
 export default {
-  name: 'ScriptTask',
+  name: 'BusinessRuleTask',
   components: {
     Activity,
-    Condition
+    FormItemInput
   },
   mixins: [elementHelper],
   created() {

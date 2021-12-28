@@ -1,10 +1,9 @@
-import IdGenerator from 'ids'
+import Ids from 'ids'
 
 export const
-  seed = [32, 10],
-  idGenerator = new IdGenerator(seed),
+  ids = new Ids([32, 32, 1]),
   next = (prefix = null) => {
-    return (prefix ? prefix + '_' : '') + idGenerator.next()
+    return ids.nextPrefixed(prefix ? prefix + '_' : '')
   },
   getLocale = () => {
     const lang = localStorage.getItem('locale') || sessionStorage.getItem('locale') ||

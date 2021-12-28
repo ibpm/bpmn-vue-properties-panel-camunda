@@ -225,7 +225,7 @@ export default {
   'Business Key': '业务主键',
   'Decision Ref': 'DMN主键',
   'Binding': '绑定',
-  'User Id': '用户编号',
+  'Tenant Id': '租户编号',
   'Result Variable': '结果变量',
   'Topic': '主题',
   'Connector Id': '连接器编号',
