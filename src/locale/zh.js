@@ -34,7 +34,7 @@ export default {
   'Ad-hoc': 'Ad-hoc子流程',
   'Task': '任务',
   'Send Task': '发送任务',
-  'Receive Task': '接受任务',
+  'Receive Task': '接收任务',
   'User Task': '用户任务',
   'Manual Task': '手动任务',
   'Business Rule Task': '规则任务',
@@ -229,6 +229,7 @@ export default {
   'Tenant Id': '租户编号',
   'Result Variable': '返回值变量',
   'Map Decision Result': '返回值类型',
+  'Global Message referenced': '全局消息标记',
   'Topic': '主题',
   'Connector Id': '连接器编号',
   'Case Ref': 'CMMN主键',
@@ -300,5 +301,7 @@ export default {
   'Zoom Big': '放大',
   'Zoom Small': '缩小',
   'Export as BPMN': '以.bpmn文件导出',
-  'Export as SVG': '以.svg图片导出'
+  'Export as SVG': '以.svg图片导出',
+
+  'Can not remove the message which used by other ReceiveTask:': '不能删除被其他接收任务引用的消息：'
 }

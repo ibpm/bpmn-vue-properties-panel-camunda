@@ -4,8 +4,12 @@
       <FormItemInput v-model="form_.scriptFormat" :label="$customTranslate('Script Format')" prop="scriptFormat" />
       <el-form-item :label="$customTranslate('Script Type')" prop="scriptType">
         <el-select v-model="form_.scriptType">
-          <el-option :label="$customTranslate('Inline Script')" value="script" />
-          <el-option :label="$customTranslate('External Resource')" value="resource" />
+          <el-option
+            v-for="(item, index) in scriptTypes"
+            :key="index"
+            :label="$customTranslate(item.name)"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
     </template>
@@ -21,6 +25,7 @@
 import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import { isExpression, isScript, isResource } from '@/utils/helper'
+import { SCRIPT_TYPES } from '@/utils/constants'
 
 export default {
   name: 'Condition',
@@ -34,6 +39,7 @@ export default {
   },
   data() {
     return {
+      scriptTypes: SCRIPT_TYPES,
       form_: this.form
     }
   },

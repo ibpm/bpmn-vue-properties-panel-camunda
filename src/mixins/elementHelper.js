@@ -1,3 +1,5 @@
+import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil'
+
 export default {
   props: {
     element: {
@@ -23,7 +25,7 @@ export default {
   },
   methods: {
     read() {
-      this.form = { ...this.element.businessObject }
+      this.form = { ...getBusinessObject(this.element) }
       // delete this.form.$type
       delete this.form.flowElements
       delete this.form.di

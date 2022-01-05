@@ -52,8 +52,12 @@
               <template v-else>
                 <el-form-item :prop="'records.' + scope.$index + '.scriptType'">
                   <el-select v-model="scope.row.scriptType" :placeholder="$customTranslate('Script Type')">
-                    <el-option :label="$customTranslate('Inline Script')" value="inlineScript" />
-                    <el-option :label="$customTranslate('External Resource')" value="externalResource" />
+                    <el-option
+                      v-for="(item, index) in scriptTypes"
+                      :key="index"
+                      :label="$customTranslate(item.name)"
+                      :value="item.value"
+                    />
                   </el-select>
                 </el-form-item>
                 <FormItemTextArea
@@ -107,7 +111,7 @@ import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import areaHelper from '@/mixins/areaHelper'
 import { isScript, isResource, typeMatch, customize } from '@/utils/helper'
-import { EVENTS_EXECUTION, LISTENER_TYPES } from '@/utils/constants'
+import { EVENTS_EXECUTION, LISTENER_TYPES, SCRIPT_TYPES } from '@/utils/constants'
 import { swapArray } from '@/utils/tools'
 
 const ELEMENT_NAME = 'ExecutionListener'
@@ -120,6 +124,7 @@ export default {
     return {
       events: EVENTS_EXECUTION,
       listenerTypes: LISTENER_TYPES,
+      scriptTypes: SCRIPT_TYPES,
       dialogVisible: true,
       fieldDialogVisible: false,
       currentRow: null,
@@ -163,10 +168,10 @@ export default {
             listenerType = 'script'
             data.scriptFormat = row.script.scriptFormat
             if (row.script.resource) {
-              data.scriptType = 'externalResource'
+              data.scriptType = 'resource'
               config = row.script.resource
             } else {
-              data.scriptType = 'inlineScript'
+              data.scriptType = 'script'
               config = row.script.value
             }
           }

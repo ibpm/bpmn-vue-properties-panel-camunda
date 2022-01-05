@@ -69,8 +69,12 @@
               <template v-else>
                 <el-form-item :prop="'records.' + scope.$index + '.scriptType'">
                   <el-select v-model="scope.row.scriptType" :placeholder="$customTranslate('Script Type')">
-                    <el-option :label="$customTranslate('Inline Script')" value="inlineScript" />
-                    <el-option :label="$customTranslate('External Resource')" value="externalResource" />
+                    <el-option
+                      v-for="(item, index) in scriptTypes"
+                      :key="index"
+                      :label="$customTranslate(item.name)"
+                      :value="item.value"
+                    />
                   </el-select>
                 </el-form-item>
                 <FormItemTextArea
@@ -140,7 +144,7 @@ import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
 import areaHelper from '@/mixins/areaHelper'
 import { isScript, isResource, typeMatch, customize, createFormalExpression } from '@/utils/helper'
-import { EVENTS_TASK, LISTENER_TYPES, TIMER_DEFINITION_TYPES } from '@/utils/constants'
+import { EVENTS_TASK, LISTENER_TYPES, SCRIPT_TYPES, TIMER_DEFINITION_TYPES } from '@/utils/constants'
 import { swapArray, next } from '@/utils/tools'
 
 const ELEMENT_NAME = 'TaskListener'
@@ -153,6 +157,7 @@ export default {
     return {
       events: EVENTS_TASK,
       listenerTypes: LISTENER_TYPES,
+      scriptTypes: SCRIPT_TYPES,
       timerDefinitionTypes: TIMER_DEFINITION_TYPES,
       dialogVisible: true,
       fieldDialogVisible: false,
@@ -198,10 +203,10 @@ export default {
             listenerType = 'script'
             data.scriptFormat = row.script.scriptFormat
             if (row.script.resource) {
-              data.scriptType = 'externalResource'
+              data.scriptType = 'resource'
               config = row.script.resource
             } else {
-              data.scriptType = 'inlineScript'
+              data.scriptType = 'script'
               config = row.script.value
             }
           }

@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import Common from '@/components/embbed/Common'
 import Process from '@/components/bpmn/Process'
 import StartEvent from '@/components/bpmn/events/StartEvent'
 import EndEvent from '@/components/bpmn/events/EndEvent'
@@ -27,12 +26,12 @@ import Task from '@/components/bpmn/tasks/Task'
 import UserTask from '@/components/bpmn/tasks/UserTask'
 import ScriptTask from '@/components/bpmn/tasks/ScriptTask'
 import BusinessRuleTask from '@/components/bpmn/tasks/BusinessRuleTask'
+import ReceiveTask from '@/components/bpmn/tasks/ReceiveTask'
 import { next } from '@/utils/tools'
 
 export default {
   name: 'PropertiesPanel',
   components: {
-    Common,
     Process,
     StartEvent,
     EndEvent,
@@ -40,7 +39,8 @@ export default {
     Task,
     UserTask,
     ScriptTask,
-    BusinessRuleTask
+    BusinessRuleTask,
+    ReceiveTask
   },
   props: {
     modeler: {

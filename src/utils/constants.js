@@ -1,5 +1,6 @@
 export const
   ENGINE = 'camunda',
+  BPMN_MESSAGE = 'bpmn:Message',
   CONDITIONAL_SOURCES = [
     'bpmn:Activity',
     'bpmn:ExclusiveGateway',
@@ -13,6 +14,16 @@ export const
     'delete',
     'update',
     'timeout'// https://docs.camunda.org/manual/latest/reference/bpmn20/events/timer-events/#defining-a-timer
+  ],
+  SCRIPT_TYPES = [
+    {
+      value: 'script',
+      name: 'Inline Script'
+    },
+    {
+      value: 'resource',
+      name: 'External Resource'
+    }
   ],
   EVENTS_EXECUTION = [
     'start',
@@ -68,19 +79,19 @@ export const
   ],
   MAP_DECISION_RESULTS = [
     {
-      name: 'singleEntry (TypedValue)',
-      value: 'singleEntry'
+      value: 'singleEntry',
+      name: 'singleEntry (TypedValue)'
     },
     {
-      name: 'singleResult (Map<String, Object>)',
-      value: 'singleResult'
+      value: 'singleResult',
+      name: 'singleResult (Map<String, Object>)'
     },
     {
-      name: 'collectEntries (List<Object>)',
-      value: 'collectEntries'
+      value: 'collectEntries',
+      name: 'collectEntries (List<Object>)'
     },
     {
-      name: 'resultList (List<Map<String, Object>>)',
-      value: 'resultList'
+      value: 'resultList',
+      name: 'resultList (List<Map<String, Object>>)'
     }
   ]
