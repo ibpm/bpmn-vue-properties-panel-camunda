@@ -143,7 +143,8 @@ import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
 import areaHelper from '@/mixins/areaHelper'
-import { isScript, isResource, typeMatch, customize, createFormalExpression } from '@/utils/helper'
+import { isScript, isResource, customize, createFormalExpression } from '@/utils/helper'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
 import { EVENTS_TASK, LISTENER_TYPES, SCRIPT_TYPES, TIMER_DEFINITION_TYPES } from '@/utils/constants'
 import { swapArray, next } from '@/utils/tools'
 
@@ -173,7 +174,7 @@ export default {
   methods: {
     read() {
       this.form_.records = this.form.extensionElements?.values
-        .filter(item => typeMatch(item.$type, ELEMENT_NAME))
+        .filter(item => is(item, customize(ELEMENT_NAME)))
         .map(row => {
           const data = {
             event: row.event,
@@ -230,7 +231,7 @@ export default {
     },
     writeSub() {
       let extensionElements = this.form_.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-      extensionElements.values = extensionElements.values?.filter(item => !typeMatch(item.$type, ELEMENT_NAME)) ?? []
+      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(ELEMENT_NAME))) ?? []
       if (this.form_.records?.length) {
         this.form_.records.forEach(row => {
           const data = this.moddle.create(customize(ELEMENT_NAME))

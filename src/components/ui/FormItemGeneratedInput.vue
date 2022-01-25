@@ -17,11 +17,15 @@ export default {
     value: {
       type: String,
       default: null
+    },
+    prefix: {
+      type: String,
+      default: null
     }
   },
   methods: {
     generate() {
-      this.input(next())
+      this.input(next(this.prefix))
     }
   }
 }

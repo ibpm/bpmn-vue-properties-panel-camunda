@@ -24,7 +24,8 @@ import Activity from '@/components/embbed/Activity'
 import TaskListener from '@/components/part/listener/TaskListener'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
-import { typeMatch } from '@/utils/helper'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
+import { customize } from '@/utils/helper'
 
 export default {
   name: 'UserTask',
@@ -51,11 +52,17 @@ export default {
       this.write({ priority: val })
     }
   },
+  created() {
+    this.computeLength()
+  },
   methods: {
     finishListener() {
-      this.listenerLength = this.form.extensionElements?.values
-        ?.filter(item => typeMatch(item.$type, 'TaskListener')).length ?? 0
+      this.computeLength()
       this.showListener = false
+    },
+    computeLength() {
+      this.listenerLength = this.form.extensionElements?.values
+        ?.filter(item => is(item, customize('TaskListener'))).length ?? 0
     }
   }
 }

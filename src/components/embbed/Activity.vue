@@ -12,7 +12,7 @@
         </el-form-item>
       </template>
     </Common>
-    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :form="form_" @write="write" @close="finishMultiInstance" />
+    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :form="form_" @write="write" @close="showMultiInstance = false" />
   </div>
 </template>
 
@@ -31,11 +31,6 @@ export default {
   data() {
     return {
       showMultiInstance: false
-    }
-  },
-  methods: {
-    finishMultiInstance() {
-      this.showMultiInstance = false
     }
   }
 }

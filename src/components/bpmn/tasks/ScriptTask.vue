@@ -2,7 +2,7 @@
 <template>
   <Activity :moddle="moddle" :form="form" @write="write">
     <template #detail>
-      <Condition :form="form" @writeSub="writeSub" />
+      <Condition v-model="form" @writeSub="writeSub" />
     </template>
   </Activity>
 </template>
@@ -36,19 +36,11 @@ export default {
     },
     writeSub(obj) {
       if (obj.scriptFormat) {
-        if ('script' in obj && obj.script) {
-          this.write({
-            scriptFormat: obj.scriptFormat,
-            script: obj.script,
-            [ customize('resource') ]: null
-          })
-        } else if ('resource' in obj && obj.resource) {
-          this.write({
-            scriptFormat: obj.scriptFormat,
-            script: null,
-            [ customize('resource') ]: obj.resource
-          })
-        }
+        this.write({
+          scriptFormat: obj.scriptFormat,
+          script: obj.script,
+          [ customize('resource') ]: obj.resource
+        })
       }
     }
   }

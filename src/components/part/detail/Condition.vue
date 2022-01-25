@@ -31,7 +31,7 @@ export default {
   name: 'Condition',
   components: { FormItemInput, FormItemTextArea },
   props: {
-    form: {
+    value: {
       type: Object,
       default: null,
       required: true
@@ -40,27 +40,26 @@ export default {
   data() {
     return {
       scriptTypes: SCRIPT_TYPES,
-      form_: this.form
+      form_: this.value
     }
   },
   computed: {
     showExpression() {
-      return isExpression(this.form.conditionType)
+      return isExpression(this.value.conditionType)
     },
     showScript() {
-      return isScript(this.form.conditionType)
+      return isScript(this.value.conditionType)
     },
     showResource() {
       return isResource(this.form_.scriptType)
     }
   },
   watch: {
-    form_: {
-      handler() {
-        this.writeSub()
-      },
-      immediate: true,
-      deep: true
+    'form_.scriptFormat'() {
+      this.writeSub()
+    },
+    'form_.config'() {
+      this.writeSub()
     }
   },
   methods: {
@@ -75,7 +74,7 @@ export default {
           props = { scriptFormat: this.form_.scriptFormat, script: this.form_.config }
         }
       } else {
-        props = null
+        props = {}
       }
       this.$emit('writeSub', props)
     }

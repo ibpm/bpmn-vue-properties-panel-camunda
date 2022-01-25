@@ -123,7 +123,6 @@ export default {
       this.write({ loopCharacteristics: loopCharacteristics })
     },
     save() {
-      console.log(this.form_)
       if (this.form_.loopCardinality || this.form_.collection) {
         this.$refs['form_'].validate().then(() => {
           this.writeSub()

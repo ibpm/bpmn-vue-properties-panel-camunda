@@ -2,13 +2,13 @@
   <Base :moddle="moddle" :form="form" @write="write">
     <template v-if="visible" #custom>
       <el-form-item :label="$customTranslate('Condition Type')" prop="conditionType">
-        <el-select v-model="form.conditionType">
+        <el-select v-model="form.conditionType" @change="changeCondition">
           <el-option :label="$customTranslate('Expression')" value="expression" />
           <el-option :label="$customTranslate('Script')" value="script" />
           <el-option label="" value="" />
         </el-select>
       </el-form-item>
-      <Condition :form="form" @writeSub="writeSub" />
+      <Condition v-model="form" @writeSub="writeSub" />
     </template>
   </Base>
 </template>
@@ -29,11 +29,6 @@ export default {
   computed: {
     visible() {
       return isConditionalSource(this.element.source)
-    }
-  },
-  watch: {
-    'form.conditionType'() {
-      this.writeSub({})
     }
   },
   created() {
@@ -76,6 +71,9 @@ export default {
         props = null
       }
       this.write({ conditionExpression: props })
+    },
+    changeCondition() {
+      this.writeSub({})
     }
   }
 }

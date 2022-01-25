@@ -29,7 +29,8 @@ import ExecutionListener from '@/components/part/listener/ExecutionListener'
 import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemSwitch from '@/components/ui/FormItemSwitch'
 import areaHelper from '@/mixins/areaHelper'
-import { typeMatch } from '@/utils/helper'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
+import { customize } from '@/utils/helper'
 
 export default {
   name: 'Common',
@@ -63,11 +64,17 @@ export default {
       this.write({ failedJobRetryTimeCycle: val })
     }
   },
+  created() {
+    this.computeLength()
+  },
   methods: {
     finishListener() {
-      this.listenerLength = this.form_.extensionElements?.values
-        ?.filter(item => typeMatch(item.$type, 'ExecutionListener')).length ?? 0
+      this.computeLength()
       this.showListener = false
+    },
+    computeLength() {
+      this.listenerLength = this.form_.extensionElements?.values
+        ?.filter(item => is(item, customize('ExecutionListener'))).length ?? 0
     }
   }
 }

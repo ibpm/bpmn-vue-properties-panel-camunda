@@ -3,9 +3,6 @@ import { isAny } from 'bpmn-js/lib/features/modeling/util/ModelingUtil'
 import { CONDITIONAL_SOURCES, ENGINE } from '@/utils/constants'
 
 export const
-  typeMatch = (type, suffix) => {
-    return type === customize(suffix)
-  },
   customize = (suffix) => {
     return ENGINE + ':' + suffix
   },

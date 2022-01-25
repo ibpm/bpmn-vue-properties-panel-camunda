@@ -24,6 +24,7 @@ import EndEvent from '@/components/bpmn/events/EndEvent'
 import SequenceFlow from '@/components/bpmn/SequenceFlow'
 import Task from '@/components/bpmn/tasks/Task'
 import UserTask from '@/components/bpmn/tasks/UserTask'
+import ServiceTask from '@/components/bpmn/tasks/ServiceTask'
 import ScriptTask from '@/components/bpmn/tasks/ScriptTask'
 import BusinessRuleTask from '@/components/bpmn/tasks/BusinessRuleTask'
 import ReceiveTask from '@/components/bpmn/tasks/ReceiveTask'
@@ -38,6 +39,7 @@ export default {
     SequenceFlow,
     Task,
     UserTask,
+    ServiceTask,
     ScriptTask,
     BusinessRuleTask,
     ReceiveTask
@@ -72,11 +74,13 @@ export default {
   computed: {
     getComponent() {
       const type = this.element?.type.split(':')[1]
-      if (type === 'ManualTask') {
+      switch (type) {
+        // https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/send-task/
+        case 'SendTask': return 'ServiceTask'
         // https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/manual-task/
-        return 'Task'
+        case 'ManualTask': return 'Task'
+        default: return type
       }
-      return type
     },
     modeling() {
       return this.modeler.get('modeling')

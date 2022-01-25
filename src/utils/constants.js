@@ -7,6 +7,31 @@ export const
     'bpmn:InclusiveGateway',
     'bpmn:ComplexGateway'
   ],
+  BPMN_IMPLEMENTATIONS = [
+    {
+      value: 'class',
+      name: 'Java Class'
+    },
+    {
+      value: 'expression',
+      name: 'Expression'
+    },
+    {
+      value: 'delegateExpression',
+      name: 'Delegate Expression'
+    }
+  ],
+  IMPLEMENTATIONS = [
+    ...BPMN_IMPLEMENTATIONS,
+    {
+      value: 'external',
+      name: 'External'
+    },
+    {
+      value: 'connector',
+      name: 'Connector'
+    }
+  ],
   EVENTS_TASK = [
     'create',
     'assignment',
@@ -30,18 +55,7 @@ export const
     'end'
   ],
   LISTENER_TYPES = [
-    {
-      value: 'class',
-      name: 'Java Class'
-    },
-    {
-      value: 'expression',
-      name: 'Expression'
-    },
-    {
-      value: 'delegateExpression',
-      name: 'Delegate Expression'
-    },
+    ...BPMN_IMPLEMENTATIONS,
     {
       value: 'script',
       name: 'Script'
@@ -93,5 +107,23 @@ export const
     {
       value: 'resultList',
       name: 'resultList (List<Map<String, Object>>)'
+    }
+  ],
+  VARIABLE_ASSIGNMENT_TYPES = [
+    {
+      value: 'text',
+      name: 'String or Expression'
+    },
+    {
+      value: 'script',
+      name: 'Script'
+    },
+    {
+      value: 'list',
+      name: 'List'
+    },
+    {
+      value: 'map',
+      name: 'Map'
     }
   ]

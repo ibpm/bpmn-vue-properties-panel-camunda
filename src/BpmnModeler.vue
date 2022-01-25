@@ -46,6 +46,7 @@ import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
 import miniMapModule from 'diagram-js-minimap'
 import PropertiesPanel from '@/PropertiesPanel'
 import { getTimeStr } from '@/utils/tools'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
 
 export default {
   name: 'BpmnModeler',
@@ -134,7 +135,7 @@ export default {
     getProcessElement() {
       const rootElements = this.modeler.getDefinitions().rootElements
       for (let i = 0; i < rootElements.length; i++) {
-        if (rootElements[i].$type === 'bpmn:Process') return rootElements[i]
+        if (is(rootElements[i], 'bpmn:Process')) return rootElements[i]
       }
     },
     async showXML() {
