@@ -76,11 +76,7 @@
         </template>
       </template>
     </Activity>
-    <InputOutput
-      v-if="showIO"
-      v-model="ioForm"
-      @writeIO="writeIO"
-    />
+    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @writeSub="writeSub" @syncLength="syncLength" />
   </div>
 </template>
 
@@ -93,9 +89,7 @@ import { IMPLEMENTATIONS } from '@/utils/constants'
 import { customize } from '@/utils/helper'
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
 
-const
-  CONNECTOR_NAME = 'Connector',
-  ELEMENT_NAME = 'InputOutput'
+const CONNECTOR_NAME = 'Connector'
 
 export default {
   name: 'ServiceTask',
@@ -108,9 +102,7 @@ export default {
   data() {
     return {
       implementations: IMPLEMENTATIONS,
-      ioForm: {
-        ios: []
-      },
+      io: {},
       showIO: false,
       ioLength: 0
     }
@@ -187,13 +179,10 @@ export default {
         this.form.implementation = 'external'
       } else if ('connector' in this.form) {
         this.form.implementation = 'connector'
-        const connectors = getBusinessObject(this.element)
-          .extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
-        if (connectors?.length > 0) {
-          const ioElement = connectors[0]['inputOutput']
-          this.readIO(ioElement?.['inputParameters'], true)
-          this.readIO(ioElement?.['outputParameters'], false)
-        }
+        getBusinessObject(this.element).extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
+          .forEach(connector => {
+            this.io = connector['inputOutput']
+          })
       }
     },
     updateImplementation() {
@@ -223,90 +212,16 @@ export default {
     updateTaskPriority(val) {
       this.write({ taskPriority: val })
     },
-    readIO(sources, ioType) {
-      sources?.forEach(io => {
-        const target = {
-          ioType: ioType,
-          name: io.name
-        }
-        if (io.definition) {
-          if (is(io.definition, customize('Script'))) {
-            target.type = 'script'
-            target.condition = {
-              conditionType: 'script',
-              scriptFormat: io.definition.scriptFormat,
-              scriptType: io.definition.resource ? 'resource' : 'script',
-              config: io.definition.value || io.definition.resource
-            }
-          } else if (is(io.definition, customize('List'))) {
-            target.type = 'list'
-            target.items = io.definition.items
-          } else if (is(io.definition, customize('Map'))) {
-            target.type = 'map'
-            target.entries = io.definition.entries
-          }
-        } else {
-          target.type = 'text'
-          target.value = io.value
-        }
-        this.ioForm.ios.push(target)
-        this.ioLength++
-      })
-    },
-    writeIO(form) {
-      this.ioLength = 0
+    writeSub(io) {
       this.showIO = false
-      let ioElement
-      if (form.ios.length) {
-        ioElement = this.moddle.create(customize(ELEMENT_NAME))
-        form.ios.forEach(item => {
-          const
-            listPropertyName = item.ioType ? 'inputParameters' : 'outputParameters',
-            parameterProps = { name: item.name }
-          ioElement[listPropertyName] = ioElement[listPropertyName] || []
-          if (item.type === 'text') {
-            parameterProps.value = item.value
-          } else if (item.type === 'script') {
-            if (item.condition_?.scriptFormat) {
-              parameterProps.definition = this.moddle.create(customize('Script'), {
-                scriptFormat: item.condition_.scriptFormat,
-                value: item.condition_.script,
-                [ customize('resource') ]: item.condition_.resource
-              })
-            }
-          } else if (item.type === 'list') {
-            if (item.items?.length) {
-              parameterProps.definition = this.moddle.create(customize('List'), {
-                items: item.items.map(li => {
-                  return this.moddle.create(customize('Value'), {
-                    value: li.value
-                  })
-                })
-              })
-            }
-          } else { // map
-            if (item.entries?.length) {
-              parameterProps.definition = this.moddle.create(customize('Map'), {
-                entries: item.entries.map(entry => {
-                  return this.moddle.create(customize('Entry'), {
-                    key: entry.key,
-                    value: entry.value
-                  })
-                })
-              })
-            }
-          }
-          ioElement[listPropertyName].push(
-            this.moddle.create(customize(item.ioType ? 'InputParameter' : 'OutputParameter'),
-              parameterProps))
-          this.ioLength++
+      getBusinessObject(this.element).extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
+        .forEach(connector => {
+          this.io = io
+          connector['inputOutput'] = io
         })
-      }
-      const connectors = getBusinessObject(this.element)
-        .extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
-      if (connectors?.length > 0) {
-        connectors[0].inputOutput = ioElement
-      }
+    },
+    syncLength(ioLength) {
+      this.ioLength = ioLength
     }
   }
 }

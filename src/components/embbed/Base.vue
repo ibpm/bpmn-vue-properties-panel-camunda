@@ -13,7 +13,7 @@
       </el-form-item>
       <FormItemTextArea v-model="form_.doc" :label="$customTranslate('Documentation')" prop="doc" />
     </el-form>
-    <InputOutput v-if="showIO" v-model="form_" @writeIO="writeIO" />
+    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @writeSub="writeSub" @syncLength="syncLength" />
   </div>
 </template>
 
@@ -37,6 +37,7 @@ export default {
   mixins: [areaHelper],
   data() {
     return {
+      io: null,
       showIO: false,
       ioLength: 0
     }
@@ -78,100 +79,27 @@ export default {
       if (this.form.documentation?.length) {
         this.form_.doc = this.form.documentation[0].text
       }
-      this.form_.ios = []
       this.form.extensionElements?.values
         .filter(item => is(item, customize(ELEMENT_NAME)))
         .forEach(io => {
-          this.readIO(io['inputParameters'], true)
-          this.readIO(io['outputParameters'], false)
+          this.io = io
         })
     },
-    readIO(sources, ioType) {
-      sources?.forEach(io => {
-        const target = {
-          ioType: ioType,
-          name: io.name
-        }
-        if (io.definition) {
-          if (is(io.definition, customize('Script'))) {
-            target.type = 'script'
-            target.condition = {
-              conditionType: 'script',
-              scriptFormat: io.definition.scriptFormat,
-              scriptType: io.definition.resource ? 'resource' : 'script',
-              config: io.definition.value || io.definition.resource
-            }
-          } else if (is(io.definition, customize('List'))) {
-            target.type = 'list'
-            target.items = io.definition.items
-          } else if (is(io.definition, customize('Map'))) {
-            target.type = 'map'
-            target.entries = io.definition.entries
-          }
-        } else {
-          target.type = 'text'
-          target.value = io.value
-        }
-        this.form_.ios.push(target)
-        this.ioLength++
-      })
-    },
-    writeIO(form) {
-      this.ioLength = 0
+    writeSub(io) {
       this.showIO = false
-      let ioElement
-      if (form.ios.length) {
-        ioElement = this.moddle.create(customize(ELEMENT_NAME))
-        form.ios.forEach(item => {
-          const
-            listPropertyName = item.ioType ? 'inputParameters' : 'outputParameters',
-            parameterProps = { name: item.name }
-          ioElement[listPropertyName] = ioElement[listPropertyName] || []
-          if (item.type === 'text') {
-            parameterProps.value = item.value
-          } else if (item.type === 'script') {
-            if (item.condition_?.scriptFormat) {
-              parameterProps.definition = this.moddle.create(customize('Script'), {
-                scriptFormat: item.condition_.scriptFormat,
-                value: item.condition_.script,
-                [ customize('resource') ]: item.condition_.resource
-              })
-            }
-          } else if (item.type === 'list') {
-            if (item.items?.length) {
-              parameterProps.definition = this.moddle.create(customize('List'), {
-                items: item.items.map(li => {
-                  return this.moddle.create(customize('Value'), {
-                    value: li.value
-                  })
-                })
-              })
-            }
-          } else { // map
-            if (item.entries?.length) {
-              parameterProps.definition = this.moddle.create(customize('Map'), {
-                entries: item.entries.map(entry => {
-                  return this.moddle.create(customize('Entry'), {
-                    key: entry.key,
-                    value: entry.value
-                  })
-                })
-              })
-            }
-          }
-          ioElement[listPropertyName].push(
-            this.moddle.create(customize(item.ioType ? 'InputParameter' : 'OutputParameter'),
-              parameterProps))
-          this.ioLength++
-        })
+      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
+      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(ELEMENT_NAME))) ?? []
+      if (io) {
+        extensionElements.values.push(io)
+      } else if (!extensionElements.values.length) {
+        extensionElements = null
       }
-      if (ioElement) {
-        let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-        extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(ELEMENT_NAME))) ?? []
-        extensionElements.values.push(ioElement)
-        this.form.extensionElements = extensionElements
-        this.write({ extensionElements: extensionElements })
-      }
+      this.io = io
+      this.form.extensionElements = extensionElements
+      this.write({ extensionElements: extensionElements })
+    },
+    syncLength(ioLength) {
+      this.ioLength = ioLength
     }
   }
 }

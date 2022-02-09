@@ -5,7 +5,6 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :show-close="false"
-    @closed="$emit('writeIO', form)"
   >
     <el-form ref="form" :model="form" size="mini">
       <el-table :data="form.ios" border>
@@ -105,7 +104,9 @@ import Condition from '@/components/part/detail/Condition'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
 import { VARIABLE_ASSIGNMENT_TYPES } from '@/utils/constants'
+import { customize } from '@/utils/helper'
 import { next } from '@/utils/tools'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
 
 const ELEMENT_NAME = 'InputOutput'
 
@@ -113,22 +114,118 @@ export default {
   name: ELEMENT_NAME,
   components: { Condition, FormItemTextArea, FormItemGeneratedInput },
   props: {
-    value: {
+    moddle: {
       type: Object,
-      default: () => {},
       required: true
+    },
+    io: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
       variableAssignmentTypes: VARIABLE_ASSIGNMENT_TYPES,
       dialogVisible: true,
-      form: this.value
+      form: {
+        ios: []
+      }
     }
   },
+  created() {
+    this.read()
+  },
   methods: {
+    readIO(listPropertyName, ioType) {
+      this.io[listPropertyName]?.forEach(io => {
+        const target = {
+          ioType: ioType,
+          name: io.name
+        }
+        if (io.definition) {
+          if (is(io.definition, customize('Script'))) {
+            target.type = 'script'
+            target.condition = {
+              conditionType: 'script',
+              scriptFormat: io.definition.scriptFormat,
+              scriptType: io.definition.resource ? 'resource' : 'script',
+              config: io.definition.value || io.definition.resource
+            }
+          } else if (is(io.definition, customize('List'))) {
+            target.type = 'list'
+            target.items = io.definition.items
+          } else if (is(io.definition, customize('Map'))) {
+            target.type = 'map'
+            target.entries = io.definition.entries
+          }
+        } else {
+          target.type = 'text'
+          target.value = io.value
+        }
+        this.form.ios.push(target)
+      })
+    },
+    writeIO() {
+      let io
+      if (this.form.ios.length) {
+        io = this.moddle.create(customize(ELEMENT_NAME))
+        this.form.ios.forEach(item => {
+          const
+            listPropertyName = item.ioType ? 'inputParameters' : 'outputParameters',
+            parameterProps = { name: item.name }
+          io[listPropertyName] = io[listPropertyName] || []
+          if (item.type === 'text') {
+            parameterProps.value = item.value
+          } else if (item.type === 'script') {
+            if (item.condition_?.scriptFormat) {
+              parameterProps.definition = this.moddle.create(customize('Script'), {
+                scriptFormat: item.condition_.scriptFormat,
+                value: item.condition_.script,
+                [ customize('resource') ]: item.condition_.resource
+              })
+            }
+          } else if (item.type === 'list') {
+            if (item.items?.length) {
+              parameterProps.definition = this.moddle.create(customize('List'), {
+                items: item.items.map(li => {
+                  return this.moddle.create(customize('Value'), {
+                    value: li.value
+                  })
+                })
+              })
+            }
+          } else { // map
+            if (item.entries?.length) {
+              parameterProps.definition = this.moddle.create(customize('Map'), {
+                entries: item.entries.map(entry => {
+                  return this.moddle.create(customize('Entry'), {
+                    key: entry.key,
+                    value: entry.value
+                  })
+                })
+              })
+            }
+          }
+          io[listPropertyName].push(
+            this.moddle.create(customize(item.ioType ? 'InputParameter' : 'OutputParameter'),
+              parameterProps))
+        })
+      } else {
+        io = null
+      }
+      this.$emit('writeSub', io)
+      this.$emit('syncLength', this.form.ios.length)
+    },
+    read() {
+      if (this.io) {
+        this.readIO('inputParameters', true)
+        this.readIO('outputParameters', false)
+        this.$emit('syncLength', this.form.ios.length)
+      }
+    },
     save() {
       this.$refs['form'].validate().then(() => {
+        this.writeIO()
         this.dialogVisible = false
       }).catch(e => console.error(e))
     },
@@ -150,6 +247,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
