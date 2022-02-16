@@ -28,21 +28,26 @@ import ServiceTask from '@/components/bpmn/tasks/ServiceTask'
 import ScriptTask from '@/components/bpmn/tasks/ScriptTask'
 import BusinessRuleTask from '@/components/bpmn/tasks/BusinessRuleTask'
 import ReceiveTask from '@/components/bpmn/tasks/ReceiveTask'
+import CallActivity from '@/components/bpmn/subprocess/CallActivity'
 import { next } from '@/utils/tools'
 
 export default {
   name: 'PropertiesPanel',
   components: {
     Process,
+    SequenceFlow,
+    // events
     StartEvent,
     EndEvent,
-    SequenceFlow,
+    // tasks
     Task,
     UserTask,
     ServiceTask,
     ScriptTask,
     BusinessRuleTask,
-    ReceiveTask
+    ReceiveTask,
+    // subprocess
+    CallActivity
   },
   props: {
     modeler: {

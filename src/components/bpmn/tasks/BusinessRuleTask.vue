@@ -31,7 +31,7 @@
         prop="decisionRefTenantId"
       />
       <FormItemInput v-model="form.resultVariable" :label="$customTranslate('Result Variable')" prop="resultVariable" />
-      <el-form-item :label="$customTranslate('Map Decision Result')" prop="mapDecisionResult">
+      <el-form-item v-if="form.resultVariable" :label="$customTranslate('Map Decision Result')" prop="mapDecisionResult">
         <el-select v-model="form.mapDecisionResult">
           <el-option
             v-for="(item, index) in mapDecisionResults"
@@ -81,6 +81,9 @@ export default {
       this.write({ decisionRefTenantId: val })
     },
     'form.resultVariable'(val) {
+      if (!val) {
+        this.write({ mapDecisionResult: undefined })
+      }
       this.write({ resultVariable: val })
     },
     'form.mapDecisionResult'(val) {

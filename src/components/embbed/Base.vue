@@ -11,7 +11,12 @@
           </el-button>
         </el-badge>
       </el-form-item>
-      <FormItemTextArea v-model="form_.doc" :label="$customTranslate('Documentation')" prop="doc" />
+      <FormItemTextArea
+        v-model="form_.doc"
+        :label="$customTranslate('Documentation')"
+        :placeholder="$customTranslate('Element Documentation')"
+        prop="doc"
+      />
     </el-form>
     <InputOutput v-if="showIO" :moddle="moddle" :io="io" @writeSub="writeSub" @syncLength="syncLength" />
   </div>

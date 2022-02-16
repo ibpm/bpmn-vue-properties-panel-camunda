@@ -85,10 +85,13 @@ export const
       name: 'Expression'
     }
   ],
-  BINDINGS = [
+  BINDINGS_CMMN = [
     'latest',
     'deployment',
-    'version',
+    'version'
+  ],
+  BINDINGS = [
+    ...BINDINGS_CMMN,
     'versionTag'
   ],
   MAP_DECISION_RESULTS = [
@@ -126,4 +129,12 @@ export const
       value: 'map',
       name: 'Map'
     }
+  ],
+  CALL_ACTIVITY_TYPES = [
+    'BPMN',
+    'CMMN'
+  ],
+  VARIABLE_MAPPINGS = [
+    'variableMappingClass',
+    'variableMappingDelegateExpression'
   ]
