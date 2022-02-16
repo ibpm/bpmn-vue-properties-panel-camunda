@@ -21,6 +21,7 @@
 import Process from '@/components/bpmn/Process'
 import StartEvent from '@/components/bpmn/events/StartEvent'
 import EndEvent from '@/components/bpmn/events/EndEvent'
+import Gateway from '@/components/bpmn/gateways/Gateway'
 import SequenceFlow from '@/components/bpmn/SequenceFlow'
 import Task from '@/components/bpmn/tasks/Task'
 import UserTask from '@/components/bpmn/tasks/UserTask'
@@ -39,6 +40,8 @@ export default {
     // events
     StartEvent,
     EndEvent,
+    // gateways
+    Gateway,
     // tasks
     Task,
     UserTask,
@@ -79,6 +82,9 @@ export default {
   computed: {
     getComponent() {
       const type = this.element?.type.split(':')[1]
+      if (type.endsWith('Gateway')) {
+        return 'Gateway'
+      }
       switch (type) {
         // https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/send-task/
         case 'SendTask': return 'ServiceTask'
