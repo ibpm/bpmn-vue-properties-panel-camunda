@@ -25,12 +25,7 @@ export default {
   },
   methods: {
     read() {
-      this.form = { ...getBusinessObject(this.element) }
-      // delete this.form.$type
-      delete this.form.flowElements
-      delete this.form.di
-      delete this.form.sourceRef
-      delete this.form.targetRef
+      this.form = getBusinessObject(this.element)
     },
     write(properties) {
       this.modeling.updateProperties(this.element, properties)
