@@ -31,7 +31,7 @@
         </ul>
       </el-main>
       <el-aside>
-        <properties-panel v-if="modeler" class="panel" :modeler="modeler" />
+        <properties-panel v-if="modeler" class="panel" :modeler="modeler" :element-templates="elementTemplates" />
       </el-aside>
     </el-container>
     <el-drawer :visible.sync="drawer" size="60%" direction="btt" :with-header="false">
@@ -51,6 +51,12 @@ import { is } from 'bpmn-js/lib/util/ModelUtil'
 export default {
   name: 'BpmnModeler',
   components: { PropertiesPanel },
+  props: {
+    elementTemplates: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       modeler: null,
@@ -203,4 +209,3 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
 @import "~@/styles/bpmn.scss";
 </style>
-

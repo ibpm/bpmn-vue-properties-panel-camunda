@@ -1,10 +1,10 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/service-task/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :form="form" @write="write">
+    <Activity :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <el-form-item :label="$customTranslate('Implementation')" prop="implementation">
-          <el-select v-model="form.implementation" filterable>
+          <el-select v-model="implementation" filterable>
             <el-option
               v-for="(item, index) in implementations"
               :key="index"
@@ -13,15 +13,15 @@
             />
           </el-select>
         </el-form-item>
-        <template v-if="form.implementation">
+        <template v-if="implementation">
           <FormItemInput
-            v-if="form.implementation === 'class'"
+            v-if="implementation === 'class'"
             v-model="form.class"
             prop="class"
             :label="$customTranslate('Java Class')"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
           />
-          <template v-if="form.implementation === 'expression'">
+          <template v-if="implementation === 'expression'">
             <FormItemInput
               v-model="form.expression"
               prop="expression"
@@ -35,13 +35,13 @@
             />
           </template>
           <FormItemInput
-            v-if="form.implementation === 'delegateExpression'"
+            v-if="implementation === 'delegateExpression'"
             v-model="form.delegateExpression"
             prop="delegateExpression"
             :label="$customTranslate('Delegate Expression')"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
           />
-          <template v-if="form.implementation === 'external'">
+          <template v-if="implementation === 'external'">
             <FormItemInput
               v-model="form.topic"
               prop="topic"
@@ -55,7 +55,7 @@
             />
           </template>
           <el-form-item
-            v-if="form.implementation === 'connector'"
+            v-if="implementation === 'connector'"
             :label="$customTranslate('Connector Id')"
             prop="connectorId"
           >
@@ -76,7 +76,7 @@
         </template>
       </template>
     </Activity>
-    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @writeSub="writeSub" @syncLength="syncLength" />
+    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" />
   </div>
 </template>
 
@@ -101,14 +101,33 @@ export default {
   mixins: [elementHelper],
   data() {
     return {
+      implementation: null,
       implementations: IMPLEMENTATIONS,
       io: {},
-      showIO: false,
-      ioLength: 0
+      showIO: false
+    }
+  },
+  computed: {
+    ioLength: {
+      get() {
+        let length = 0
+        if (this.io) {
+          if (this.io.inputParameters) {
+            length += this.io.inputParameters.length
+          }
+          if (this.io.outputParameters) {
+            length += this.io.outputParameters.length
+          }
+        }
+        return length
+      },
+      set(newValue) {
+        return newValue
+      }
     }
   },
   watch: {
-    'form.implementation'(newVal, oldVal) {
+    'implementation'(newVal, oldVal) {
       if (oldVal) {
         if (oldVal === 'external') {
           this.write({ type: null, topic: null, taskPriority: null })
@@ -165,29 +184,27 @@ export default {
     }
   },
   created() {
-    this.readSub()
+    this.sync()
   },
   methods: {
-    readSub() {
-      if ('class' in this.form) {
-        this.form.implementation = 'class'
-      } else if ('expression' in this.form) {
-        this.form.implementation = 'expression'
-      } else if ('delegateExpression' in this.form) {
-        this.form.implementation = 'delegateExpression'
-      } else if ('external' in this.form) {
-        this.form.implementation = 'external'
-      } else if ('connector' in this.form) {
-        this.form.implementation = 'connector'
-        getBusinessObject(this.element).extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
-          .forEach(connector => {
-            this.io = connector['inputOutput']
-          })
+    sync() {
+      if ('expression' in this.form && this.form.expression) {
+        this.implementation = 'expression'
+      } else if ('delegateExpression' in this.form && this.form.delegateExpression) {
+        this.implementation = 'delegateExpression'
+      } else if ('external' in this.form && this.form.external) {
+        this.implementation = 'external'
+      } else if ('connector' in this.form && this.form.connector) {
+        this.implementation = 'connector'
+        this.io = getBusinessObject(this.element)
+          .extensionElements?.values?.find(item => is(item, customize(CONNECTOR_NAME)))?.inputOutput
+      } else {
+        this.implementation = 'class'
       }
     },
     updateImplementation() {
-      if (this.form.implementation) {
-        this.write({ [this.form.implementation]: this.form[this.form.implementation] })
+      if (this.implementation) {
+        this.write({ [this.implementation]: this.form[this.implementation] })
       }
     },
     updateExternal() {
@@ -212,16 +229,13 @@ export default {
     updateTaskPriority(val) {
       this.write({ taskPriority: val })
     },
-    writeSub(io) {
+    update(io) {
       this.showIO = false
+      this.io = io
       getBusinessObject(this.element).extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
         .forEach(connector => {
-          this.io = io
           connector['inputOutput'] = io
         })
-    },
-    syncLength(ioLength) {
-      this.ioLength = ioLength
     }
   }
 }

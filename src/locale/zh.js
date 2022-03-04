@@ -265,7 +265,7 @@ export default {
   'Http(Sync)': '同步Http',
   'Http(Async)': '异步Http',
   'Ftp2Local': '下载Ftp文件到本地磁盘',
-  'Local2Ftp': '上传本地磁盘文件到Ftp服务器',
+  'Local2Ftp': '上传本地文件到Ftp服务器',
   'Custom Mail': '发送邮件通知',
   'Custom DingTalk': '发送钉钉通知',
   'Custom WxWork': '发送企业微信通知',

@@ -56,14 +56,14 @@ export default {
   },
   watch: {
     'form_.scriptFormat'() {
-      this.writeSub()
+      this.update()
     },
     'form_.config'() {
-      this.writeSub()
+      this.update()
     }
   },
   methods: {
-    writeSub() {
+    update() {
       let props
       if (this.showExpression) {
         props = { expression: this.form_.config }
@@ -76,7 +76,7 @@ export default {
       } else {
         props = {}
       }
-      this.$emit('writeSub', props)
+      this.$emit('update', props)
     }
   }
 }

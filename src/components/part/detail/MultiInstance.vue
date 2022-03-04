@@ -97,7 +97,7 @@ export default {
         failedJobRetryTimeCycle: failedJobRetryTimeCycle
       }
     },
-    writeSub() {
+    update() {
       let extensionElements
       if (this.form_.failedJobRetryTimeCycle) {
         extensionElements = this.moddle.create('bpmn:ExtensionElements')
@@ -125,7 +125,7 @@ export default {
     save() {
       if (this.form_.loopCardinality || this.form_.collection) {
         this.$refs['form_'].validate().then(() => {
-          this.writeSub()
+          this.update()
           this.dialogVisible = false
         }).catch(e => console.error(e))
       } else {

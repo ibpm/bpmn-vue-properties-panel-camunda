@@ -51,7 +51,7 @@
               :prop="'ios.' + scope.$index + '.value'"
               :placeholder="$customTranslate('Variable Assignment Value')"
             />
-            <Condition v-if="scope.row.type === 'script'" v-model="scope.row.condition" @writeSub="scope.row.condition_ = $event" />
+            <Condition v-if="scope.row.type === 'script'" v-model="scope.row.condition" @update="scope.row.condition_ = $event" />
             <template v-if="scope.row.type === 'list'">
               <el-form-item>
                 <el-button type="primary" size="mini" icon="el-icon-plus" @click="scope.row.items.push({value: ''})" />
@@ -210,17 +210,14 @@ export default {
             this.moddle.create(customize(item.ioType ? 'InputParameter' : 'OutputParameter'),
               parameterProps))
         })
-      } else {
-        io = null
       }
-      this.$emit('writeSub', io)
-      this.$emit('syncLength', this.form.ios.length)
+
+      this.$emit('update', io)
     },
     read() {
       if (this.io) {
         this.readIO('inputParameters', true)
         this.readIO('outputParameters', false)
-        this.$emit('syncLength', this.form.ios.length)
       }
     },
     save() {

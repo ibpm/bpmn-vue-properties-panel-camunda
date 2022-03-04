@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Common :moddle="moddle" :form="form_" @write="write">
+    <Common :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <slot name="detail" />
         <el-form-item :label="$customTranslate('Multi Instance')">
@@ -12,7 +12,7 @@
         </el-form-item>
       </template>
     </Common>
-    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :form="form_" @write="write" @close="showMultiInstance = false" />
+    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :form="form" @write="write" @close="showMultiInstance = false" />
   </div>
 </template>
 
@@ -31,6 +31,11 @@ export default {
   data() {
     return {
       showMultiInstance: false
+    }
+  },
+  methods: {
+    sync() {
+      this.$emit('sync')
     }
   }
 }

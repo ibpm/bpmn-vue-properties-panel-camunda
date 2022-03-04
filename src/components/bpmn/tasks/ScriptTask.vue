@@ -1,8 +1,8 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/script-task/ -->
 <template>
-  <Activity :moddle="moddle" :form="form" @write="write">
+  <Activity :moddle="moddle" :form="form" :templates="templates" @write="write">
     <template #detail>
-      <Condition v-model="form" @writeSub="writeSub" />
+      <Condition v-model="form" @update="update" />
     </template>
   </Activity>
 </template>
@@ -21,10 +21,10 @@ export default {
   },
   mixins: [elementHelper],
   created() {
-    this.readSub()
+    this.sync()
   },
   methods: {
-    readSub() {
+    sync() {
       this.form.conditionType = 'script'
       if ('script' in this.form) {
         this.form.scriptType = 'script'
@@ -34,7 +34,7 @@ export default {
         this.form.config = this.form.resource
       }
     },
-    writeSub(obj) {
+    update(obj) {
       if (obj.scriptFormat) {
         this.write({
           scriptFormat: obj.scriptFormat,

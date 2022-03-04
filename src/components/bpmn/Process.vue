@@ -1,5 +1,5 @@
 <template>
-  <Base :moddle="moddle" :form="form" :rules="rules" @write="write">
+  <Base :moddle="moddle" :form="form" :rules="rules" @sync="sync" @write="write">
     <template #custom>
       <FormItemInput v-model="form.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
       <FormItemSwitch v-model="form.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />
@@ -63,8 +63,13 @@ export default {
     }
   },
   created() {
-    if (!this.form.isStartableInTasklist) {
-      this.form.isStartableInTasklist = true
+    this.sync()
+  },
+  methods: {
+    sync() {
+      if (!this.form.isStartableInTasklist) {
+        this.form.isStartableInTasklist = true
+      }
     }
   }
 }

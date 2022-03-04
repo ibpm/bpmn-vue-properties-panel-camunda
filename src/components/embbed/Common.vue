@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Base :moddle="moddle" :form="form_" @write="write">
+    <Base :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
       <template #custom>
         <slot name="detail" />
         <el-form-item :label="$customTranslate('Execution Listener')">
@@ -10,12 +10,12 @@
             </el-button>
           </el-badge>
         </el-form-item>
-        <FormItemSwitch v-model="form_.asyncBefore" :label="$customTranslate('Asynchronous Before')" prop="asyncBefore" />
-        <FormItemSwitch v-model="form_.asyncAfter" :label="$customTranslate('Asynchronous After')" prop="asyncAfter" />
-        <template v-if="form_.asyncBefore || form_.asyncAfter">
-          <FormItemSwitch v-model="form_.exclusive" :label="$customTranslate('Exclusive')" prop="exclusive" />
-          <FormItemInput v-model="form_.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
-          <FormItemInput v-model="form_.failedJobRetryTimeCycle" :label="$customTranslate('Retry Time Cycle')" prop="failedJobRetryTimeCycle" />
+        <FormItemSwitch v-model="form.asyncBefore" :label="$customTranslate('Asynchronous Before')" prop="asyncBefore" />
+        <FormItemSwitch v-model="form.asyncAfter" :label="$customTranslate('Asynchronous After')" prop="asyncAfter" />
+        <template v-if="form.asyncBefore || form.asyncAfter">
+          <FormItemSwitch v-model="form.exclusive" :label="$customTranslate('Exclusive')" prop="exclusive" />
+          <FormItemInput v-model="form.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
+          <FormItemInput v-model="form.failedJobRetryTimeCycle" :label="$customTranslate('Retry Time Cycle')" prop="failedJobRetryTimeCycle" />
         </template>
         <el-form-item v-if="isInputOutputSupported" :label="$customTranslate('Input/Output')">
           <el-badge :value="ioLength">
@@ -27,7 +27,7 @@
       </template>
     </Base>
     <ExecutionListener v-if="showListener" :moddle="moddle" :form="form" @write="write" @close="finishListener" />
-    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @writeSub="writeSub" @syncLength="syncLength" />
+    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" />
   </div>
 </template>
 
@@ -59,58 +59,76 @@ export default {
       showListener: false,
       io: null,
       showIO: false,
-      ioLength: 0,
       isInputOutputSupported: false
     }
   },
+  computed: {
+    ioLength: {
+      get() {
+        let length = 0
+        if (this.io) {
+          if (this.io.inputParameters) {
+            length += this.io.inputParameters.length
+          }
+          if (this.io.outputParameters) {
+            length += this.io.outputParameters.length
+          }
+        }
+        return length
+      },
+      set(newValue) {
+        return newValue
+      }
+    }
+  },
   watch: {
-    'form_.asyncBefore': function(val) {
+    'form.asyncBefore': function(val) {
       this.write({ asyncBefore: val })
     },
-    'form_.asyncAfter': function(val) {
+    'form.asyncAfter': function(val) {
       this.write({ asyncAfter: val })
     },
-    'form_.exclusive': function(val) {
+    'form.exclusive': function(val) {
       this.write({ exclusive: val })
     },
-    'form_.jobPriority': function(val) {
+    'form.jobPriority': function(val) {
       this.write({ jobPriority: val })
     },
-    'form_.failedJobRetryTimeCycle': function(val) {
+    'form.failedJobRetryTimeCycle': function(val) {
       this.write({ failedJobRetryTimeCycle: val })
     }
   },
   created() {
-    this.computeLength()
-    this.readSub()
+    this.init()
   },
   methods: {
+    sync() {
+      this.$emit('sync')
+      this.init()
+    },
+    init() {
+      this.io = this.form.extensionElements?.values
+        .find(item => is(item, customize(ELEMENT_NAME)))
+      this.isInputOutputSupported = is(this.form, 'bpmn:FlowNode') &&
+        !(
+          is(this.form, 'bpmn:StartEvent') ||
+          is(this.form, 'bpmn:Gateway') ||
+          is(this.form, 'bpmn:BoundaryEvent') ||
+          (
+            is(this.form, 'bpmn:SubProcess') && this.form.get('triggeredByEvent')
+          )
+        )
+      this.computeLength()
+    },
     finishListener() {
       this.computeLength()
       this.showListener = false
     },
     computeLength() {
-      this.listenerLength = this.form_.extensionElements?.values
+      this.listenerLength = this.form.extensionElements?.values
         ?.filter(item => is(item, customize('ExecutionListener'))).length ?? 0
     },
-    readSub() {
-      this.form.extensionElements?.values
-        .filter(item => is(item, customize(ELEMENT_NAME)))
-        .forEach(io => {
-          this.io = io
-        })
-      const bo = this.form
-      this.isInputOutputSupported = is(bo, 'bpmn:FlowNode') &&
-        !(
-          is(bo, 'bpmn:StartEvent') ||
-          is(bo, 'bpmn:Gateway') ||
-          is(bo, 'bpmn:BoundaryEvent') ||
-          (
-            is(bo, 'bpmn:SubProcess') && bo.get('triggeredByEvent')
-          )
-        )
-    },
-    writeSub(io) {
+    update(io) {
       this.showIO = false
       let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
       extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(ELEMENT_NAME))) ?? []
@@ -122,9 +140,6 @@ export default {
       this.io = io
       this.form.extensionElements = extensionElements
       this.write({ extensionElements: extensionElements })
-    },
-    syncLength(ioLength) {
-      this.ioLength = ioLength
     }
   }
 }

@@ -1,5 +1,4 @@
-import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
-import { isAny } from 'bpmn-js/lib/features/modeling/util/ModelingUtil'
+import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil'
 import { CONDITIONAL_SOURCES, ENGINE } from '@/utils/constants'
 
 export const

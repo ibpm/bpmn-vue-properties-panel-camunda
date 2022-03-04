@@ -53,9 +53,12 @@ export default {
     }
   },
   created() {
-    this.computeLength()
+    this.sync()
   },
   methods: {
+    sync() {
+      this.computeLength()
+    },
     finishListener() {
       this.computeLength()
       this.showListener = false

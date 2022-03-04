@@ -1,5 +1,3 @@
-import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil'
-
 export default {
   props: {
     element: {
@@ -13,20 +11,17 @@ export default {
     moddle: {
       type: Object,
       required: true
+    },
+    form: {
+      type: Object,
+      required: true
+    },
+    templates: {
+      type: Array,
+      default: () => []
     }
-  },
-  data() {
-    return {
-      form: {}
-    }
-  },
-  created() {
-    this.read()
   },
   methods: {
-    read() {
-      this.form = getBusinessObject(this.element)
-    },
     write(properties) {
       this.modeling.updateProperties(this.element, properties)
     }

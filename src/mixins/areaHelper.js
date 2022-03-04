@@ -12,6 +12,10 @@ export default {
       type: Object,
       required: false,
       default: () => {}
+    },
+    templates: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

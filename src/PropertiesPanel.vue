@@ -2,7 +2,7 @@
 <template>
   <div>
     <div v-if="element" class="titleStyle">
-      {{ element.businessObject.name || element.id }}
+      {{ form.name || form.id || element.id }}
     </div>
     <keep-alive>
       <component
@@ -12,6 +12,8 @@
         :element="element"
         :modeling="modeling"
         :moddle="moddle"
+        :form="form"
+        :templates="templates"
       />
     </keep-alive>
   </div>
@@ -30,6 +32,7 @@ import ScriptTask from '@/components/bpmn/tasks/ScriptTask'
 import BusinessRuleTask from '@/components/bpmn/tasks/BusinessRuleTask'
 import ReceiveTask from '@/components/bpmn/tasks/ReceiveTask'
 import CallActivity from '@/components/bpmn/subprocess/CallActivity'
+import { getBusinessObject, isAny } from 'bpmn-js/lib/util/ModelUtil'
 import { next } from '@/utils/tools'
 
 export default {
@@ -57,6 +60,10 @@ export default {
       type: Object,
       required: true
     },
+    elementTemplates: {
+      type: Array,
+      default: () => []
+    },
     candidateUsers: {
       type: Array,
       default: null
@@ -76,7 +83,8 @@ export default {
   },
   data() {
     return {
-      element: null
+      element: null,
+      form: null
     }
   },
   computed: {
@@ -98,6 +106,9 @@ export default {
     },
     moddle() {
       return this.modeler.get('moddle')
+    },
+    templates() {
+      return this.elementTemplates?.filter(template => isAny(this.element, template.appliesTo))
     }
   },
   mounted() {
@@ -121,6 +132,7 @@ export default {
         if (!this.element.eid) {
           this.element.eid = next()
         }
+        this.form = getBusinessObject(this.element)
       })
     }
   }

@@ -1,4 +1,4 @@
-<!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/business-rule-task/ -->
+<!-- https://docs.camunda.org/manual/latest/reference/bpmn20/subprocesses/call-activity/ -->
 <template>
   <Activity :moddle="moddle" :form="form" @write="write">
     <template #detail>
@@ -140,10 +140,10 @@ export default {
     }
   },
   created() {
-    this.readSub()
+    this.sync()
   },
   methods: {
-    readSub() {
+    sync() {
       if (!this.form.caseRef && !this.form.calledElement) {
         // this.form.businessKeyExpression = '#{execution.processBusinessKey}'
         return
@@ -153,10 +153,8 @@ export default {
       this.form.calledBinding = this.form.caseRef ? this.form.caseBinding : this.form.calledElementBinding
       this.form.calledVersion = this.form.caseRef ? this.form.caseVersion : this.form.calledElementVersion
       this.form.calledTenantId = this.form.caseRef ? this.form.caseTenantId : this.form.calledElementTenantId
-      getBusinessObject(this.element).extensionElements?.values?.filter(item => is(item, customize('In')))
-        .forEach(_in => {
-          this.form.businessKeyExpression = _in.businessKey
-        })
+      this.form.businessKeyExpression = getBusinessObject(this.element)
+        .extensionElements?.values?.find(item => is(item, customize('In')))?.businessKey
       if (this.form.calledElement) {
         if ('variableMappingClass' in this.form) {
           this.form.delegateVariableMapping = 'variableMappingClass'

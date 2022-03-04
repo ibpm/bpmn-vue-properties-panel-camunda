@@ -8,7 +8,7 @@
           <el-option label="" value="" />
         </el-select>
       </el-form-item>
-      <Condition v-model="form" @writeSub="writeSub" />
+      <Condition v-model="form" @update="update" />
     </template>
   </Base>
 </template>
@@ -32,10 +32,10 @@ export default {
     }
   },
   created() {
-    this.readSub()
+    this.sync()
   },
   methods: {
-    readSub() {
+    sync() {
       if (this.form.conditionExpression) {
         if (this.form.conditionExpression.language) {
           this.form.conditionType = 'script'
@@ -53,7 +53,7 @@ export default {
         }
       }
     },
-    writeSub(obj) {
+    update(obj) {
       let props
       if ('expression' in obj) {
         props = obj.expression ? createFormalExpression(this.moddle, { body: obj.expression }) : null
@@ -73,7 +73,7 @@ export default {
       this.write({ conditionExpression: props })
     },
     changeCondition() {
-      this.writeSub({})
+      this.update({})
     }
   }
 }

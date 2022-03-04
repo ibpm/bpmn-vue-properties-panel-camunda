@@ -1,17 +1,20 @@
 <template>
   <div id="app">
-    <bpmn-modeler />
+    <bpmn-modeler :element-templates="customElementTemplates" />
   </div>
 </template>
 
 <script>
 import BpmnModeler from '@/BpmnModeler'
+import CUSTOM_ELEMENT_TEMPLATES from './custom.json'
 
 export default {
   name: 'App',
   components: { BpmnModeler },
   data() {
-    return {}
+    return {
+      customElementTemplates: CUSTOM_ELEMENT_TEMPLATES
+    }
   },
   methods: {}
 }

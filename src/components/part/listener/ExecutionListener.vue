@@ -181,7 +181,7 @@ export default {
           return data
         }) ?? []
     },
-    writeSub() {
+    update() {
       let extensionElements = this.form_.extensionElements || this.moddle.create('bpmn:ExtensionElements')
       extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(ELEMENT_NAME))) ?? []
       if (this.form_.records?.length) {
@@ -224,7 +224,7 @@ export default {
     },
     save() {
       this.$refs['form_'].validate().then(() => {
-        this.writeSub()
+        this.update()
         this.dialogVisible = false
       }).catch(e => console.error(e))
     },

@@ -5,10 +5,10 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :show-close="false"
-    @closed="$emit('close', form_.records)"
+    @closed="$emit('close', form.records)"
   >
-    <el-form ref="form_" :model="form_" size="mini">
-      <el-table :data="form_.records" border>
+    <el-form ref="form" :model="form" size="mini">
+      <el-table :data="form.records" border>
         <el-table-column :label="$customTranslate('Name')" prop="name">
           <template slot-scope="scope">
             <FormItemInput
@@ -75,27 +75,24 @@ export default {
     return {
       fieldTypes: FIELD_TYPES,
       dialogVisible: true,
-      form_: {
+      form: {
         records: this.value
       }
     }
   },
   methods: {
-    initRow() {
-      return {
-        type: 'string'
-      }
-    },
     save() {
-      this.$refs['form_'].validate().then(() => {
+      this.$refs['form'].validate().then(() => {
         this.dialogVisible = false
       }).catch(e => console.error(e))
     },
     add() {
-      this.form_.records.push(this.initRow())
+      this.form.records.push({
+        type: 'string'
+      })
     },
     remove(index) {
-      this.form_.records.splice(index, 1)
+      this.form.records.splice(index, 1)
     }
   }
 }
