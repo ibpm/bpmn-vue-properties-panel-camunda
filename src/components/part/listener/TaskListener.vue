@@ -134,7 +134,7 @@
         <el-button type="success" @click="save">{{ $customTranslate('Save') }}</el-button>
       </span>
     </el-dialog>
-    <Field v-if="fieldDialogVisible" v-model="currentRow.fields" @close="saveFields" />
+    <Field v-if="showField" v-model="currentRow.fields" @close="saveFields" />
   </div>
 </template>
 <script>
@@ -161,7 +161,7 @@ export default {
       scriptTypes: SCRIPT_TYPES,
       timerDefinitionTypes: TIMER_DEFINITION_TYPES,
       dialogVisible: true,
-      fieldDialogVisible: false,
+      showField: false,
       currentRow: null,
       form_: {
         records: []
@@ -308,16 +308,16 @@ export default {
     showResource(scriptType) {
       return isResource(scriptType)
     },
-    showTimeout(event) {
-      return event === 'timeout'
-    },
     configFields(index) {
       this.currentRow = this.form_.records[index]
-      this.fieldDialogVisible = true
+      this.showField = true
     },
     saveFields(fields) {
       this.currentRow.fields = fields
-      this.fieldDialogVisible = false
+      this.showField = false
+    },
+    showTimeout(event) {
+      return event === 'timeout'
     }
   }
 }

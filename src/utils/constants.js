@@ -137,4 +137,18 @@ export const
   VARIABLE_MAPPINGS = [
     'variableMappingClass',
     'variableMappingDelegateExpression'
+  ],
+  VARIABLE_TYPES = [
+    {
+      value: 'source',
+      name: 'Source'
+    },
+    {
+      value: 'sourceExpression',
+      name: 'Source Expression'
+    },
+    {
+      value: 'variables',
+      name: 'All'
+    }
   ]

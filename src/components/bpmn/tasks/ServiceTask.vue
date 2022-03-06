@@ -74,14 +74,23 @@
             </el-col>
           </el-form-item>
         </template>
+        <el-form-item :label="$customTranslate('Fields')">
+          <el-badge :value="fields.length">
+            <el-button @click="showField = true">
+              {{ $customTranslate('Update') }}
+            </el-button>
+          </el-badge>
+        </el-form-item>
       </template>
     </Activity>
     <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" />
+    <Field v-if="showField" v-model="fields" @close="saveFields" />
   </div>
 </template>
 
 <script>
 import Activity from '@/components/embbed/Activity'
+import Field from '@/components/part/detail/Field'
 import InputOutput from '@/components/part/detail/InputOutput'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
@@ -95,6 +104,7 @@ export default {
   name: 'ServiceTask',
   components: {
     Activity,
+    Field,
     InputOutput,
     FormItemInput
   },
@@ -104,7 +114,9 @@ export default {
       implementation: null,
       implementations: IMPLEMENTATIONS,
       io: {},
-      showIO: false
+      showIO: false,
+      fields: [],
+      showField: false
     }
   },
   computed: {
@@ -236,6 +248,22 @@ export default {
         .forEach(connector => {
           connector['inputOutput'] = io
         })
+    },
+    saveFields(fields) {
+      this.showField = false
+      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
+      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize('Field'))) ?? []
+      fields.forEach(field => {
+        const fieldElement = this.moddle.create(customize('Field'))
+        fieldElement.name = field.name
+        fieldElement[field.type] = field.value
+        extensionElements.values.push(fieldElement)
+      })
+      if (!extensionElements.values.length) {
+        extensionElements = null
+      }
+      this.fields = fields
+      this.write({ extensionElements: extensionElements })
     }
   }
 }

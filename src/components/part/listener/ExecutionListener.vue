@@ -102,7 +102,7 @@
         <el-button type="success" @click="save">{{ $customTranslate('Save') }}</el-button>
       </span>
     </el-dialog>
-    <Field v-if="fieldDialogVisible" v-model="currentRow.fields" @close="saveFields" />
+    <Field v-if="showField" v-model="currentRow.fields" @close="saveFields" />
   </div>
 </template>
 <script>
@@ -127,7 +127,7 @@ export default {
       listenerTypes: LISTENER_TYPES,
       scriptTypes: SCRIPT_TYPES,
       dialogVisible: true,
-      fieldDialogVisible: false,
+      showField: false,
       currentRow: null,
       form_: {
         records: []
@@ -182,7 +182,7 @@ export default {
         }) ?? []
     },
     update() {
-      let extensionElements = this.form_.extensionElements || this.moddle.create('bpmn:ExtensionElements')
+      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
       extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(ELEMENT_NAME))) ?? []
       if (this.form_.records?.length) {
         this.form_.records.forEach(row => {
@@ -252,11 +252,11 @@ export default {
     },
     configFields(index) {
       this.currentRow = this.form_.records[index]
-      this.fieldDialogVisible = true
+      this.showField = true
     },
     saveFields(fields) {
       this.currentRow.fields = fields
-      this.fieldDialogVisible = false
+      this.showField = false
     }
   }
 }

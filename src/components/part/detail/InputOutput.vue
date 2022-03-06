@@ -226,10 +226,10 @@ export default {
         this.dialogVisible = false
       }).catch(e => console.error(e))
     },
-    add(isInput) {
+    add(ioType) {
       this.form.ios.push({
-        ioType: isInput,
-        name: isInput ? next('Input') : next('Output'),
+        ioType: ioType,
+        name: ioType ? next('Input') : next('Output'),
         type: 'text',
         condition: {
           conditionType: 'script',

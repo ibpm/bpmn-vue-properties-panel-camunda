@@ -1,57 +1,12 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/subprocesses/call-activity/ -->
 <template>
-  <Activity :moddle="moddle" :form="form" @write="write">
-    <template #detail>
-      <el-form-item :label="$customTranslate('CallActivity Type')">
-        <el-select v-model="form.callActivityType">
-          <el-option
-            v-for="(item, index) in callActivityTypes"
-            :key="index"
-            :label="$customTranslate(item)"
-            :value="item"
-          />
-        </el-select>
-      </el-form-item>
-      <FormItemInput
-        v-model="form.calledRef"
-        :label="$customTranslate(isCMMN ? 'Case Ref' : 'Called Element')"
-        prop="calledRef"
-        :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
-      />
-      <el-form-item :label="$customTranslate('Binding')">
-        <el-select v-model="form.calledBinding">
-          <el-option
-            v-for="(item, index) in (isCMMN ? bindingsCmmn : bindings)"
-            :key="index"
-            :label="$customTranslate(item)"
-            :value="item"
-          />
-        </el-select>
-      </el-form-item>
-      <FormItemInput
-        v-if="form.calledBinding === 'version'"
-        v-model="form.calledVersion"
-        :label="$customTranslate('Version')"
-      />
-      <FormItemInput
-        v-if="form.calledBinding === 'versionTag'"
-        v-model="form.calledElementVersionTag"
-        :label="$customTranslate('Version Tag')"
-      />
-      <FormItemInput
-        v-model="form.calledTenantId"
-        :label="$customTranslate('Tenant Id')"
-      />
-      <FormItemInput
-        v-model="form.businessKeyExpression"
-        :label="$customTranslate('Business Key Expression')"
-        placeholder="#{execution.processBusinessKey}"
-      />
-      <template v-if="!isCMMN">
-        <el-form-item :label="$customTranslate('Delegate Variable Mapping')">
-          <el-select v-model="form.delegateVariableMapping">
+  <div>
+    <Activity :moddle="moddle" :form="form" @write="write">
+      <template #detail>
+        <el-form-item :label="$customTranslate('CallActivity Type')">
+          <el-select v-model="form.callActivityType">
             <el-option
-              v-for="(item, index) in variableMappings"
+              v-for="(item, index) in callActivityTypes"
               :key="index"
               :label="$customTranslate(item)"
               :value="item"
@@ -59,26 +14,83 @@
           </el-select>
         </el-form-item>
         <FormItemInput
-          v-model="form.variableMapping"
-          :label="$customTranslate(form.delegateVariableMapping === 'variableMappingDelegateExpression' ? 'Delegate Expression' : 'Class')"
+          v-model="form.calledRef"
+          :label="$customTranslate(isCMMN ? 'Case Ref' : 'Called Element')"
+          prop="calledRef"
+          :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
         />
+        <el-form-item :label="$customTranslate('Binding')">
+          <el-select v-model="form.calledBinding">
+            <el-option
+              v-for="(item, index) in (isCMMN ? bindingsCmmn : bindings)"
+              :key="index"
+              :label="$customTranslate(item)"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <FormItemInput
+          v-if="form.calledBinding === 'version'"
+          v-model="form.calledVersion"
+          :label="$customTranslate('Version')"
+        />
+        <FormItemInput
+          v-if="form.calledBinding === 'versionTag'"
+          v-model="form.calledElementVersionTag"
+          :label="$customTranslate('Version Tag')"
+        />
+        <FormItemInput
+          v-model="form.calledTenantId"
+          :label="$customTranslate('Tenant Id')"
+        />
+        <FormItemInput
+          v-model="form.businessKeyExpression"
+          :label="$customTranslate('Business Key Expression')"
+          placeholder="#{execution.processBusinessKey}"
+        />
+        <template v-if="!isCMMN">
+          <el-form-item :label="$customTranslate('Delegate Variable Mapping')">
+            <el-select v-model="form.delegateVariableMapping">
+              <el-option
+                v-for="(item, index) in variableMappings"
+                :key="index"
+                :label="$customTranslate(item)"
+                :value="item"
+              />
+            </el-select>
+          </el-form-item>
+          <FormItemInput
+            v-model="form.variableMapping"
+            :label="$customTranslate(form.delegateVariableMapping === 'variableMappingDelegateExpression' ? 'Delegate Expression' : 'Class')"
+          />
+        </template>
+        <el-form-item :label="$customTranslate('Variables')">
+          <el-badge :value="variableLength">
+            <el-button @click="showVariable = true">
+              {{ $customTranslate('Update') }}
+            </el-button>
+          </el-badge>
+        </el-form-item>
       </template>
-    </template>
-  </Activity>
+    </Activity>
+    <Variable v-if="showVariable" :moddle="moddle" :form="form" @write="write" @close="finishVariable" />
+  </div>
 </template>
 
 <script>
 import Activity from '@/components/embbed/Activity'
+import Variable from '@/components/part/detail/Variable'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
 import { CALL_ACTIVITY_TYPES, BINDINGS, BINDINGS_CMMN, VARIABLE_MAPPINGS } from '@/utils/constants'
-import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
+import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil'
 import { customize } from '@/utils/helper'
 
 export default {
   name: 'CallActivity',
   components: {
     Activity,
+    Variable,
     FormItemInput
   },
   mixins: [elementHelper],
@@ -87,7 +99,9 @@ export default {
       callActivityTypes: CALL_ACTIVITY_TYPES,
       bindings: BINDINGS,
       bindingsCmmn: BINDINGS_CMMN,
-      variableMappings: VARIABLE_MAPPINGS
+      variableMappings: VARIABLE_MAPPINGS,
+      showVariable: false,
+      variableLength: 0
     }
   },
   computed: {
@@ -144,6 +158,7 @@ export default {
   },
   methods: {
     sync() {
+      this.computeLength()
       if (!this.form.caseRef && !this.form.calledElement) {
         // this.form.businessKeyExpression = '#{execution.processBusinessKey}'
         return
@@ -208,6 +223,14 @@ export default {
       if (delegateVariableMapping) {
         this.write({ [delegateVariableMapping]: this.isCMMN ? undefined : variableMapping })
       }
+    },
+    finishVariable() {
+      this.computeLength()
+      this.showVariable = false
+    },
+    computeLength() {
+      this.variableLength = this.form.extensionElements?.values
+        ?.filter(item => isAny(item, [customize('In'), customize('Out')])).length ?? 0
     }
   }
 }
