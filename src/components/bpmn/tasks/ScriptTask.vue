@@ -1,6 +1,6 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/script-task/ -->
 <template>
-  <Activity :moddle="moddle" :form="form" :templates="templates" @write="write">
+  <Activity :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
     <template #detail>
       <Condition v-model="form" @update="update" />
     </template>
@@ -11,7 +11,7 @@
 import Activity from '@/components/embbed/Activity'
 import Condition from '@/components/part/detail/Condition'
 import elementHelper from '@/mixins/elementHelper'
-import { customize } from '@/utils/helper'
+import { customize } from '@/utils/utils'
 
 export default {
   name: 'ScriptTask',

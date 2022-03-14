@@ -1,5 +1,5 @@
 <template>
-  <Base :moddle="moddle" :form="form" @write="write">
+  <Base :moddle="moddle" :form="form" :templates="templates" @write="write">
     <template v-if="visible" #custom>
       <el-form-item :label="$customTranslate('Condition Type')" prop="conditionType">
         <el-select v-model="form.conditionType" @change="changeCondition">
@@ -17,7 +17,8 @@
 import Base from '@/components/embbed/Base'
 import Condition from '@/components/part/detail/Condition'
 import elementHelper from '@/mixins/elementHelper'
-import { customize, isConditionalSource, createFormalExpression } from '@/utils/helper'
+import { customize, isConditionalSource } from '@/utils/utils'
+import { createFormalExpression } from '@/utils/creators'
 
 export default {
   name: 'SequenceFlow',

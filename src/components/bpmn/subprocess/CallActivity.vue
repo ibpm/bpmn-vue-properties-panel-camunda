@@ -1,7 +1,7 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/subprocesses/call-activity/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :form="form" @write="write">
+    <Activity :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <el-form-item :label="$customTranslate('CallActivity Type')">
           <el-select v-model="form.callActivityType">
@@ -73,7 +73,7 @@
         </el-form-item>
       </template>
     </Activity>
-    <Variable v-if="showVariable" :moddle="moddle" :form="form" @write="write" @close="finishVariable" />
+    <Variable v-if="showVariable" :moddle="moddle" :form="form" @close="finishVariable" />
   </div>
 </template>
 
@@ -83,8 +83,9 @@ import Variable from '@/components/part/detail/Variable'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
 import { CALL_ACTIVITY_TYPES, BINDINGS, BINDINGS_CMMN, VARIABLE_MAPPINGS } from '@/utils/constants'
-import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/helper'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
+import { addAndRemoveElementsFromExtensionElements, createCamundaInWithBusinessKey } from '@/utils/creators'
+import { customize } from '@/utils/utils'
 
 export default {
   name: 'CallActivity',
@@ -134,17 +135,10 @@ export default {
       this.updateCalledTenantId(this.form.calledTenantId)
     },
     'form.businessKeyExpression'(val) {
-      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize('In'))) ?? []
-      if (val) {
-        extensionElements.values.push(this.moddle.create(customize('In'), {
-          businessKey: val
-        }))
-      } else if (!extensionElements.values.length) {
-        extensionElements = null
-      }
-      this.form.extensionElements = extensionElements
-      this.write({ extensionElements: extensionElements })
+      const
+        matcher = item => !(is(item, customize('In')) && 'businessKey' in item),
+        objectsToAdd = val ? [createCamundaInWithBusinessKey(this.moddle, undefined, val)] : undefined
+      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
     },
     'form.delegateVariableMapping'() {
       this.updateVariableMapping(this.form.delegateVariableMapping, this.form.variableMapping)
@@ -168,8 +162,8 @@ export default {
       this.form.calledBinding = this.form.caseRef ? this.form.caseBinding : this.form.calledElementBinding
       this.form.calledVersion = this.form.caseRef ? this.form.caseVersion : this.form.calledElementVersion
       this.form.calledTenantId = this.form.caseRef ? this.form.caseTenantId : this.form.calledElementTenantId
-      this.form.businessKeyExpression = getBusinessObject(this.element)
-        .extensionElements?.values?.find(item => is(item, customize('In')))?.businessKey
+      this.form.businessKeyExpression = this.form
+        .extensionElements?.values?.find(item => is(item, customize('In')) && 'businessKey' in item)?.businessKey
       if (this.form.calledElement) {
         if ('variableMappingClass' in this.form) {
           this.form.delegateVariableMapping = 'variableMappingClass'
@@ -230,7 +224,7 @@ export default {
     },
     computeLength() {
       this.variableLength = this.form.extensionElements?.values
-        ?.filter(item => isAny(item, [customize('In'), customize('Out')])).length ?? 0
+        ?.filter(item => (is(item, customize('In')) && !('businessKey' in item)) || is(item, customize('Out'))).length ?? 0
     }
   }
 }

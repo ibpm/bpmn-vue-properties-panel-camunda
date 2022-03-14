@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     :title="$customTranslate('Input/Output')"
-    :visible.sync="dialogVisible"
+    :visible.sync="visible"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :show-close="false"
@@ -93,6 +93,7 @@
       </el-table>
     </el-form>
     <span slot="footer">
+      <el-button type="info" @click="close">{{ $customTranslate('Cancel') }}</el-button>
       <el-button type="primary" icon="el-icon-plus" @click="add(true)">{{ $customTranslate('Input Parameters') }}</el-button>
       <el-button type="primary" icon="el-icon-plus" @click="add(false)">{{ $customTranslate('Output Parameters') }}</el-button>
       <el-button type="success" @click="save">{{ $customTranslate('Confirm') }}</el-button>
@@ -103,8 +104,9 @@
 import Condition from '@/components/part/detail/Condition'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
+import dialogHelper from '@/mixins/dialogHelper'
 import { VARIABLE_ASSIGNMENT_TYPES } from '@/utils/constants'
-import { customize } from '@/utils/helper'
+import { customize } from '@/utils/utils'
 import { next } from '@/utils/tools'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 
@@ -113,6 +115,7 @@ const ELEMENT_NAME = 'InputOutput'
 export default {
   name: ELEMENT_NAME,
   components: { Condition, FormItemTextArea, FormItemGeneratedInput },
+  mixins: [dialogHelper],
   props: {
     moddle: {
       type: Object,
@@ -126,7 +129,6 @@ export default {
   data() {
     return {
       variableAssignmentTypes: VARIABLE_ASSIGNMENT_TYPES,
-      dialogVisible: true,
       form: {
         ios: []
       }
@@ -211,7 +213,6 @@ export default {
               parameterProps))
         })
       }
-
       this.$emit('update', io)
     },
     read() {
@@ -223,7 +224,7 @@ export default {
     save() {
       this.$refs['form'].validate().then(() => {
         this.writeIO()
-        this.dialogVisible = false
+        this.close()
       }).catch(e => console.error(e))
     },
     add(ioType) {

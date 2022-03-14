@@ -1,7 +1,7 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :form="form" @write="write">
+    <Activity :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <FormItemInput v-model="form.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
         <FormItemInput v-model="form.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
@@ -15,7 +15,7 @@
         </el-form-item>
       </template>
     </Activity>
-    <TaskListener v-if="showListener" :moddle="moddle" :form="form" @write="write" @close="finishListener" />
+    <TaskListener v-if="showListener" :moddle="moddle" :form="form" @close="finishListener" />
   </div>
 </template>
 
@@ -25,7 +25,7 @@ import TaskListener from '@/components/part/listener/TaskListener'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/helper'
+import { customize } from '@/utils/utils'
 
 export default {
   name: 'UserTask',

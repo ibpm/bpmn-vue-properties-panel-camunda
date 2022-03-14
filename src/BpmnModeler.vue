@@ -201,6 +201,7 @@ export default {
       this.zoom = this.modeler.get('canvas').zoom()
       this.zoom += (zoomIn ? 0.1 : -0.1)
       this.modeler.get('canvas').zoom(this.zoom)
+      this.$message.info(Number(this.zoom * 100).toFixed(0) + '%')
     }
   }
 }

@@ -24,7 +24,7 @@
 <script>
 import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
-import { isExpression, isScript, isResource } from '@/utils/helper'
+import { isExpression, isScript, isResource } from '@/utils/utils'
 import { SCRIPT_TYPES } from '@/utils/constants'
 
 export default {

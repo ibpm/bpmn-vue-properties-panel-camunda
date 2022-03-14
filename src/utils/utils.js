@@ -17,9 +17,6 @@ export const
   isResource = (scriptType) => {
     return scriptType && scriptType === 'resource'
   },
-  createFormalExpression = (moddle, props) => {
-    return moddle.create('bpmn:FormalExpression', props)
-  },
   getRoot = (element) => {
     let parent = getBusinessObject(element)
     while (parent.$parent) {
@@ -36,6 +33,32 @@ export const
   },
   getFlowElements = (element, type) => {
     return filterElementsByType(element.flowElements, type)
+  },
+  isInOut = (element, binding) => {
+    if (binding.type === 'camunda:in') {
+      // find based on target attribute
+      if (binding.target) {
+        return element.target === binding.target
+      }
+    }
+
+    if (binding.type === 'camunda:out') {
+      // find based on source / sourceExpression
+      if (binding.source) {
+        return element.source === binding.source
+      }
+
+      if (binding.sourceExpression) {
+        return element.sourceExpression === binding.sourceExpression
+      }
+    }
+
+    // find based variables / local combination
+    if (binding.variables) {
+      return element.variables === 'all' && (
+        binding.variables !== 'local' || element.local
+      )
+    }
   }
   /*
   ,findElementById = (element, type, id) => {

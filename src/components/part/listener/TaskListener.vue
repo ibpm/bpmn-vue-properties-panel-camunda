@@ -2,11 +2,10 @@
   <div>
     <el-dialog
       :title="$customTranslate('Task Listener')"
-      :visible.sync="dialogVisible"
+      :visible.sync="visible"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      @closed="$emit('close')"
     >
       <el-form ref="form_" :model="form_" size="mini">
         <el-table :data="form_.records" border>
@@ -130,11 +129,12 @@
         </el-table>
       </el-form>
       <span slot="footer">
+        <el-button type="info" @click="close">{{ $customTranslate('Cancel') }}</el-button>
         <el-button type="primary" @click="add()">{{ $customTranslate('Add') }}</el-button>
         <el-button type="success" @click="save">{{ $customTranslate('Save') }}</el-button>
       </span>
     </el-dialog>
-    <Field v-if="showField" v-model="currentRow.fields" @close="saveFields" />
+    <Field v-if="showField" v-model="currentRow.fields" @save-fields="saveFields" @close="showField = false" />
   </div>
 </template>
 <script>
@@ -143,24 +143,25 @@ import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
 import areaHelper from '@/mixins/areaHelper'
-import { isScript, isResource, customize, createFormalExpression } from '@/utils/helper'
-import { is } from 'bpmn-js/lib/util/ModelUtil'
+import dialogHelper from '@/mixins/dialogHelper'
 import { EVENTS_TASK, LISTENER_TYPES, SCRIPT_TYPES, TIMER_DEFINITION_TYPES } from '@/utils/constants'
 import { swapArray, next } from '@/utils/tools'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
+import { addAndRemoveElementsFromExtensionElements, createFormalExpression } from '@/utils/creators'
+import { customize, isResource, isScript } from '@/utils/utils'
 
 const ELEMENT_NAME = 'TaskListener'
 
 export default {
   name: ELEMENT_NAME,
   components: { Field, FormItemInput, FormItemTextArea, FormItemGeneratedInput },
-  mixins: [areaHelper],
+  mixins: [areaHelper, dialogHelper],
   data() {
     return {
       events: EVENTS_TASK,
       listenerTypes: LISTENER_TYPES,
       scriptTypes: SCRIPT_TYPES,
       timerDefinitionTypes: TIMER_DEFINITION_TYPES,
-      dialogVisible: true,
       showField: false,
       currentRow: null,
       form_: {
@@ -230,10 +231,10 @@ export default {
         }) ?? []
     },
     update() {
-      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(ELEMENT_NAME))) ?? []
+      const matcher = item => !is(item, customize(ELEMENT_NAME))
+      let objectsToAdd
       if (this.form_.records?.length) {
-        this.form_.records.forEach(row => {
+        objectsToAdd = this.form_.records.map(row => {
           const data = this.moddle.create(customize(ELEMENT_NAME))
           data.event = row.event
           if (row.event === 'timeout') {
@@ -266,13 +267,10 @@ export default {
               data.get('fields').push(fieldElement)
             })
           }
-          extensionElements.values.push(data)
+          return data
         })
-      } else if (!extensionElements.values.length) {
-        extensionElements = null
       }
-      this.form.extensionElements = extensionElements
-      this.write({ extensionElements: extensionElements })
+      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
     },
     initRow() {
       return {
@@ -283,7 +281,7 @@ export default {
     save() {
       this.$refs['form_'].validate().then(() => {
         this.update()
-        this.dialogVisible = false
+        this.close()
       }).catch(e => console.error(e))
     },
     add() {
@@ -314,7 +312,6 @@ export default {
     },
     saveFields(fields) {
       this.currentRow.fields = fields
-      this.showField = false
     },
     showTimeout(event) {
       return event === 'timeout'

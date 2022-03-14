@@ -304,6 +304,7 @@ export default {
   'Update': '编辑',
   'Confirm': '确定',
   'Save': '保存',
+  'Cancel': '取消',
   'Clear': '清空',
   'Undo': '撤销',
   'Redo': '重做',

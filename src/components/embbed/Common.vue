@@ -26,8 +26,8 @@
         </el-form-item>
       </template>
     </Base>
-    <ExecutionListener v-if="showListener" :moddle="moddle" :form="form" @write="write" @close="finishListener" />
-    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" />
+    <ExecutionListener v-if="showListener" :moddle="moddle" :form="form" @close="finishListener" />
+    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" @close="showIO = false" />
   </div>
 </template>
 
@@ -39,7 +39,8 @@ import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemSwitch from '@/components/ui/FormItemSwitch'
 import areaHelper from '@/mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/helper'
+import { customize } from '@/utils/utils'
+import { addAndRemoveElementsFromExtensionElements } from '@/utils/creators'
 
 const ELEMENT_NAME = 'InputOutput'
 
@@ -65,16 +66,7 @@ export default {
   computed: {
     ioLength: {
       get() {
-        let length = 0
-        if (this.io) {
-          if (this.io.inputParameters) {
-            length += this.io.inputParameters.length
-          }
-          if (this.io.outputParameters) {
-            length += this.io.outputParameters.length
-          }
-        }
-        return length
+        return (this.io?.inputParameters?.length ?? 0) + (this.io?.outputParameters?.length ?? 0)
       },
       set(newValue) {
         return newValue
@@ -130,16 +122,11 @@ export default {
     },
     update(io) {
       this.showIO = false
-      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(ELEMENT_NAME))) ?? []
-      if (io) {
-        extensionElements.values.push(io)
-      } else if (!extensionElements.values.length) {
-        extensionElements = null
-      }
       this.io = io
-      this.form.extensionElements = extensionElements
-      this.write({ extensionElements: extensionElements })
+      const
+        matcher = item => !is(item, customize(ELEMENT_NAME)),
+        objectsToAdd = io ? [io] : undefined
+      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
     }
   }
 }

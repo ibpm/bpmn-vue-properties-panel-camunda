@@ -1,5 +1,5 @@
 <template>
-  <Base :moddle="moddle" :form="form" :rules="rules" @sync="sync" @write="write">
+  <Base :moddle="moddle" :form="form" :templates="templates" :rules="rules" @sync="sync" @write="write">
     <template #custom>
       <FormItemInput v-model="form.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
       <FormItemSwitch v-model="form.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />

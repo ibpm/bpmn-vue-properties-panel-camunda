@@ -12,7 +12,7 @@
         </el-form-item>
       </template>
     </Common>
-    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :form="form" @write="write" @close="showMultiInstance = false" />
+    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :form="form" @close="showMultiInstance = false" />
   </div>
 </template>
 

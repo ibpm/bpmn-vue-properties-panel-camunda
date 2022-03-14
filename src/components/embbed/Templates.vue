@@ -14,39 +14,37 @@
       <el-form-item v-if="selectedTemplate.description">
         <span style="color: #8492a6;">{{ $customTranslate(selectedTemplate.description) }}</span>
       </el-form-item>
-      <el-form-item
-        v-for="(item, index) in templateProperties"
-        :key="index"
-        :label="$customTranslate(item.label)"
-      >
-        <el-input
-          v-if="item.type === 'String'"
-          v-model="item.value"
-          clearable
-          :disabled="item.editable === false"
-        />
-        <el-input
-          v-if="item.type === 'Text'"
-          v-model="item.value"
-          type="textarea"
-          clearable
-          :disabled="item.editable === false"
-          :autosize="{ maxRows: 5 }"
-        />
-        <el-select v-if="item.type === 'Dropdown'" v-model="item.value">
-          <el-option
-            v-for="(choice, idx) in item.choices"
-            :key="idx"
-            :label="$customTranslate(choice.name)"
-            :value="choice.value"
+      <template v-for="(item, index) in templateProperties">
+        <el-form-item v-if="item.type !== 'Hidden'" :key="index" :label="$customTranslate(item.label)">
+          <el-input
+            v-if="item.type === 'String'"
+            v-model="item.value"
+            clearable
+            :disabled="item.editable === false"
           />
-        </el-select>
-        <el-switch
-          v-if="item.type === 'Boolean'"
-          v-model="item.value"
-          :disabled="item.editable === false"
-        />
-      </el-form-item>
+          <el-input
+            v-if="item.type === 'Text'"
+            v-model="item.value"
+            type="textarea"
+            clearable
+            :disabled="item.editable === false"
+            :autosize="{ maxRows: 5 }"
+          />
+          <el-select v-if="item.type === 'Dropdown'" v-model="item.value">
+            <el-option
+              v-for="(choice, idx) in item.choices"
+              :key="idx"
+              :label="$customTranslate(choice.name)"
+              :value="choice.value"
+            />
+          </el-select>
+          <el-switch
+            v-if="item.type === 'Boolean'"
+            v-model="item.value"
+            :disabled="item.editable === false"
+          />
+        </el-form-item>
+      </template>
     </template>
   </el-form>
 </template>
@@ -54,7 +52,18 @@
 <script>
 import areaHelper from '@/mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/helper'
+import { customize, isInOut } from '@/utils/utils'
+import {
+  createCamundaIn,
+  createCamundaInWithBusinessKey,
+  createCamundaOut,
+  createCamundaFieldInjection,
+  createOutputParameter,
+  createInputParameter,
+  createCamundaProperty,
+  createFormalExpression,
+  createExtensionElements, createCamundaExecutionListenerScript
+} from '@/utils/creators'
 const
   PROPERTY_TYPE = 'property',
   CAMUNDA_PROPERTY_TYPE = 'camunda:property',
@@ -65,17 +74,7 @@ const
   CAMUNDA_IN_BUSINESS_KEY_TYPE = 'camunda:in:businessKey',
   CAMUNDA_EXECUTION_LISTENER_TYPE = 'camunda:executionListener',
   CAMUNDA_FIELD = 'camunda:field',
-  CAMUNDA_ERROR_EVENT_DEFINITION = 'camunda:errorEventDefinition',
-  EXTENSION_BINDING_TYPES = [
-    CAMUNDA_PROPERTY_TYPE,
-    CAMUNDA_INPUT_PARAMETER_TYPE,
-    CAMUNDA_OUTPUT_PARAMETER_TYPE,
-    CAMUNDA_IN_TYPE,
-    CAMUNDA_OUT_TYPE,
-    CAMUNDA_IN_BUSINESS_KEY_TYPE,
-    CAMUNDA_FIELD,
-    CAMUNDA_ERROR_EVENT_DEFINITION
-  ],
+  // CAMUNDA_ERROR_EVENT_DEFINITION = 'camunda:errorEventDefinition',
   IO_BINDING_TYPES = [
     CAMUNDA_INPUT_PARAMETER_TYPE,
     CAMUNDA_OUTPUT_PARAMETER_TYPE
@@ -109,9 +108,7 @@ export default {
     },
     templateProperties: {
       handler(newVal, oldVal) {
-        const updateProperties = {
-          extensionElements: this.form.extensionElements
-        }
+        const updateProperties = {}
         oldVal?.forEach(property => {
           this.handleProperty(updateProperties, property)
         })
@@ -138,157 +135,122 @@ export default {
     // 当General面板变更时，调用本方法同步数据
     align() {
       this.templateProperties.forEach(property => {
-        if (property.binding.type === CAMUNDA_PROPERTY_TYPE) {
-          if (this.form.extensionElements?.values) {
-            const propertiesElement = this.form.extensionElements.values?.find(item => is(item, customize('Properties')))
+        const binding = property.binding,
+          bindingType = binding.type
+        let values
+        if ((values = this.form.extensionElements?.values)?.length) {
+          if (bindingType === CAMUNDA_PROPERTY_TYPE) {
+            const propertiesElement = values.find(item => is(item, customize('Properties')))
             if (propertiesElement?.values) {
-              const propertyElement = propertiesElement.values?.find(item => item.name === property.binding.name)
+              const propertyElement = propertiesElement.values?.find(item => item.name === binding.name)
               if (propertyElement) {
                 property.value = propertyElement.value
               }
             }
-          }
-        } else if (IO_BINDING_TYPES.indexOf(property.binding.type) !== -1) {
-          if (this.form.extensionElements?.values) {
-            const ioElement = this.form.extensionElements.values?.find(item => is(item, customize('InputOutput')))
+          } else if (IO_BINDING_TYPES.indexOf(bindingType) !== -1) {
+            const ioElement = values.find(item => is(item, customize('InputOutput')))
             if (ioElement?.inputParameters) {
-              const parameterElement = ioElement.inputParameters?.find(item => item.name === property.binding.name)
+              const parameterElement = ioElement.inputParameters?.find(item => item.name === binding.name)
               if (parameterElement) {
-                if (parameterElement.definition) {
-                  property.definition.value = parameterElement.definition.value
-                } else {
-                  property.value = parameterElement.value
-                }
+                property.value = (parameterElement.definition || parameterElement).value
               }
             }
             // TODO OutputParameter先跳过
+          } else if (IN_OUT_BINDING_TYPES.indexOf(bindingType) !== -1) {
+            let matcher, ioElement
+            if (bindingType === CAMUNDA_IN_TYPE) {
+              matcher = item => is(item, customize('In')) && isInOut(item, binding)
+              if ((ioElement = values.find(matcher)) !== undefined) {
+                property.value = 'sourceExpression' in property ? ioElement.sourceExpression : ioElement.source
+              }
+            } else if (bindingType === CAMUNDA_OUT_TYPE) {
+              matcher = item => is(item, customize('Out')) && isInOut(item, binding)
+              if ((ioElement = values.find(matcher)) !== undefined) {
+                property.value = ioElement.target
+              }
+            } else {
+              matcher = item => is(item, customize('In')) && 'businessKey' in item
+              if ((ioElement = values.find(matcher)) !== undefined) {
+                property.value = ioElement.businessKey
+              }
+            }
           }
         }
       })
     },
     handleProperty(updateProperties, property, value) {
-      if (property.binding.type === PROPERTY_TYPE) {
+      const binding = property.binding,
+        bindingType = binding.type,
+        extensionElements = createExtensionElements(this.moddle, updateProperties)
+      if (bindingType === PROPERTY_TYPE) {
         let propertyValue
-        if (property.binding.name === 'conditionExpression') {
-          propertyValue = this.moddle.createElement('bpmn:FormalExpression', {
+        if (binding.name === 'conditionExpression') {
+          propertyValue = createFormalExpression(this.moddle, {
             body: value,
-            language: property.binding.scriptFormat
+            language: binding.scriptFormat
           })
         } else {
           propertyValue = value
         }
-        updateProperties[property.binding.name] = propertyValue
-      } else if (property.binding.type === CAMUNDA_PROPERTY_TYPE) {
-        let extensionElements, propertiesElement, propertyElement
-        extensionElements = updateProperties.extensionElements || this.moddle.create('bpmn:ExtensionElements', {
-          values: []
-        })
-        propertiesElement = extensionElements.values?.find(item => is(item, customize('Properties')))
+        updateProperties[binding.name] = propertyValue
+      } else if (bindingType === CAMUNDA_PROPERTY_TYPE) {
+        let propertiesElement = extensionElements.values?.find(item => is(item, customize('Properties')))
         if (!propertiesElement) {
           propertiesElement = this.moddle.create(customize('Properties'))
           propertiesElement.values = []
           extensionElements.values.push(propertiesElement)
         }
-        propertyElement = propertiesElement.values?.find(item => item.name === property.binding.name)
-        if (propertyElement) {
-          if (value) {
-            propertyElement.value = value
-          } else {
-            propertiesElement.values = propertiesElement.values.filter(item => item.name !== property.binding.name)
-          }
-        } else if (value) {
-          propertyElement = this.moddle.create(customize('Property'), {
-            name: property.binding.name,
-            value: value
-          })
-          propertiesElement.values.push(propertyElement)
-        }
+        const matcher = item => item.name !== binding.name
+        this.resolveList(propertiesElement, 'values', value, createCamundaProperty, binding, matcher)
         if (!propertiesElement.values.length) {
           extensionElements.values = extensionElements.values.filter(item => !is(item, customize('Properties')))
-          if (!extensionElements.values.length) {
-            extensionElements = null
-          }
         }
-        updateProperties.extensionElements = extensionElements
-      } else if (IO_BINDING_TYPES.indexOf(property.binding.type) !== -1) {
-        let extensionElements, ioElement, parameterElement, parameterValue, parameterDefinition
-        extensionElements = updateProperties.extensionElements || this.moddle.create('bpmn:ExtensionElements', {
-          values: []
-        })
-        ioElement = extensionElements.values?.find(item => is(item, customize('InputOutput')))
+      } else if (IO_BINDING_TYPES.indexOf(bindingType) !== -1) {
+        let ioElement = extensionElements.values?.find(item => is(item, customize('InputOutput')))
         if (!ioElement) {
           ioElement = this.moddle.create(customize('InputOutput'))
           extensionElements.values.push(ioElement)
         }
-        if (property.binding.type === CAMUNDA_INPUT_PARAMETER_TYPE) {
-          if (!ioElement.inputParameters) {
-            ioElement.inputParameters = []
-          }
-          parameterElement = ioElement.inputParameters.find(item => item.name === property.binding.name)
-          if (parameterElement) {
-            if (value) {
-              if (property.binding.scriptFormat) {
-                parameterElement.definition.value = value
-              } else {
-                parameterElement.value = value
-              }
-            } else {
-              ioElement.inputParameters = ioElement.inputParameters.filter(item => item.name !== property.binding.name)
-            }
-          } else if (value) {
-            if (property.binding.scriptFormat) {
-              parameterDefinition = this.moddle.create(customize('Script'), {
-                scriptFormat: property.binding.scriptFormat,
-                value: value
-              })
-            } else {
-              parameterValue = value
-            }
-            parameterElement = this.moddle.create(customize('InputParameter'), {
-              name: property.binding.name,
-              value: parameterValue,
-              definition: parameterDefinition
-            })
-            ioElement.inputParameters.push(parameterElement)
-          }
-          if (!ioElement.inputParameters.length) {
-            extensionElements.values = extensionElements.values.filter(item => !is(item, customize('InputOutput')))
-          }
+        let matcher, propertyName, func
+        if (bindingType === CAMUNDA_INPUT_PARAMETER_TYPE) {
+          matcher = item => item.name !== binding.name
+          propertyName = 'inputParameters'
+          func = createInputParameter
         } else {
-          if (!ioElement.outputParameters) {
-            ioElement.outputParameters = []
-          }
-          parameterElement = ioElement.outputParameters.find(item => item.name === property.binding.value)
-          if (parameterElement) {
-            if (value) {
-              parameterElement.name = value
-            } else {
-              ioElement.outputParameters = ioElement.outputParameters.filter(item => item.name !== value)
-            }
-          } else if (value) {
-            if (property.binding.scriptFormat) {
-              parameterDefinition = this.moddle.create(customize('Script'), {
-                scriptFormat: property.binding.scriptFormat,
-                value: property.binding.source
-              })
-            } else {
-              parameterValue = property.binding.source
-            }
-            parameterElement = this.moddle.create(customize('OutputParameter'), {
-              name: value,
-              value: parameterValue,
-              definition: parameterDefinition
-            })
-            ioElement.outputParameters.push(parameterElement)
-          }
-          if (!ioElement.outputParameters.length) {
-            extensionElements.values = extensionElements.values.filter(item => !is(item, customize('InputOutput')))
-          }
+          matcher = item => item.name !== value
+          propertyName = 'outputParameters'
+          func = createOutputParameter
         }
-        if (!extensionElements.values.length) {
-          extensionElements = null
+        this.resolveList(ioElement, propertyName, value, func, binding, matcher)
+        if (ioElement['inputParameters']?.length + ioElement['outputParameters']?.length === 0) {
+          extensionElements.values = extensionElements.values.filter(item => !is(item, customize('InputOutput')))
         }
-        updateProperties.extensionElements = extensionElements
+      } else if (IN_OUT_BINDING_TYPES.indexOf(bindingType) !== -1) {
+        let func, matcher
+        if (bindingType === CAMUNDA_IN_TYPE) {
+          func = createCamundaIn
+          matcher = item => !(is(item, customize('In')) && isInOut(item, binding))
+        } else if (bindingType === CAMUNDA_OUT_TYPE) {
+          func = createCamundaOut
+          matcher = item => !(is(item, customize('Out')) && isInOut(item, binding))
+        } else {
+          func = createCamundaInWithBusinessKey
+          matcher = item => !(is(item, customize('In')) && 'businessKey' in item)
+        }
+        this.resolveList(extensionElements, 'values', value, func, binding, matcher)
+      } else if (bindingType === CAMUNDA_FIELD) {
+        const matcher = item => !(is(item, customize('Field')) && item.name === binding.name)
+        this.resolveList(extensionElements, 'values', value, createCamundaFieldInjection, binding, matcher)
+      } else if (bindingType === CAMUNDA_EXECUTION_LISTENER_TYPE) {
+        const matcher = item => !is(item, customize('ExecutionListener') && item.event !== binding.event)
+        this.resolveList(extensionElements, 'values', value, createCamundaExecutionListenerScript, binding, matcher)
+      }
+      updateProperties.extensionElements = extensionElements.values.length ? extensionElements : undefined
+    },
+    resolveList(businessObject, propertyName, value, createFunction, binding, matcher) {
+      businessObject[propertyName] = businessObject[propertyName]?.filter(matcher) ?? [] // delete
+      if (value) { // create & update
+        businessObject[propertyName].push(createFunction(this.moddle, binding, value))
       }
     }
   }

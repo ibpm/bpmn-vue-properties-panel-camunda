@@ -1,6 +1,6 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/receive-task/ -->
 <template>
-  <Activity :moddle="moddle" :form="form" @write="write">
+  <Activity :moddle="moddle" :form="form" :templates="templates" @write="write">
     <template #detail>
       <el-form-item :label="$customTranslate('Global Message referenced')" prop="messageRef">
         <el-select v-model="form.messageRef" filterable allow-create @visible-change="changeVisible">
@@ -25,7 +25,7 @@
 import Activity from '@/components/embbed/Activity'
 import elementHelper from '@/mixins/elementHelper'
 import { next } from '@/utils/tools'
-import { getRoot, findRootElementsByType, getFlowElements } from '@/utils/helper'
+import { getRoot, findRootElementsByType, getFlowElements } from '@/utils/utils'
 import { BPMN_MESSAGE } from '@/utils/constants'
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil'
 
@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     remove(id) {
-      let index = 0, name = null
+      let index = 0, name
       while (index < this.messages.length) {
         if (this.messages[index].id === id) {
           name = this.messages[index].name
@@ -65,7 +65,7 @@ export default {
         index++
       }
       if (this.form.messageRef === id || this.form.messageRef === name) {
-        this.write({ messageRef: this.form.messageRef = null })
+        this.write({ messageRef: this.form.messageRef = undefined })
         this.delete(index, id)
         return
       }

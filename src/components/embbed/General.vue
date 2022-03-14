@@ -18,7 +18,7 @@
         prop="doc"
       />
     </el-form>
-    <Properties v-if="showProperty" v-model="properties" :moddle="moddle" :is-form="false" @write-properties="update" />
+    <Properties v-if="showProperty" v-model="properties" :moddle="moddle" :is-form="false" @write-properties="update" @close="showProperty = false" />
   </div>
 </template>
 <script>
@@ -27,7 +27,8 @@ import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemTextArea from '@/components/ui/FormItemTextArea'
 import areaHelper from '@/mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/helper'
+import { customize } from '@/utils/utils'
+import { addAndRemoveElementsFromExtensionElements } from '@/utils/creators'
 
 export default {
   name: 'General',
@@ -86,15 +87,10 @@ export default {
     update(propertiesElement) {
       this.showProperty = false
       this.properties = propertiesElement?.values || []
-      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize('Properties'))) ?? []
-      if (propertiesElement) {
-        extensionElements.values.push(propertiesElement)
-      } else if (!extensionElements.values.length) {
-        extensionElements = null
-      }
-      // this.form.extensionElements = extensionElements
-      this.write({ extensionElements: extensionElements })
+      const
+        matcher = item => !is(item, customize('Properties')),
+        objectsToAdd = propertiesElement ? [propertiesElement] : undefined
+      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
     }
   }
 }

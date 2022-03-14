@@ -83,8 +83,8 @@
         </el-form-item>
       </template>
     </Activity>
-    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" />
-    <Field v-if="showField" v-model="fields" @close="saveFields" />
+    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" @close="showIO = false" />
+    <Field v-if="showField" v-model="fields" @save-fields="saveFields" @close="showField = false" />
   </div>
 </template>
 
@@ -95,8 +95,9 @@ import InputOutput from '@/components/part/detail/InputOutput'
 import FormItemInput from '@/components/ui/FormItemInput'
 import elementHelper from '@/mixins/elementHelper'
 import { IMPLEMENTATIONS } from '@/utils/constants'
-import { customize } from '@/utils/helper'
-import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
+import { customize } from '@/utils/utils'
+import { is } from 'bpmn-js/lib/util/ModelUtil'
+import { addAndRemoveElementsFromExtensionElements } from '@/utils/creators'
 
 const CONNECTOR_NAME = 'Connector'
 
@@ -122,16 +123,7 @@ export default {
   computed: {
     ioLength: {
       get() {
-        let length = 0
-        if (this.io) {
-          if (this.io.inputParameters) {
-            length += this.io.inputParameters.length
-          }
-          if (this.io.outputParameters) {
-            length += this.io.outputParameters.length
-          }
-        }
-        return length
+        return (this.io?.inputParameters?.length ?? 0) + (this.io?.outputParameters?.length ?? 0)
       },
       set(newValue) {
         return newValue
@@ -144,14 +136,8 @@ export default {
         if (oldVal === 'external') {
           this.write({ type: null, topic: null, taskPriority: null })
         } else if (oldVal === 'connector') {
-          let extensionElements = getBusinessObject(this.element).extensionElements
-          if (extensionElements && extensionElements.values) {
-            extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(CONNECTOR_NAME))) ?? []
-            if (!extensionElements.values.length) {
-              extensionElements = null
-            }
-            this.write({ extensionElements: extensionElements })
-          }
+          const matcher = item => !is(item, customize(CONNECTOR_NAME))
+          this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, undefined, matcher)
         } else {
           if (oldVal === 'expression') {
             this.updateResultVariable(null)
@@ -208,8 +194,7 @@ export default {
         this.implementation = 'external'
       } else if ('connector' in this.form && this.form.connector) {
         this.implementation = 'connector'
-        this.io = getBusinessObject(this.element)
-          .extensionElements?.values?.find(item => is(item, customize(CONNECTOR_NAME)))?.inputOutput
+        this.io = this.form.extensionElements?.values?.find(item => is(item, customize(CONNECTOR_NAME)))?.inputOutput
       } else {
         this.implementation = 'class'
       }
@@ -223,17 +208,12 @@ export default {
       this.write({ type: 'external', topic: this.form.topic })
     },
     updateConnector() {
-      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize(CONNECTOR_NAME))) ?? []
-      if (this.form.connectorId) {
-        extensionElements.values.push(this.moddle.create(customize(CONNECTOR_NAME), {
+      const
+        matcher = item => !is(item, customize(CONNECTOR_NAME)),
+        objectsToAdd = this.form.connectorId ? [this.moddle.create(customize(CONNECTOR_NAME), {
           connectorId: this.form.connectorId
-        }))
-      } else if (!extensionElements.values.length) {
-        extensionElements = null
-      }
-      this.form.extensionElements = extensionElements
-      this.write({ extensionElements: extensionElements })
+        })] : undefined
+      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
     },
     updateResultVariable(val) {
       this.write({ resultVariable: val })
@@ -244,26 +224,23 @@ export default {
     update(io) {
       this.showIO = false
       this.io = io
-      getBusinessObject(this.element).extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
+      this.form.extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
         .forEach(connector => {
           connector['inputOutput'] = io
         })
     },
     saveFields(fields) {
       this.showField = false
-      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-      extensionElements.values = extensionElements.values?.filter(item => !is(item, customize('Field'))) ?? []
-      fields.forEach(field => {
-        const fieldElement = this.moddle.create(customize('Field'))
-        fieldElement.name = field.name
-        fieldElement[field.type] = field.value
-        extensionElements.values.push(fieldElement)
-      })
-      if (!extensionElements.values.length) {
-        extensionElements = null
-      }
       this.fields = fields
-      this.write({ extensionElements: extensionElements })
+      const
+        matcher = item => !is(item, customize('Field')),
+        objectsToAdd = fields?.map(field => {
+          const fieldElement = this.moddle.create(customize('Field'))
+          fieldElement.name = field.name
+          fieldElement[field.type] = field.value
+          return fieldElement
+        })
+      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
     }
   }
 }

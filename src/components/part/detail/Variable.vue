@@ -1,11 +1,10 @@
 <template>
   <el-dialog
     :title="$customTranslate('Field Injection')"
-    :visible.sync="dialogVisible"
+    :visible.sync="visible"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :show-close="false"
-    @closed="$emit('close')"
   >
     <el-form ref="form_" :model="form_" size="mini">
       <el-table :data="form_.records" border>
@@ -48,7 +47,6 @@
             <FormItemInput
               v-model="scope.row.target"
               :prop="'records.' + scope.$index + '.target'"
-              :placeholder="$customTranslate(variableTypes.find(item => item.value === scope.row.type).name)"
               :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
             />
           </template>
@@ -71,6 +69,7 @@
       </el-table>
     </el-form>
     <span slot="footer">
+      <el-button type="info" @click="close">{{ $customTranslate('Cancel') }}</el-button>
       <el-button type="primary" icon="el-icon-plus" @click="add(true)">{{ $customTranslate('Input Parameters') }}</el-button>
       <el-button type="primary" icon="el-icon-plus" @click="add(false)">{{ $customTranslate('Output Parameters') }}</el-button>
       <el-button type="success" @click="save">{{ $customTranslate('Confirm') }}</el-button>
@@ -81,18 +80,19 @@
 import FormItemInput from '@/components/ui/FormItemInput'
 import FormItemSwitch from '@/components/ui/FormItemSwitch'
 import areaHelper from '@/mixins/areaHelper'
+import dialogHelper from '@/mixins/dialogHelper'
 import { VARIABLE_TYPES } from '@/utils/constants'
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/helper'
+import { customize } from '@/utils/utils'
+import { addAndRemoveElementsFromExtensionElements } from '@/utils/creators'
 
 export default {
   name: 'Variable',
   components: { FormItemInput, FormItemSwitch },
-  mixins: [areaHelper],
+  mixins: [areaHelper, dialogHelper],
   data() {
     return {
       variableTypes: VARIABLE_TYPES,
-      dialogVisible: true,
       form_: {
         records: []
       }
@@ -111,11 +111,11 @@ export default {
       }
     },
     update() {
-      let extensionElements = this.form.extensionElements || this.moddle.create('bpmn:ExtensionElements')
-      extensionElements.values = extensionElements
-        .values?.filter(item => !isAny(item, [customize('In'), customize('Out')])) ?? []
+      const matcher = item => ('businessKey' in item && is(item, customize('In'))) ||
+        !isAny(item, [customize('In'), customize('Out')])
+      let objectsToAdd
       if (this.form_.records?.length) {
-        this.form_.records.forEach(row => {
+        objectsToAdd = this.form_.records.map(row => {
           const data = this.moddle.create(customize(row.ioType ? 'In' : 'Out'))
           if (row.type === 'source') {
             data.source = row.source
@@ -126,18 +126,15 @@ export default {
           }
           data.local = row.local
           data.target = row.target
-          extensionElements.values.push(data)
+          return data
         })
-      } else if (!extensionElements.values.length) {
-        extensionElements = null
       }
-      this.form.extensionElements = extensionElements
-      this.write({ extensionElements: extensionElements })
+      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
     },
     save() {
       this.$refs['form_'].validate().then(() => {
         this.update()
-        this.dialogVisible = false
+        this.close()
       }).catch(e => console.error(e))
     },
     add(ioType) {
@@ -151,7 +148,7 @@ export default {
     },
     readIO(values, ioType) {
       values
-        .filter(item => is(item, customize(ioType ? 'In' : 'Out')))
+        .filter(item => !('businessKey' in item) && is(item, customize(ioType ? 'In' : 'Out')))
         .forEach(row => {
           let type, source
           if ('source' in row) {
