@@ -52,6 +52,14 @@ export default {
   name: 'BpmnModeler',
   components: { PropertiesPanel },
   props: {
+    source: {
+      type: String,
+      required: true
+    },
+    additionalModules: {
+      type: Array,
+      default: () => []
+    },
     elementTemplates: {
       type: Array,
       default: () => []
@@ -61,14 +69,19 @@ export default {
     return {
       modeler: null,
       element: null,
-      xml: '',
+      xml: this.source,
       drawer: false,
       zoom: 1
     }
   },
+  watch: {
+    'xml'() {
+      this.$emit('update', this.xml)
+    }
+  },
   mounted() {
     this.bindBpmn()
-    this.initWidget()
+    this.registerFileDrop()
   },
   methods: {
     bindBpmn() {
@@ -78,7 +91,8 @@ export default {
           miniMapModule,
           {
             translate: ['value', this.$customTranslate]
-          }
+          },
+          ...this.additionalModules
         ],
         moddleExtensions: {
           camunda: camundaModdleDescriptor
@@ -87,7 +101,7 @@ export default {
           bindTo: document
         }
       })
-      this.modeler.createDiagram()
+      this.openDiagram(this.xml)
     },
     async openDiagram(xml) {
       try {
@@ -148,36 +162,23 @@ export default {
       await this.exportBPMN()
       this.drawer = true
     },
-    initWidget() {
-      function registerFileDrop(container, callback) {
-        function handleFileSelect(e) {
-          e.stopPropagation()
-          e.preventDefault()
-          const
-            files = e.dataTransfer.files,
-            file = files[0],
-            reader = new FileReader()
-          reader.onload = function(e) {
-            callback(e.target.result)
-          }
-          reader.readAsText(file)
-        }
-        function handleDragOver(e) {
-          e.stopPropagation()
-          e.preventDefault()
-          e.dataTransfer.dropEffect = 'copy' // Explicitly show this is a copy.
-        }
-        container.ondragover = handleDragOver
-        container.ondrop = handleFileSelect
+    registerFileDrop() {
+      this.$refs.container.ondragover = e => {
+        e.stopPropagation()
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'copy' // Explicitly show this is a copy.
       }
-      // file drag / drop ///////////////////////
-      // check file api availability
-      if (!window.FileList || !window.FileReader) {
-        window.alert(
-          'Looks like you use an older browser that does not support drag and drop. ' +
-          'Try using Chrome, Firefox or the Internet Explorer > 10.')
-      } else {
-        registerFileDrop(this.$refs.container, this.openDiagram)
+      this.$refs.container.ondrop = (e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        const
+          files = e.dataTransfer.files,
+          file = files[0],
+          reader = new FileReader()
+        reader.onload = (e) => {
+          this.openDiagram(e.target.result)
+        }
+        reader.readAsText(file)
       }
     },
     fitViewport() {
