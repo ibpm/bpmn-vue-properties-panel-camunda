@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Common :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
+    <Common :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <slot name="detail" />
         <el-form-item :label="$customTranslate('Multi Instance')">
-          <el-badge :is-dot="Boolean(form.loopCharacteristics)">
+          <el-badge :is-dot="Boolean(businessObject.loopCharacteristics)">
             <el-button @click="showMultiInstance = true">
               {{ $customTranslate('Update') }}
             </el-button>
@@ -12,14 +12,14 @@
         </el-form-item>
       </template>
     </Common>
-    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :form="form" @close="showMultiInstance = false" />
+    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :business-object="businessObject" @close="showMultiInstance = false" />
   </div>
 </template>
 
 <script>
-import Common from '@/components/embbed/Common'
-import MultiInstance from '@/components/part/detail/MultiInstance'
-import areaHelper from '@/mixins/areaHelper'
+import Common from '../../components/embbed/Common'
+import MultiInstance from '../../components/part/detail/MultiInstance'
+import areaHelper from '../../mixins/areaHelper'
 
 export default {
   name: 'Activity',

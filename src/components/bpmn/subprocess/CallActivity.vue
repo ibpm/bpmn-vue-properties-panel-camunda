@@ -1,10 +1,10 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/subprocesses/call-activity/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
+    <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <el-form-item :label="$customTranslate('CallActivity Type')">
-          <el-select v-model="form.callActivityType">
+          <el-select v-model="businessObject.callActivityType">
             <el-option
               v-for="(item, index) in callActivityTypes"
               :key="index"
@@ -14,13 +14,13 @@
           </el-select>
         </el-form-item>
         <FormItemInput
-          v-model="form.calledRef"
+          v-model="businessObject.calledRef"
           :label="$customTranslate(isCMMN ? 'Case Ref' : 'Called Element')"
           prop="calledRef"
           :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
         />
         <el-form-item :label="$customTranslate('Binding')">
-          <el-select v-model="form.calledBinding">
+          <el-select v-model="businessObject.calledBinding">
             <el-option
               v-for="(item, index) in (isCMMN ? bindingsCmmn : bindings)"
               :key="index"
@@ -30,27 +30,27 @@
           </el-select>
         </el-form-item>
         <FormItemInput
-          v-if="form.calledBinding === 'version'"
-          v-model="form.calledVersion"
+          v-if="businessObject.calledBinding === 'version'"
+          v-model="businessObject.calledVersion"
           :label="$customTranslate('Version')"
         />
         <FormItemInput
-          v-if="form.calledBinding === 'versionTag'"
-          v-model="form.calledElementVersionTag"
+          v-if="businessObject.calledBinding === 'versionTag'"
+          v-model="businessObject.calledElementVersionTag"
           :label="$customTranslate('Version Tag')"
         />
         <FormItemInput
-          v-model="form.calledTenantId"
+          v-model="businessObject.calledTenantId"
           :label="$customTranslate('Tenant Id')"
         />
         <FormItemInput
-          v-model="form.businessKeyExpression"
+          v-model="businessObject.businessKeyExpression"
           :label="$customTranslate('Business Key Expression')"
           placeholder="#{execution.processBusinessKey}"
         />
         <template v-if="!isCMMN">
           <el-form-item :label="$customTranslate('Delegate Variable Mapping')">
-            <el-select v-model="form.delegateVariableMapping">
+            <el-select v-model="businessObject.delegateVariableMapping">
               <el-option
                 v-for="(item, index) in variableMappings"
                 :key="index"
@@ -60,8 +60,8 @@
             </el-select>
           </el-form-item>
           <FormItemInput
-            v-model="form.variableMapping"
-            :label="$customTranslate(form.delegateVariableMapping === 'variableMappingDelegateExpression' ? 'Delegate Expression' : 'Class')"
+            v-model="businessObject.variableMapping"
+            :label="$customTranslate(businessObject.delegateVariableMapping === 'variableMappingDelegateExpression' ? 'Delegate Expression' : 'Class')"
           />
         </template>
         <el-form-item :label="$customTranslate('Variables')">
@@ -73,19 +73,19 @@
         </el-form-item>
       </template>
     </Activity>
-    <Variable v-if="showVariable" :moddle="moddle" :form="form" @close="finishVariable" />
+    <Variable v-if="showVariable" :moddle="moddle" :business-object="businessObject" @close="finishVariable" />
   </div>
 </template>
 
 <script>
-import Activity from '@/components/embbed/Activity'
-import Variable from '@/components/part/detail/Variable'
-import FormItemInput from '@/components/ui/FormItemInput'
-import elementHelper from '@/mixins/elementHelper'
-import { CALL_ACTIVITY_TYPES, BINDINGS, BINDINGS_CMMN, VARIABLE_MAPPINGS } from '@/utils/constants'
+import Activity from '../../embbed/Activity'
+import Variable from '../../part/detail/Variable'
+import FormItemInput from '../../ui/FormItemInput'
+import elementHelper from '../../../mixins/elementHelper'
+import { CALL_ACTIVITY_TYPES, BINDINGS, BINDINGS_CMMN, VARIABLE_MAPPINGS } from '../../../utils/constants'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { addAndRemoveElementsFromExtensionElements, createCamundaInWithBusinessKey } from '@/utils/creators'
-import { customize } from '@/utils/utils'
+import { addAndRemoveElementsFromExtensionElements, createCamundaInWithBusinessKey } from '../../../utils/creators'
+import { customize } from '../../../utils/utils'
 
 export default {
   name: 'CallActivity',
@@ -107,44 +107,44 @@ export default {
   },
   computed: {
     isCMMN() {
-      return this.form.callActivityType === 'CMMN'
+      return this.businessObject.callActivityType === 'CMMN'
     }
   },
   watch: {
-    'form.callActivityType'() {
-      this.updateCalledRef(this.form.calledRef)
-      this.updateCalledBinding(this.form.calledBinding)
-      this.updateCalledVersion(this.form.calledVersion)
-      this.updateCalledTenantId(this.form.calledTenantId)
-      this.updateCalledElementVersionTag(this.form.calledElementVersionTag)
-      this.updateVariableMapping(this.form.delegateVariableMapping, this.form.variableMapping)
+    'businessObject.callActivityType'() {
+      this.updateCalledRef(this.businessObject.calledRef)
+      this.updateCalledBinding(this.businessObject.calledBinding)
+      this.updateCalledVersion(this.businessObject.calledVersion)
+      this.updateCalledTenantId(this.businessObject.calledTenantId)
+      this.updateCalledElementVersionTag(this.businessObject.calledElementVersionTag)
+      this.updateVariableMapping(this.businessObject.delegateVariableMapping, this.businessObject.variableMapping)
     },
-    'form.calledRef'() {
-      this.updateCalledRef(this.form.calledRef)
+    'businessObject.calledRef'() {
+      this.updateCalledRef(this.businessObject.calledRef)
     },
-    'form.calledBinding'() {
-      this.updateCalledBinding(this.form.calledBinding)
+    'businessObject.calledBinding'() {
+      this.updateCalledBinding(this.businessObject.calledBinding)
     },
-    'form.calledVersion'() {
-      this.updateCalledVersion(this.form.calledVersion)
+    'businessObject.calledVersion'() {
+      this.updateCalledVersion(this.businessObject.calledVersion)
     },
-    'form.calledElementVersionTag'() {
-      this.updateCalledElementVersionTag(this.form.calledElementVersionTag)
+    'businessObject.calledElementVersionTag'() {
+      this.updateCalledElementVersionTag(this.businessObject.calledElementVersionTag)
     },
-    'form.calledTenantId'() {
-      this.updateCalledTenantId(this.form.calledTenantId)
+    'businessObject.calledTenantId'() {
+      this.updateCalledTenantId(this.businessObject.calledTenantId)
     },
-    'form.businessKeyExpression'(val) {
+    'businessObject.businessKeyExpression'(val) {
       const
         matcher = item => !(is(item, customize('In')) && 'businessKey' in item),
         objectsToAdd = val ? [createCamundaInWithBusinessKey(this.moddle, undefined, val)] : undefined
-      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
+      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
     },
-    'form.delegateVariableMapping'() {
-      this.updateVariableMapping(this.form.delegateVariableMapping, this.form.variableMapping)
+    'businessObject.delegateVariableMapping'() {
+      this.updateVariableMapping(this.businessObject.delegateVariableMapping, this.businessObject.variableMapping)
     },
-    'form.variableMapping'() {
-      this.updateVariableMapping(this.form.delegateVariableMapping, this.form.variableMapping)
+    'businessObject.variableMapping'() {
+      this.updateVariableMapping(this.businessObject.delegateVariableMapping, this.businessObject.variableMapping)
     }
   },
   created() {
@@ -153,24 +153,24 @@ export default {
   methods: {
     sync() {
       this.computeLength()
-      if (!this.form.caseRef && !this.form.calledElement) {
-        // this.form.businessKeyExpression = '#{execution.processBusinessKey}'
+      if (!this.businessObject.caseRef && !this.businessObject.calledElement) {
+        // this.businessObject.businessKeyExpression = '#{execution.processBusinessKey}'
         return
       }
-      this.form.callActivityType = this.form.caseRef ? 'CMMN' : 'BPMN'
-      this.form.calledRef = this.form.caseRef ? this.form.caseRef : this.form.calledElement
-      this.form.calledBinding = this.form.caseRef ? this.form.caseBinding : this.form.calledElementBinding
-      this.form.calledVersion = this.form.caseRef ? this.form.caseVersion : this.form.calledElementVersion
-      this.form.calledTenantId = this.form.caseRef ? this.form.caseTenantId : this.form.calledElementTenantId
-      this.form.businessKeyExpression = this.form
+      this.businessObject.callActivityType = this.businessObject.caseRef ? 'CMMN' : 'BPMN'
+      this.businessObject.calledRef = this.businessObject.caseRef ? this.businessObject.caseRef : this.businessObject.calledElement
+      this.businessObject.calledBinding = this.businessObject.caseRef ? this.businessObject.caseBinding : this.businessObject.calledElementBinding
+      this.businessObject.calledVersion = this.businessObject.caseRef ? this.businessObject.caseVersion : this.businessObject.calledElementVersion
+      this.businessObject.calledTenantId = this.businessObject.caseRef ? this.businessObject.caseTenantId : this.businessObject.calledElementTenantId
+      this.businessObject.businessKeyExpression = this.businessObject
         .extensionElements?.values?.find(item => is(item, customize('In')) && 'businessKey' in item)?.businessKey
-      if (this.form.calledElement) {
-        if ('variableMappingClass' in this.form) {
-          this.form.delegateVariableMapping = 'variableMappingClass'
-          this.form.variableMapping = this.form.variableMappingClass
-        } else if ('variableMappingDelegateExpression' in this.form) {
-          this.form.delegateVariableMapping = 'variableMappingDelegateExpression'
-          this.form.variableMapping = this.form.variableMappingDelegateExpression
+      if (this.businessObject.calledElement) {
+        if ('variableMappingClass' in this.businessObject) {
+          this.businessObject.delegateVariableMapping = 'variableMappingClass'
+          this.businessObject.variableMapping = this.businessObject.variableMappingClass
+        } else if ('variableMappingDelegateExpression' in this.businessObject) {
+          this.businessObject.delegateVariableMapping = 'variableMappingDelegateExpression'
+          this.businessObject.variableMapping = this.businessObject.variableMappingDelegateExpression
         }
       }
     },
@@ -223,7 +223,7 @@ export default {
       this.showVariable = false
     },
     computeLength() {
-      this.variableLength = this.form.extensionElements?.values
+      this.variableLength = this.businessObject.extensionElements?.values
         ?.filter(item => (is(item, customize('In')) && !('businessKey' in item)) || is(item, customize('Out'))).length ?? 0
     }
   }

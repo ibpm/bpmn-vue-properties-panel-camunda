@@ -4,7 +4,7 @@ export default {
       type: Object,
       required: true
     },
-    form: {
+    businessObject: {
       type: Object,
       required: true
     },
@@ -16,11 +16,6 @@ export default {
     templates: {
       type: Array,
       default: () => []
-    }
-  },
-  data() {
-    return {
-      form_: this.form
     }
   },
   methods: {

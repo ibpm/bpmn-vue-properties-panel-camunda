@@ -1,11 +1,11 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
+    <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
       <template #detail>
-        <FormItemInput v-model="form.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
-        <FormItemInput v-model="form.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
-        <FormItemInput v-model="form.priority" :label="$customTranslate('Priority')" prop="priority" />
+        <FormItemInput v-model="businessObject.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
+        <FormItemInput v-model="businessObject.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
+        <FormItemInput v-model="businessObject.priority" :label="$customTranslate('Priority')" prop="priority" />
         <el-form-item :label="$customTranslate('Task Listener')">
           <el-badge :value="listenerLength">
             <el-button @click="showListener = true">
@@ -15,17 +15,17 @@
         </el-form-item>
       </template>
     </Activity>
-    <TaskListener v-if="showListener" :moddle="moddle" :form="form" @close="finishListener" />
+    <TaskListener v-if="showListener" :moddle="moddle" :business-object="businessObject" @close="finishListener" />
   </div>
 </template>
 
 <script>
-import Activity from '@/components/embbed/Activity'
-import TaskListener from '@/components/part/listener/TaskListener'
-import FormItemInput from '@/components/ui/FormItemInput'
-import elementHelper from '@/mixins/elementHelper'
+import Activity from '../../embbed/Activity'
+import TaskListener from '../../part/listener/TaskListener'
+import FormItemInput from '../../ui/FormItemInput'
+import elementHelper from '../../../mixins/elementHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/utils'
+import { customize } from '../../../utils/utils'
 
 export default {
   name: 'UserTask',
@@ -42,13 +42,13 @@ export default {
     }
   },
   watch: {
-    'form.dueDate'(val) {
+    'businessObject.dueDate'(val) {
       this.write({ dueDate: val })
     },
-    'form.followUpDate'(val) {
+    'businessObject.followUpDate'(val) {
       this.write({ followUpDate: val })
     },
-    'form.priority'(val) {
+    'businessObject.priority'(val) {
       this.write({ priority: val })
     }
   },
@@ -64,7 +64,7 @@ export default {
       this.showListener = false
     },
     computeLength() {
-      this.listenerLength = this.form.extensionElements?.values
+      this.listenerLength = this.businessObject.extensionElements?.values
         ?.filter(item => is(item, customize('TaskListener'))).length ?? 0
     }
   }

@@ -1,15 +1,15 @@
 <template>
-  <Common :moddle="moddle" :form="form" :templates="templates" :rules="rules" @write="write">
+  <Common :moddle="moddle" :business-object="businessObject" :templates="templates" :rules="rules" @write="write">
     <template #detail>
-      <FormItemInput v-model="form.initiator" :label="$customTranslate('Initiator')" prop="initiator" />
+      <FormItemInput v-model="businessObject.initiator" :label="$customTranslate('Initiator')" prop="initiator" />
     </template>
   </Common>
 </template>
 
 <script>
-import Common from '@/components/embbed/Common'
-import FormItemInput from '@/components/ui/FormItemInput'
-import elementHelper from '@/mixins/elementHelper'
+import Common from '../../embbed/Common'
+import FormItemInput from '../../ui/FormItemInput'
+import elementHelper from '../../../mixins/elementHelper'
 
 export default {
   name: 'StartEvent',
@@ -28,7 +28,7 @@ export default {
     }
   },
   watch: {
-    'form.initiator'(val) {
+    'businessObject.initiator'(val) {
       this.write({ initiator: val })
     }
   }

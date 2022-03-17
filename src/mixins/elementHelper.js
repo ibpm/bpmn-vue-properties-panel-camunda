@@ -12,7 +12,7 @@ export default {
       type: Object,
       required: true
     },
-    form: {
+    businessObject: {
       type: Object,
       required: true
     },

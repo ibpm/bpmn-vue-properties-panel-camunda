@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-form ref="form" :model="form_" :rules="rules_" label-width="100px" size="mini">
-      <FormItemInput v-model="form_.id" :label="$customTranslate('Id')" prop="id" />
-      <FormItemTextArea v-model="form_.name" :label="$customTranslate('Name')" prop="name" />
+    <el-form ref="form" :model="businessObject" :rules="rules_" label-width="100px" size="mini">
+      <FormItemInput v-model="businessObject.id" :label="$customTranslate('Id')" prop="id" />
+      <FormItemTextArea v-model="businessObject.name" :label="$customTranslate('Name')" prop="name" />
       <slot name="custom" />
       <el-form-item :label="$customTranslate('Properties')">
         <el-badge :value="properties.length">
@@ -12,7 +12,7 @@
         </el-badge>
       </el-form-item>
       <FormItemTextArea
-        v-model="form_.doc"
+        v-model="businessObject.doc"
         :label="$customTranslate('Documentation')"
         :placeholder="$customTranslate('Element Documentation')"
         prop="doc"
@@ -22,13 +22,13 @@
   </div>
 </template>
 <script>
-import Properties from '@/components/part/detail/Properties'
-import FormItemInput from '@/components/ui/FormItemInput'
-import FormItemTextArea from '@/components/ui/FormItemTextArea'
-import areaHelper from '@/mixins/areaHelper'
+import Properties from '../../components/part/detail/Properties'
+import FormItemInput from '../../components/ui/FormItemInput'
+import FormItemTextArea from '../../components/ui/FormItemTextArea'
+import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/utils'
-import { addAndRemoveElementsFromExtensionElements } from '@/utils/creators'
+import { customize } from '../../utils/utils'
+import { addAndRemoveElementsFromExtensionElements } from '../../utils/creators'
 
 export default {
   name: 'General',
@@ -61,13 +61,13 @@ export default {
     }
   },
   watch: {
-    'form_.id': function(val) {
+    'businessObject.id': function(val) {
       this.write({ id: val })
     },
-    'form_.name': function(val) {
+    'businessObject.name': function(val) {
       this.write({ name: val })
     },
-    'form_.doc'(val) {
+    'businessObject.doc'(val) {
       this.write({
         documentation: val ? [this.moddle.create('bpmn:Documentation', { text: val })] : []
       })
@@ -78,11 +78,11 @@ export default {
   },
   methods: {
     read() {
-      if (this.form.documentation?.length) {
-        this.form_.doc = this.form.documentation[0].text
+      if (this.businessObject.documentation?.length) {
+        this.businessObject.doc = this.businessObject.documentation[0].text
       }
       this.properties =
-        this.form.extensionElements?.values.find(item => is(item, customize('Properties')))?.values ?? []
+        this.businessObject.extensionElements?.values.find(item => is(item, customize('Properties')))?.values ?? []
     },
     update(propertiesElement) {
       this.showProperty = false
@@ -90,7 +90,7 @@ export default {
       const
         matcher = item => !is(item, customize('Properties')),
         objectsToAdd = propertiesElement ? [propertiesElement] : undefined
-      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
+      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
     }
   }
 }

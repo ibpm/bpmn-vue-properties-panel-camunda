@@ -44,8 +44,8 @@
 import Modeler from 'bpmn-js/lib/Modeler'
 import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
 import miniMapModule from 'diagram-js-minimap'
-import PropertiesPanel from '@/PropertiesPanel'
-import { getTimeStr } from '@/utils/tools'
+import PropertiesPanel from './PropertiesPanel'
+import { getTimeStr } from './utils/tools'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 
 export default {
@@ -209,5 +209,5 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-@import "~@/styles/bpmn.scss";
+@import "./styles/bpmn.scss";
 </style>

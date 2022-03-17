@@ -1,9 +1,9 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/receive-task/ -->
 <template>
-  <Activity :moddle="moddle" :form="form" :templates="templates" @write="write">
+  <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @write="write">
     <template #detail>
       <el-form-item :label="$customTranslate('Global Message referenced')" prop="messageRef">
-        <el-select v-model="form.messageRef" filterable allow-create @visible-change="changeVisible">
+        <el-select v-model="businessObject.messageRef" filterable allow-create @visible-change="changeVisible">
           <el-option
             v-for="item in messages"
             :key="item.id"
@@ -22,11 +22,11 @@
 </template>
 
 <script>
-import Activity from '@/components/embbed/Activity'
-import elementHelper from '@/mixins/elementHelper'
-import { next } from '@/utils/tools'
-import { getRoot, findRootElementsByType, getFlowElements } from '@/utils/utils'
-import { BPMN_MESSAGE } from '@/utils/constants'
+import Activity from '../../embbed/Activity'
+import elementHelper from '../../../mixins/elementHelper'
+import { next } from '../../../utils/tools'
+import { getRoot, findRootElementsByType, getFlowElements } from '../../../utils/utils'
+import { BPMN_MESSAGE } from '../../../utils/constants'
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil'
 
 export default {
@@ -41,7 +41,7 @@ export default {
     }
   },
   watch: {
-    'form.messageRef'(val) {
+    'businessObject.messageRef'(val) {
       if (!val) return
       let message = this.messages.find(item => item.id === val)
       if (!message) { // 新增下拉选项
@@ -64,8 +64,8 @@ export default {
         }
         index++
       }
-      if (this.form.messageRef === id || this.form.messageRef === name) {
-        this.write({ messageRef: this.form.messageRef = undefined })
+      if (this.businessObject.messageRef === id || this.businessObject.messageRef === name) {
+        this.write({ messageRef: this.businessObject.messageRef = undefined })
         this.delete(index, id)
         return
       }

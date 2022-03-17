@@ -1,17 +1,17 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/script-task/ -->
 <template>
-  <Activity :moddle="moddle" :form="form" :templates="templates" @sync="sync" @write="write">
+  <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
     <template #detail>
-      <Condition v-model="form" @update="update" />
+      <Condition v-model="businessObject" @update="update" />
     </template>
   </Activity>
 </template>
 
 <script>
-import Activity from '@/components/embbed/Activity'
-import Condition from '@/components/part/detail/Condition'
-import elementHelper from '@/mixins/elementHelper'
-import { customize } from '@/utils/utils'
+import Activity from '../../embbed/Activity'
+import Condition from '../../part/detail/Condition'
+import elementHelper from '../../../mixins/elementHelper'
+import { customize } from '../../../utils/utils'
 
 export default {
   name: 'ScriptTask',
@@ -25,13 +25,13 @@ export default {
   },
   methods: {
     sync() {
-      this.form.conditionType = 'script'
-      if ('script' in this.form) {
-        this.form.scriptType = 'script'
-        this.form.config = this.form.script
-      } else if ('resource' in this.form) {
-        this.form.scriptType = 'resource'
-        this.form.config = this.form.resource
+      this.businessObject.conditionType = 'script'
+      if ('script' in this.businessObject) {
+        this.businessObject.scriptType = 'script'
+        this.businessObject.config = this.businessObject.script
+      } else if ('resource' in this.businessObject) {
+        this.businessObject.scriptType = 'resource'
+        this.businessObject.config = this.businessObject.resource
       }
     },
     update(obj) {

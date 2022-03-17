@@ -1,24 +1,24 @@
 <template>
-  <Base :moddle="moddle" :form="form" :templates="templates" @write="write">
+  <Base :moddle="moddle" :business-object="businessObject" :templates="templates" @write="write">
     <template v-if="visible" #custom>
       <el-form-item :label="$customTranslate('Condition Type')" prop="conditionType">
-        <el-select v-model="form.conditionType" @change="changeCondition">
+        <el-select v-model="businessObject.conditionType" @change="changeCondition">
           <el-option :label="$customTranslate('Expression')" value="expression" />
           <el-option :label="$customTranslate('Script')" value="script" />
           <el-option label="" value="" />
         </el-select>
       </el-form-item>
-      <Condition v-model="form" @update="update" />
+      <Condition v-model="businessObject" @update="update" />
     </template>
   </Base>
 </template>
 
 <script>
-import Base from '@/components/embbed/Base'
-import Condition from '@/components/part/detail/Condition'
-import elementHelper from '@/mixins/elementHelper'
-import { customize, isConditionalSource } from '@/utils/utils'
-import { createFormalExpression } from '@/utils/creators'
+import Base from '../../components/embbed/Base'
+import Condition from '../../components/part/detail/Condition'
+import elementHelper from '../../mixins/elementHelper'
+import { customize, isConditionalSource } from '../../utils/utils'
+import { createFormalExpression } from '../../utils/creators'
 
 export default {
   name: 'SequenceFlow',
@@ -37,20 +37,20 @@ export default {
   },
   methods: {
     sync() {
-      if (this.form.conditionExpression) {
-        if (this.form.conditionExpression.language) {
-          this.form.conditionType = 'script'
-          this.form.scriptFormat = this.form.conditionExpression.language
-          if (this.form.conditionExpression.body) {
-            this.form.scriptType = 'script'
-            this.form.config = this.form.conditionExpression.body
+      if (this.businessObject.conditionExpression) {
+        if (this.businessObject.conditionExpression.language) {
+          this.businessObject.conditionType = 'script'
+          this.businessObject.scriptFormat = this.businessObject.conditionExpression.language
+          if (this.businessObject.conditionExpression.body) {
+            this.businessObject.scriptType = 'script'
+            this.businessObject.config = this.businessObject.conditionExpression.body
           } else {
-            this.form.scriptType = 'resource'
-            this.form.config = this.form.conditionExpression.resource
+            this.businessObject.scriptType = 'resource'
+            this.businessObject.config = this.businessObject.conditionExpression.resource
           }
         } else {
-          this.form.conditionType = 'expression'
-          this.form.config = this.form.conditionExpression.body
+          this.businessObject.conditionType = 'expression'
+          this.businessObject.config = this.businessObject.conditionExpression.body
         }
       }
     },

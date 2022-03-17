@@ -1,5 +1,5 @@
-import zh from '@/locale/zh'
-import { getLocale } from '@/utils/tools'
+import zh from '../locale/zh'
+import { getLocale } from './tools'
 
 export default function customTranslate(template, replacements) {
   const lang = getLocale() || 'zh'

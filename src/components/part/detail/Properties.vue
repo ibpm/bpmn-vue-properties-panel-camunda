@@ -9,22 +9,22 @@
     <el-form ref="form" :model="form" size="mini">
       <el-table :data="form.properties" border>
         <el-table-column v-if="isForm" :label="$customTranslate('Id')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <FormItemGeneratedInput v-model="scope.row.id" prefix="Property" />
           </template>
         </el-table-column>
         <el-table-column v-else :label="$customTranslate('Name')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <FormItemInput v-model="scope.row.name" />
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Value')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <FormItemInput v-model="scope.row.value" />
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Operation')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item>
               <el-button type="danger" icon="el-icon-minus" circle @click="remove(scope.$index)" />
             </el-form-item>
@@ -40,12 +40,12 @@
   </el-dialog>
 </template>
 <script>
-import FormItemInput from '@/components/ui/FormItemInput'
-import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
-import dialogHelper from '@/mixins/dialogHelper'
-import { VARIABLE_ASSIGNMENT_TYPES } from '@/utils/constants'
-import { customize } from '@/utils/utils'
-import { next } from '@/utils/tools'
+import FormItemInput from '../../ui/FormItemInput'
+import FormItemGeneratedInput from '../../ui/FormItemGeneratedInput'
+import dialogHelper from '../../../mixins/dialogHelper'
+import { VARIABLE_ASSIGNMENT_TYPES } from '../../../utils/constants'
+import { customize } from '../../../utils/utils'
+import { next } from '../../../utils/tools'
 
 const ELEMENT_NAME = 'Properties'
 
@@ -119,5 +119,5 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-@import "~@/styles/bpmn.scss";
+@import "../../../styles/bpmn.scss";
 </style>

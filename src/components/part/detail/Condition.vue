@@ -1,9 +1,9 @@
 <template>
   <div>
     <template v-if="showScript">
-      <FormItemInput v-model="form_.scriptFormat" :label="$customTranslate('Script Format')" prop="scriptFormat" />
+      <FormItemInput v-model="form.scriptFormat" :label="$customTranslate('Script Format')" prop="scriptFormat" />
       <el-form-item :label="$customTranslate('Script Type')" prop="scriptType">
-        <el-select v-model="form_.scriptType">
+        <el-select v-model="form.scriptType">
           <el-option
             v-for="(item, index) in scriptTypes"
             :key="index"
@@ -15,17 +15,17 @@
     </template>
     <FormItemTextArea
       v-if="showExpression || showScript"
-      v-model="form_.config"
+      v-model="form.config"
       :label=" $customTranslate(showExpression ? 'Expression': showResource ? 'Resource' : 'Script')"
       prop="config"
     />
   </div>
 </template>
 <script>
-import FormItemInput from '@/components/ui/FormItemInput'
-import FormItemTextArea from '@/components/ui/FormItemTextArea'
-import { isExpression, isScript, isResource } from '@/utils/utils'
-import { SCRIPT_TYPES } from '@/utils/constants'
+import FormItemInput from '../../ui/FormItemInput'
+import FormItemTextArea from '../../ui/FormItemTextArea'
+import { isExpression, isScript, isResource } from '../../../utils/utils'
+import { SCRIPT_TYPES } from '../../../utils/constants'
 
 export default {
   name: 'Condition',
@@ -40,7 +40,7 @@ export default {
   data() {
     return {
       scriptTypes: SCRIPT_TYPES,
-      form_: this.value
+      form: Object.assign({}, this.value)
     }
   },
   computed: {
@@ -51,14 +51,14 @@ export default {
       return isScript(this.value.conditionType)
     },
     showResource() {
-      return isResource(this.form_.scriptType)
+      return isResource(this.form.scriptType)
     }
   },
   watch: {
-    'form_.scriptFormat'() {
+    'form.scriptFormat'() {
       this.update()
     },
-    'form_.config'() {
+    'form.config'() {
       this.update()
     }
   },
@@ -66,12 +66,12 @@ export default {
     update() {
       let props
       if (this.showExpression) {
-        props = { expression: this.form_.config }
+        props = { expression: this.form.config }
       } else if (this.showScript) {
         if (this.showResource) {
-          props = { scriptFormat: this.form_.scriptFormat, resource: this.form_.config }
+          props = { scriptFormat: this.form.scriptFormat, resource: this.form.config }
         } else {
-          props = { scriptFormat: this.form_.scriptFormat, script: this.form_.config }
+          props = { scriptFormat: this.form.scriptFormat, script: this.form.config }
         }
       } else {
         props = {}

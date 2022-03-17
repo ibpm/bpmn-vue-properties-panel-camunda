@@ -50,9 +50,9 @@
 </template>
 // TODO 因为el-select的value-key只能指定单一属性，无法组合多个属性，所以暂不支持template的version
 <script>
-import areaHelper from '@/mixins/areaHelper'
+import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize, isInOut } from '@/utils/utils'
+import { customize, isInOut } from '../../utils/utils'
 import {
   createCamundaIn,
   createCamundaInWithBusinessKey,
@@ -63,7 +63,7 @@ import {
   createCamundaProperty,
   createFormalExpression,
   createExtensionElements, createCamundaExecutionListenerScript
-} from '@/utils/creators'
+} from '../../utils/creators'
 const
   PROPERTY_TYPE = 'property',
   CAMUNDA_PROPERTY_TYPE = 'camunda:property',
@@ -103,7 +103,7 @@ export default {
           })
         })
       }
-      this.form.modelerTemplate = this.selectedTemplate?.id
+      this.businessObject.modelerTemplate = this.selectedTemplate?.id
       this.write({ modelerTemplate: this.selectedTemplate?.id })
     },
     templateProperties: {
@@ -126,8 +126,8 @@ export default {
   },
   methods: {
     read() {
-      if (this.form.modelerTemplate) {
-        this.selectedTemplate = this.templates.find(template => template.id === this.form.modelerTemplate)
+      if (this.businessObject.modelerTemplate) {
+        this.selectedTemplate = this.templates.find(template => template.id === this.businessObject.modelerTemplate)
       } else {
         this.selectedTemplate = this.templates.find(template => template.isDefault)
       }
@@ -138,7 +138,7 @@ export default {
         const binding = property.binding,
           bindingType = binding.type
         let values
-        if ((values = this.form.extensionElements?.values)?.length) {
+        if ((values = this.businessObject.extensionElements?.values)?.length) {
           if (bindingType === CAMUNDA_PROPERTY_TYPE) {
             const propertiesElement = values.find(item => is(item, customize('Properties')))
             if (propertiesElement?.values) {

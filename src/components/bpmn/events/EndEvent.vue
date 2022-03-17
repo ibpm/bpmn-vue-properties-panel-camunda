@@ -1,10 +1,10 @@
 <template>
-  <Common :moddle="moddle" :form="form" :templates="templates" @write="write" />
+  <Common :moddle="moddle" :business-object="businessObject" :templates="templates" @write="write" />
 </template>
 
 <script>
-import Common from '@/components/embbed/Common'
-import elementHelper from '@/mixins/elementHelper'
+import Common from '../../embbed/Common'
+import elementHelper from '../../../mixins/elementHelper'
 
 export default {
   name: 'EndEvent',

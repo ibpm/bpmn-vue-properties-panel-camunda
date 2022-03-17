@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import propHelper from '@/mixins/propHelper'
-import { next } from '@/utils/tools'
+import propHelper from '../../mixins/propHelper'
+import { next } from '../../utils/tools'
 
 export default {
   name: 'FormItemGeneratedInput',

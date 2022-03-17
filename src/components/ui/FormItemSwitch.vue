@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import propHelper from '@/mixins/propHelper'
+import propHelper from '../../mixins/propHelper'
 
 export default {
   name: 'FormItemSwitch',

@@ -1,23 +1,23 @@
 <template>
-  <Base :moddle="moddle" :form="form" :templates="templates" :rules="rules" @sync="sync" @write="write">
+  <Base :moddle="moddle" :business-object="businessObject" :templates="templates" :rules="rules" @sync="sync" @write="write">
     <template #custom>
-      <FormItemInput v-model="form.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
-      <FormItemSwitch v-model="form.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />
-      <FormItemInput v-model="form.candidateStarterGroups" :label="$customTranslate('Candidate Starter Groups')" prop="candidateStarterGroups" />
-      <FormItemInput v-model="form.candidateStarterUsers" :label="$customTranslate('Candidate Starter Users')" prop="candidateStarterUsers" />
-      <FormItemInput v-model="form.historyTimeToLive" :label="$customTranslate('History Time To Live')" prop="historyTimeToLive" />
-      <FormItemInput v-model="form.taskPriority" :label="$customTranslate('Task Priority')" prop="taskPriority" />
-      <FormItemInput v-model="form.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
-      <FormItemSwitch v-model="form.isStartableInTasklist" :label="$customTranslate('Startable')" prop="isStartableInTasklist" />
+      <FormItemInput v-model="businessObject.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
+      <FormItemSwitch v-model="businessObject.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />
+      <FormItemInput v-model="businessObject.candidateStarterGroups" :label="$customTranslate('Candidate Starter Groups')" prop="candidateStarterGroups" />
+      <FormItemInput v-model="businessObject.candidateStarterUsers" :label="$customTranslate('Candidate Starter Users')" prop="candidateStarterUsers" />
+      <FormItemInput v-model="businessObject.historyTimeToLive" :label="$customTranslate('History Time To Live')" prop="historyTimeToLive" />
+      <FormItemInput v-model="businessObject.taskPriority" :label="$customTranslate('Task Priority')" prop="taskPriority" />
+      <FormItemInput v-model="businessObject.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
+      <FormItemSwitch v-model="businessObject.isStartableInTasklist" :label="$customTranslate('Startable')" prop="isStartableInTasklist" />
     </template>
   </Base>
 </template>
 
 <script>
-import Base from '@/components/embbed/Base'
-import FormItemInput from '@/components/ui/FormItemInput'
-import elementHelper from '@/mixins/elementHelper'
-import FormItemSwitch from '@/components/ui/FormItemSwitch'
+import Base from '../../components/embbed/Base'
+import FormItemInput from '../../components/ui/FormItemInput'
+import elementHelper from '../../mixins/elementHelper'
+import FormItemSwitch from '../../components/ui/FormItemSwitch'
 
 export default {
   name: 'Process',
@@ -37,28 +37,28 @@ export default {
     }
   },
   watch: {
-    'form.versionTag'(val) {
+    'businessObject.versionTag'(val) {
       this.write({ versionTag: val })
     },
-    'form.isExecutable'(val) {
+    'businessObject.isExecutable'(val) {
       this.write({ isExecutable: val })
     },
-    'form.candidateStarterGroups'(val) {
+    'businessObject.candidateStarterGroups'(val) {
       this.write({ candidateStarterGroups: val })
     },
-    'form.candidateStarterUsers'(val) {
+    'businessObject.candidateStarterUsers'(val) {
       this.write({ candidateStarterUsers: val })
     },
-    'form.historyTimeToLive'(val) {
+    'businessObject.historyTimeToLive'(val) {
       this.write({ historyTimeToLive: val })
     },
-    'form.taskPriority'(val) {
+    'businessObject.taskPriority'(val) {
       this.write({ taskPriority: val })
     },
-    'form.jobPriority'(val) {
+    'businessObject.jobPriority'(val) {
       this.write({ jobPriority: val })
     },
-    'form.isStartableInTasklist'(val) {
+    'businessObject.isStartableInTasklist'(val) {
       this.write({ isStartableInTasklist: val })
     }
   },
@@ -67,8 +67,8 @@ export default {
   },
   methods: {
     sync() {
-      if (!this.form.isStartableInTasklist) {
-        this.form.isStartableInTasklist = true
+      if (!this.businessObject.isStartableInTasklist) {
+        this.businessObject.isStartableInTasklist = true
       }
     }
   }

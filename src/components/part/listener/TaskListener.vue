@@ -7,10 +7,10 @@
       :close-on-press-escape="false"
       :show-close="false"
     >
-      <el-form ref="form_" :model="form_" size="mini">
-        <el-table :data="form_.records" border>
+      <el-form ref="form" :model="form" size="mini">
+        <el-table :data="form.records" border>
           <el-table-column :label="$customTranslate('Event Type')" prop="event">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-form-item :prop="'records.' + scope.$index + '.event'">
                 <el-select v-model="scope.row.event">
                   <el-option v-for="(item, index) in events" :key="index" :label="$customTranslate(item)" :value="item" />
@@ -36,7 +36,7 @@
             </template>
           </el-table-column>
           <el-table-column :label="$customTranslate('Listener Type')" prop="listenerType">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-form-item :prop="'records.' + scope.$index + '.listenerType'">
                 <el-select v-model="scope.row.listenerType">
                   <el-option
@@ -57,7 +57,7 @@
             </template>
           </el-table-column>
           <el-table-column :label="$customTranslate('Config')">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <FormItemInput
                 v-if="!showScript(scope.row.listenerType)"
                 v-model="scope.row.config"
@@ -92,7 +92,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="listenerId" :label="$customTranslate('Listener Id')">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <FormItemGeneratedInput
                 v-model="scope.row.listenerId"
                 :prop="'records.' + scope.$index + '.listenerId'"
@@ -107,7 +107,7 @@
             </template>
           </el-table-column>
           <el-table-column :label="$customTranslate('Fields')">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-form-item>
                 <el-badge :value="scope.row.fields ? scope.row.fields.length : 0">
                   <el-button type="primary" @click="configFields(scope.$index)">
@@ -118,7 +118,7 @@
             </template>
           </el-table-column>
           <el-table-column :label="$customTranslate('Operation')">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-form-item>
                 <el-button type="danger" icon="el-icon-minus" circle @click="remove(scope.$index)" />
                 <el-button type="primary" icon="el-icon-arrow-up" circle @click="up(scope.$index)" />
@@ -138,17 +138,17 @@
   </div>
 </template>
 <script>
-import Field from '@/components/part/detail/Field'
-import FormItemInput from '@/components/ui/FormItemInput'
-import FormItemTextArea from '@/components/ui/FormItemTextArea'
-import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
-import areaHelper from '@/mixins/areaHelper'
-import dialogHelper from '@/mixins/dialogHelper'
-import { EVENTS_TASK, LISTENER_TYPES, SCRIPT_TYPES, TIMER_DEFINITION_TYPES } from '@/utils/constants'
-import { swapArray, next } from '@/utils/tools'
+import Field from '../detail/Field'
+import FormItemInput from '../../ui/FormItemInput'
+import FormItemTextArea from '../../ui/FormItemTextArea'
+import FormItemGeneratedInput from '../../ui/FormItemGeneratedInput'
+import areaHelper from '../../../mixins/areaHelper'
+import dialogHelper from '../../../mixins/dialogHelper'
+import { EVENTS_TASK, LISTENER_TYPES, SCRIPT_TYPES, TIMER_DEFINITION_TYPES } from '../../../utils/constants'
+import { swapArray, next } from '../../../utils/tools'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { addAndRemoveElementsFromExtensionElements, createFormalExpression } from '@/utils/creators'
-import { customize, isResource, isScript } from '@/utils/utils'
+import { addAndRemoveElementsFromExtensionElements, createFormalExpression } from '../../../utils/creators'
+import { customize, isResource, isScript } from '../../../utils/utils'
 
 const ELEMENT_NAME = 'TaskListener'
 
@@ -164,7 +164,7 @@ export default {
       timerDefinitionTypes: TIMER_DEFINITION_TYPES,
       showField: false,
       currentRow: null,
-      form_: {
+      form: {
         records: []
       }
     }
@@ -174,7 +174,7 @@ export default {
   },
   methods: {
     read() {
-      this.form_.records = this.form.extensionElements?.values
+      this.form.records = this.businessObject.extensionElements?.values
         .filter(item => is(item, customize(ELEMENT_NAME)))
         .map(row => {
           const data = {
@@ -233,8 +233,8 @@ export default {
     update() {
       const matcher = item => !is(item, customize(ELEMENT_NAME))
       let objectsToAdd
-      if (this.form_.records?.length) {
-        objectsToAdd = this.form_.records.map(row => {
+      if (this.form.records?.length) {
+        objectsToAdd = this.form.records.map(row => {
           const data = this.moddle.create(customize(ELEMENT_NAME))
           data.event = row.event
           if (row.event === 'timeout') {
@@ -270,7 +270,7 @@ export default {
           return data
         })
       }
-      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
+      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
     },
     initRow() {
       return {
@@ -279,25 +279,25 @@ export default {
       }
     },
     save() {
-      this.$refs['form_'].validate().then(() => {
+      this.$refs['form'].validate().then(() => {
         this.update()
         this.close()
       }).catch(e => console.error(e))
     },
     add() {
-      this.form_.records.push(this.initRow())
+      this.form.records.push(this.initRow())
     },
     remove(index) {
-      this.form_.records.splice(index, 1)
+      this.form.records.splice(index, 1)
     },
     up(index) {
       if (index > 0) {
-        swapArray(this.form_.records, index, index - 1)
+        swapArray(this.form.records, index, index - 1)
       }
     },
     down(index) {
-      if (index < this.form_.records.length - 1) {
-        swapArray(this.form_.records, index, index + 1)
+      if (index < this.form.records.length - 1) {
+        swapArray(this.form.records, index, index + 1)
       }
     },
     showScript(listenerType) {
@@ -307,7 +307,7 @@ export default {
       return isResource(scriptType)
     },
     configFields(index) {
-      this.currentRow = this.form_.records[index]
+      this.currentRow = this.form.records[index]
       this.showField = true
     },
     saveFields(fields) {
@@ -321,6 +321,6 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-@import "~@/styles/bpmn.scss";
+@import "../../../styles/bpmn.scss";
 </style>
 

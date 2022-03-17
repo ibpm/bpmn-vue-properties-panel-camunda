@@ -1,5 +1,5 @@
 import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil'
-import { CONDITIONAL_SOURCES, ENGINE } from '@/utils/constants'
+import { CONDITIONAL_SOURCES, ENGINE } from './constants'
 
 export const
   customize = (suffix) => {

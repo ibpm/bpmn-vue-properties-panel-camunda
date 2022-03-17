@@ -9,7 +9,7 @@
     <el-form ref="form" :model="form" size="mini">
       <el-table :data="form.ios" border>
         <el-table-column :label="$customTranslate('Type')" prop="ioType">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item>
               <el-switch
                 v-model="scope.row.ioType"
@@ -20,7 +20,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Local Variable Name')" prop="name">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <FormItemGeneratedInput
               v-model="scope.row.name"
               :prefix="scope.row.ioType ? 'Input' : 'Output'"
@@ -30,7 +30,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Variable Assignment Type')" prop="type">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item :prop="'ios.' + scope.$index + '.type'">
               <el-select v-model="scope.row.type">
                 <el-option
@@ -44,7 +44,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Config')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <FormItemTextArea
               v-if="scope.row.type === 'text'"
               v-model="scope.row.value"
@@ -84,7 +84,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Operation')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item>
               <el-button type="danger" icon="el-icon-minus" circle @click="remove(scope.$index)" />
             </el-form-item>
@@ -101,13 +101,13 @@
   </el-dialog>
 </template>
 <script>
-import Condition from '@/components/part/detail/Condition'
-import FormItemTextArea from '@/components/ui/FormItemTextArea'
-import FormItemGeneratedInput from '@/components/ui/FormItemGeneratedInput'
-import dialogHelper from '@/mixins/dialogHelper'
-import { VARIABLE_ASSIGNMENT_TYPES } from '@/utils/constants'
-import { customize } from '@/utils/utils'
-import { next } from '@/utils/tools'
+import Condition from './Condition'
+import FormItemTextArea from '../../ui/FormItemTextArea'
+import FormItemGeneratedInput from '../../ui/FormItemGeneratedInput'
+import dialogHelper from '../../../mixins/dialogHelper'
+import { VARIABLE_ASSIGNMENT_TYPES } from '../../../utils/constants'
+import { customize } from '../../../utils/utils'
+import { next } from '../../../utils/tools'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 
 const ELEMENT_NAME = 'InputOutput'
@@ -249,5 +249,5 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-@import "~@/styles/bpmn.scss";
+@import "../../../styles/bpmn.scss";
 </style>

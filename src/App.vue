@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import BpmnModeler from '@/BpmnModeler'
+import BpmnModeler from './BpmnModeler'
 import CUSTOM_ELEMENT_TEMPLATES from './custom.json'
-import { INITIAL_DIAGRAM } from '@/utils/constants'
+import { INITIAL_DIAGRAM } from './utils/constants'
 
 export default {
   name: 'App',

@@ -6,10 +6,10 @@
     :close-on-press-escape="false"
     :show-close="false"
   >
-    <el-form ref="form_" :model="form_" size="mini">
-      <el-table :data="form_.records" border>
+    <el-form ref="form" :model="form" size="mini">
+      <el-table :data="form.records" border>
         <el-table-column :label="$customTranslate('Type')" prop="ioType">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item>
               <el-switch
                 v-model="scope.row.ioType"
@@ -20,7 +20,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Type')" prop="type">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item :prop="'records.' + scope.$index + '.type'">
               <el-select v-model="scope.row.type">
                 <el-option
@@ -34,7 +34,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Source')" prop="source">
-          <template v-if="scope.row.type !== 'variables'" slot-scope="scope">
+          <template v-if="scope.row.type !== 'variables'" v-slot="scope">
             <FormItemInput
               v-model="scope.row.source"
               :prop="'records.' + scope.$index + '.source'"
@@ -43,7 +43,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Target')" prop="target">
-          <template v-if="scope.row.type !== 'variables'" slot-scope="scope">
+          <template v-if="scope.row.type !== 'variables'" v-slot="scope">
             <FormItemInput
               v-model="scope.row.target"
               :prop="'records.' + scope.$index + '.target'"
@@ -52,7 +52,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Local')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <FormItemSwitch
               v-model="scope.row.local"
               :prop="'records.' + scope.$index + '.local'"
@@ -60,7 +60,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Operation')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item>
               <el-button type="danger" icon="el-icon-minus" circle @click="remove(scope.$index)" />
             </el-form-item>
@@ -77,14 +77,14 @@
   </el-dialog>
 </template>
 <script>
-import FormItemInput from '@/components/ui/FormItemInput'
-import FormItemSwitch from '@/components/ui/FormItemSwitch'
-import areaHelper from '@/mixins/areaHelper'
-import dialogHelper from '@/mixins/dialogHelper'
-import { VARIABLE_TYPES } from '@/utils/constants'
+import FormItemInput from '../../ui/FormItemInput'
+import FormItemSwitch from '../../ui/FormItemSwitch'
+import areaHelper from '../../../mixins/areaHelper'
+import dialogHelper from '../../../mixins/dialogHelper'
+import { VARIABLE_TYPES } from '../../../utils/constants'
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '@/utils/utils'
-import { addAndRemoveElementsFromExtensionElements } from '@/utils/creators'
+import { customize } from '../../../utils/utils'
+import { addAndRemoveElementsFromExtensionElements } from '../../../utils/creators'
 
 export default {
   name: 'Variable',
@@ -93,7 +93,7 @@ export default {
   data() {
     return {
       variableTypes: VARIABLE_TYPES,
-      form_: {
+      form: {
         records: []
       }
     }
@@ -103,9 +103,9 @@ export default {
   },
   methods: {
     read() {
-      this.form_.records = []
+      this.form.records = []
       let values
-      if ((values = this.form.extensionElements?.values)?.length) {
+      if ((values = this.businessObject.extensionElements?.values)?.length) {
         this.readIO(values, true)
         this.readIO(values, false)
       }
@@ -114,8 +114,8 @@ export default {
       const matcher = item => ('businessKey' in item && is(item, customize('In'))) ||
         !isAny(item, [customize('In'), customize('Out')])
       let objectsToAdd
-      if (this.form_.records?.length) {
-        objectsToAdd = this.form_.records.map(row => {
+      if (this.form.records?.length) {
+        objectsToAdd = this.form.records.map(row => {
           const data = this.moddle.create(customize(row.ioType ? 'In' : 'Out'))
           if (row.type === 'source') {
             data.source = row.source
@@ -129,22 +129,22 @@ export default {
           return data
         })
       }
-      this.form.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.form, objectsToAdd, matcher)
+      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
     },
     save() {
-      this.$refs['form_'].validate().then(() => {
+      this.$refs['form'].validate().then(() => {
         this.update()
         this.close()
       }).catch(e => console.error(e))
     },
     add(ioType) {
-      this.form_.records.push({
+      this.form.records.push({
         ioType: ioType,
         type: 'source'
       })
     },
     remove(index) {
-      this.form_.records.splice(index, 1)
+      this.form.records.splice(index, 1)
     },
     readIO(values, ioType) {
       values
@@ -160,7 +160,7 @@ export default {
           } else if ('variables' in row) {
             type = 'variables'
           }
-          this.form_.records.push({
+          this.form.records.push({
             ioType: ioType,
             type: type,
             source: source,

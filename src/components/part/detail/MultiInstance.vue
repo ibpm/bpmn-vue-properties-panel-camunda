@@ -5,52 +5,52 @@
     :close-on-click-modal="false"
     width="500px"
   >
-    <el-form ref="form_" :model="form_" label-width="150px" size="mini">
+    <el-form ref="form" :model="form" label-width="150px" size="mini">
       <el-form-item :label="$customTranslate('Multi Instance')" prop="isSequential">
         <el-switch
-          v-model="form_.isSequential"
+          v-model="form.isSequential"
           :active-text="$customTranslate('Sequential Multi Instance')"
           :inactive-text="$customTranslate('Parallel Multi Instance')"
         />
       </el-form-item>
       <FormItemInput
-        v-model="form_.loopCardinality"
+        v-model="form.loopCardinality"
         prop="loopCardinality"
         :label="$customTranslate('Loop Cardinality')"
       />
       <FormItemInput
-        v-model="form_.collection"
+        v-model="form.collection"
         prop="collection"
         :label="$customTranslate('Collection')"
       />
       <FormItemInput
-        v-model="form_.elementVariable"
+        v-model="form.elementVariable"
         prop="elementVariable"
         :label="$customTranslate('Element Variable')"
       />
       <FormItemInput
-        v-model="form_.completionCondition"
+        v-model="form.completionCondition"
         prop="completionCondition"
         :label="$customTranslate('Completion Condition')"
       />
       <FormItemSwitch
-        v-model="form_.asyncBefore"
+        v-model="form.asyncBefore"
         :label="$customTranslate('Multi Instance') + ' ' + $customTranslate('Asynchronous Before')"
         prop="asyncBefore"
       />
       <FormItemSwitch
-        v-model="form_.asyncAfter"
+        v-model="form.asyncAfter"
         :label="$customTranslate('Multi Instance') + ' ' + $customTranslate('Asynchronous After')"
         prop="asyncAfter"
       />
-      <template v-if="form_.asyncBefore || form_.asyncAfter">
+      <template v-if="form.asyncBefore || form.asyncAfter">
         <FormItemSwitch
-          v-model="form_.exclusive"
+          v-model="form.exclusive"
           :label="$customTranslate('Multi Instance') + ' ' + $customTranslate('Exclusive')"
           prop="exclusive"
         />
         <FormItemInput
-          v-model="form_.failedJobRetryTimeCycle"
+          v-model="form.failedJobRetryTimeCycle"
           :label="$customTranslate('Multi Instance') + ' ' + $customTranslate('Retry Time Cycle')"
           prop="failedJobRetryTimeCycle"
         />
@@ -58,68 +58,73 @@
     </el-form>
     <span slot="footer">
       <el-button type="info" @click="close">{{ $customTranslate('Cancel') }}</el-button>
-      <el-button type="primary" @click="form_ = {}">{{ $customTranslate('Clear') }}</el-button>
+      <el-button type="primary" @click="form = {}">{{ $customTranslate('Clear') }}</el-button>
       <el-button type="success" @click="save">{{ $customTranslate('Save') }}</el-button>
     </span>
   </el-dialog>
 </template>
 
 <script>
-import FormItemInput from '@/components/ui/FormItemInput'
-import FormItemSwitch from '@/components/ui/FormItemSwitch'
-import areaHelper from '@/mixins/areaHelper'
-import dialogHelper from '@/mixins/dialogHelper'
-import { customize } from '@/utils/utils'
-import { addAndRemoveElementsFromExtensionElements, createFormalExpression } from '@/utils/creators'
+import FormItemInput from '../../ui/FormItemInput'
+import FormItemSwitch from '../../ui/FormItemSwitch'
+import areaHelper from '../../../mixins/areaHelper'
+import dialogHelper from '../../../mixins/dialogHelper'
+import { customize } from '../../../utils/utils'
+import { addAndRemoveElementsFromExtensionElements, createFormalExpression } from '../../../utils/creators'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 
 export default {
   name: 'MultiInstance',
   components: { FormItemInput, FormItemSwitch },
   mixins: [areaHelper, dialogHelper],
+  data() {
+    return {
+      form: null
+    }
+  },
   created() {
     this.read()
   },
   methods: {
     read() {
-      this.form_ = {
-        ...this.form.loopCharacteristics,
-        loopCardinality: this.form.loopCharacteristics?.loopCardinality?.body,
-        completionCondition: this.form.loopCharacteristics?.completionCondition?.body,
-        failedJobRetryTimeCycle: this.form.loopCharacteristics?.extensionElements?.values[0]?.body
+      this.form = {
+        ...this.businessObject.loopCharacteristics,
+        loopCardinality: this.businessObject.loopCharacteristics?.loopCardinality?.body,
+        completionCondition: this.businessObject.loopCharacteristics?.completionCondition?.body,
+        failedJobRetryTimeCycle: this.businessObject.loopCharacteristics?.extensionElements?.values[0]?.body
       }
     },
     update() {
       const
         loopCharacteristics = this.moddle.create('bpmn:MultiInstanceLoopCharacteristics', {
-          isSequential: this.form_.isSequential,
-          collection: this.form_.collection,
-          elementVariable: this.form_.elementVariable,
-          loopCardinality: this.form_.loopCardinality
-            ? createFormalExpression(this.moddle, { body: this.form_.loopCardinality }) : null,
-          completionCondition: this.form_.completionCondition
-            ? createFormalExpression(this.moddle, { body: this.form_.completionCondition }) : null,
-          asyncBefore: this.form_.asyncBefore,
-          asyncAfter: this.form_.asyncAfter,
-          exclusive: this.form_.exclusive
+          isSequential: this.form.isSequential,
+          collection: this.form.collection,
+          elementVariable: this.form.elementVariable,
+          loopCardinality: this.form.loopCardinality
+            ? createFormalExpression(this.moddle, { body: this.form.loopCardinality }) : null,
+          completionCondition: this.form.completionCondition
+            ? createFormalExpression(this.moddle, { body: this.form.completionCondition }) : null,
+          asyncBefore: this.form.asyncBefore,
+          asyncAfter: this.form.asyncAfter,
+          exclusive: this.form.exclusive
         }),
         matcher = item => !is(item, customize('FailedJobRetryTimeCycle')),
-        objectsToAdd = this.form_.failedJobRetryTimeCycle
+        objectsToAdd = this.form.failedJobRetryTimeCycle
           ? [this.moddle.create(customize('FailedJobRetryTimeCycle'), {
-            body: this.form_.failedJobRetryTimeCycle
+            body: this.form.failedJobRetryTimeCycle
           })] : undefined
       loopCharacteristics.extensionElements =
         addAndRemoveElementsFromExtensionElements(this.moddle, loopCharacteristics, objectsToAdd, matcher)
-      this.form.loopCharacteristics = loopCharacteristics
+      this.businessObject.loopCharacteristics = loopCharacteristics
     },
     save() {
-      if (this.form_.loopCardinality || this.form_.collection) {
-        this.$refs['form_'].validate().then(() => {
+      if (this.form.loopCardinality || this.form.collection) {
+        this.$refs['form'].validate().then(() => {
           this.update()
           this.close()
         }).catch(e => console.error(e))
       } else {
-        this.form.loopCharacteristics = undefined
+        this.businessObject.loopCharacteristics = undefined
         this.close()
       }
     }

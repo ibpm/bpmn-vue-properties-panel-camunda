@@ -9,7 +9,7 @@
     <el-form ref="form" :model="form" size="mini">
       <el-table :data="form.records" border>
         <el-table-column :label="$customTranslate('Name')" prop="name">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <FormItemInput
               v-model="scope.row.name"
               :prop="'records.' + scope.$index + '.name'"
@@ -18,7 +18,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Type')" prop="type">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item :prop="'records.' + scope.$index + '.type'">
               <el-select v-model="scope.row.type">
                 <el-option
@@ -32,7 +32,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Value')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <FormItemTextArea
               v-model="scope.row.value"
               :prop="'records.' + scope.$index + '.value'"
@@ -42,7 +42,7 @@
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Operation')">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-form-item>
               <el-button type="danger" icon="el-icon-minus" circle @click="remove(scope.$index)" />
             </el-form-item>
@@ -58,10 +58,10 @@
   </el-dialog>
 </template>
 <script>
-import FormItemInput from '@/components/ui/FormItemInput'
-import FormItemTextArea from '@/components/ui/FormItemTextArea'
-import { FIELD_TYPES } from '@/utils/constants'
-import dialogHelper from '@/mixins/dialogHelper'
+import FormItemInput from '../../ui/FormItemInput'
+import FormItemTextArea from '../../ui/FormItemTextArea'
+import { FIELD_TYPES } from '../../../utils/constants'
+import dialogHelper from '../../../mixins/dialogHelper'
 
 export default {
   name: 'Field',
