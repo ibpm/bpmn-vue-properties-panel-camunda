@@ -24,7 +24,7 @@
 <script>
 import FormItemInput from '../../ui/FormItemInput'
 import FormItemTextArea from '../../ui/FormItemTextArea'
-import { isExpression, isScript, isResource } from '../../../utils/utils'
+import { isExpression, isScript, isResource } from '../../../utils'
 import { SCRIPT_TYPES } from '../../../utils/constants'
 
 export default {

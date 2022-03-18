@@ -1,4 +1,4 @@
-import { customize } from './utils'
+import { customize } from './index'
 
 export const
   createElement = (moddle, elementType, parent, properties) => {

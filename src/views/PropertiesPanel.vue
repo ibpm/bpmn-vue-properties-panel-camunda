@@ -20,20 +20,20 @@
 </template>
 
 <script>
-import Process from './components/bpmn/Process'
-import StartEvent from './components/bpmn/events/StartEvent'
-import EndEvent from './components/bpmn/events/EndEvent'
-import Gateway from './components/bpmn/gateways/Gateway'
-import SequenceFlow from './components/bpmn/SequenceFlow'
-import Task from './components/bpmn/tasks/Task'
-import UserTask from './components/bpmn/tasks/UserTask'
-import ServiceTask from './components/bpmn/tasks/ServiceTask'
-import ScriptTask from './components/bpmn/tasks/ScriptTask'
-import BusinessRuleTask from './components/bpmn/tasks/BusinessRuleTask'
-import ReceiveTask from './components/bpmn/tasks/ReceiveTask'
-import CallActivity from './components/bpmn/subprocess/CallActivity'
+import Process from '../components/bpmn/Process'
+import StartEvent from '../components/bpmn/events/StartEvent'
+import EndEvent from '../components/bpmn/events/EndEvent'
+import Gateway from '../components/bpmn/gateways/Gateway'
+import SequenceFlow from '../components/bpmn/SequenceFlow'
+import Task from '../components/bpmn/tasks/Task'
+import UserTask from '../components/bpmn/tasks/UserTask'
+import ServiceTask from '../components/bpmn/tasks/ServiceTask'
+import ScriptTask from '../components/bpmn/tasks/ScriptTask'
+import BusinessRuleTask from '../components/bpmn/tasks/BusinessRuleTask'
+import ReceiveTask from '../components/bpmn/tasks/ReceiveTask'
+import CallActivity from '../components/bpmn/subprocess/CallActivity'
 import { isAny } from 'bpmn-js/lib/util/ModelUtil'
-import { next } from './utils/tools'
+import { next } from '../utils/tools'
 
 export default {
   name: 'PropertiesPanel',

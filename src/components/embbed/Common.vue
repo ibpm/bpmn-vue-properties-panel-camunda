@@ -39,7 +39,7 @@ import FormItemInput from '../../components/ui/FormItemInput'
 import FormItemSwitch from '../../components/ui/FormItemSwitch'
 import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '../../utils/utils'
+import { customize } from '../../utils'
 import { addAndRemoveElementsFromExtensionElements } from '../../utils/creators'
 
 const ELEMENT_NAME = 'InputOutput'

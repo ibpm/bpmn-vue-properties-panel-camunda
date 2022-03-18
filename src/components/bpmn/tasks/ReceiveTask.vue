@@ -25,7 +25,7 @@
 import Activity from '../../embbed/Activity'
 import elementHelper from '../../../mixins/elementHelper'
 import { next } from '../../../utils/tools'
-import { getRoot, findRootElementsByType, getFlowElements } from '../../../utils/utils'
+import { getRoot, findRootElementsByType, getFlowElements } from '../../../utils'
 import { BPMN_MESSAGE } from '../../../utils/constants'
 import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil'
 

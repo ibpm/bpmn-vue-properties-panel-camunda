@@ -17,7 +17,7 @@
 import Base from '../../components/embbed/Base'
 import Condition from '../../components/part/detail/Condition'
 import elementHelper from '../../mixins/elementHelper'
-import { customize, isConditionalSource } from '../../utils/utils'
+import { customize, isConditionalSource } from '../../utils'
 import { createFormalExpression } from '../../utils/creators'
 
 export default {

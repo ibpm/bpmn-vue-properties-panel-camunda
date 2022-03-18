@@ -95,7 +95,7 @@ import InputOutput from '../../part/detail/InputOutput'
 import FormItemInput from '../../ui/FormItemInput'
 import elementHelper from '../../../mixins/elementHelper'
 import { IMPLEMENTATIONS } from '../../../utils/constants'
-import { customize } from '../../../utils/utils'
+import { customize } from '../../../utils'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 import { addAndRemoveElementsFromExtensionElements } from '../../../utils/creators'
 

@@ -11,7 +11,7 @@
 import Activity from '../../embbed/Activity'
 import Condition from '../../part/detail/Condition'
 import elementHelper from '../../../mixins/elementHelper'
-import { customize } from '../../../utils/utils'
+import { customize } from '../../../utils'
 
 export default {
   name: 'ScriptTask',

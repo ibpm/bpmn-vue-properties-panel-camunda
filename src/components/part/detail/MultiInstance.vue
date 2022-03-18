@@ -69,7 +69,7 @@ import FormItemInput from '../../ui/FormItemInput'
 import FormItemSwitch from '../../ui/FormItemSwitch'
 import areaHelper from '../../../mixins/areaHelper'
 import dialogHelper from '../../../mixins/dialogHelper'
-import { customize } from '../../../utils/utils'
+import { customize } from '../../../utils'
 import { addAndRemoveElementsFromExtensionElements, createFormalExpression } from '../../../utils/creators'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 

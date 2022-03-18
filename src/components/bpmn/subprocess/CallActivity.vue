@@ -85,7 +85,7 @@ import elementHelper from '../../../mixins/elementHelper'
 import { CALL_ACTIVITY_TYPES, BINDINGS, BINDINGS_CMMN, VARIABLE_MAPPINGS } from '../../../utils/constants'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 import { addAndRemoveElementsFromExtensionElements, createCamundaInWithBusinessKey } from '../../../utils/creators'
-import { customize } from '../../../utils/utils'
+import { customize } from '../../../utils'
 
 export default {
   name: 'CallActivity',

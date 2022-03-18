@@ -1,3 +1,4 @@
+<!-- 仅展示如何使用和集成，请根据需要拷贝本页面的代码 -->
 <template>
   <div ref="container">
     <el-container>
@@ -44,39 +45,23 @@
 import Modeler from 'bpmn-js/lib/Modeler'
 import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
 import miniMapModule from 'diagram-js-minimap'
-import PropertiesPanel from './PropertiesPanel'
+import PropertiesPanel from './views/PropertiesPanel'
 import { getTimeStr } from './utils/tools'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
+import CUSTOM_ELEMENT_TEMPLATES from './custom.json'
+import { INITIAL_DIAGRAM } from './utils/constants'
 
 export default {
   name: 'BpmnModeler',
   components: { PropertiesPanel },
-  props: {
-    source: {
-      type: String,
-      required: true
-    },
-    additionalModules: {
-      type: Array,
-      default: () => []
-    },
-    elementTemplates: {
-      type: Array,
-      default: () => []
-    }
-  },
   data() {
     return {
       modeler: null,
       element: null,
-      xml: this.source,
+      xml: INITIAL_DIAGRAM,
       drawer: false,
-      zoom: 1
-    }
-  },
-  watch: {
-    'xml'() {
-      this.$emit('update', this.xml)
+      zoom: 1,
+      elementTemplates: CUSTOM_ELEMENT_TEMPLATES
     }
   },
   mounted() {
@@ -91,8 +76,7 @@ export default {
           miniMapModule,
           {
             translate: ['value', this.$customTranslate]
-          },
-          ...this.additionalModules
+          }
         ],
         moddleExtensions: {
           camunda: camundaModdleDescriptor
@@ -109,7 +93,7 @@ export default {
           result = await this.modeler.importXML(xml),
           { warnings } = result
         this.modeler.get('canvas').zoom('fit-viewport')
-        if (warnings.length > 0) {
+        if (warnings.length) {
           this.$message.warning(warnings)
         }
       } catch (err) {
@@ -133,8 +117,7 @@ export default {
         if (download) {
           this.downloadFile(`${this.getExportFileName()}.bpmn`, xml, 'application/xml')
         }
-        this.xml = xml
-        return xml
+        return (this.xml = xml)
       } catch (err) {
         this.$message.error(err)
       }

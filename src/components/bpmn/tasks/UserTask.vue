@@ -25,7 +25,7 @@ import TaskListener from '../../part/listener/TaskListener'
 import FormItemInput from '../../ui/FormItemInput'
 import elementHelper from '../../../mixins/elementHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '../../../utils/utils'
+import { customize } from '../../../utils'
 
 export default {
   name: 'UserTask',

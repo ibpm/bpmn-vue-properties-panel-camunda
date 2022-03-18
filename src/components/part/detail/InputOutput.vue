@@ -106,7 +106,7 @@ import FormItemTextArea from '../../ui/FormItemTextArea'
 import FormItemGeneratedInput from '../../ui/FormItemGeneratedInput'
 import dialogHelper from '../../../mixins/dialogHelper'
 import { VARIABLE_ASSIGNMENT_TYPES } from '../../../utils/constants'
-import { customize } from '../../../utils/utils'
+import { customize } from '../../../utils'
 import { next } from '../../../utils/tools'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 

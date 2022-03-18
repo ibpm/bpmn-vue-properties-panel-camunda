@@ -27,7 +27,7 @@ import FormItemInput from '../../components/ui/FormItemInput'
 import FormItemTextArea from '../../components/ui/FormItemTextArea'
 import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '../../utils/utils'
+import { customize } from '../../utils'
 import { addAndRemoveElementsFromExtensionElements } from '../../utils/creators'
 
 export default {

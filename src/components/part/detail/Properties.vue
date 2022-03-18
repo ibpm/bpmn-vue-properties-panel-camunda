@@ -44,7 +44,7 @@ import FormItemInput from '../../ui/FormItemInput'
 import FormItemGeneratedInput from '../../ui/FormItemGeneratedInput'
 import dialogHelper from '../../../mixins/dialogHelper'
 import { VARIABLE_ASSIGNMENT_TYPES } from '../../../utils/constants'
-import { customize } from '../../../utils/utils'
+import { customize } from '../../../utils'
 import { next } from '../../../utils/tools'
 
 const ELEMENT_NAME = 'Properties'

@@ -115,7 +115,7 @@ import { EVENTS_EXECUTION, LISTENER_TYPES, SCRIPT_TYPES } from '../../../utils/c
 import { swapArray } from '../../../utils/tools'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 import { addAndRemoveElementsFromExtensionElements } from '../../../utils/creators'
-import { customize, isResource, isScript } from '../../../utils/utils'
+import { customize, isResource, isScript } from '../../../utils'
 
 const ELEMENT_NAME = 'ExecutionListener'
 

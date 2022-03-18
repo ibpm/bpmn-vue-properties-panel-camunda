@@ -148,7 +148,7 @@ import { EVENTS_TASK, LISTENER_TYPES, SCRIPT_TYPES, TIMER_DEFINITION_TYPES } fro
 import { swapArray, next } from '../../../utils/tools'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 import { addAndRemoveElementsFromExtensionElements, createFormalExpression } from '../../../utils/creators'
-import { customize, isResource, isScript } from '../../../utils/utils'
+import { customize, isResource, isScript } from '../../../utils'
 
 const ELEMENT_NAME = 'TaskListener'
 

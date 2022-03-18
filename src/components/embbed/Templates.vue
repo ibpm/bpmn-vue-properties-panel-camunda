@@ -52,7 +52,7 @@
 <script>
 import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize, isInOut } from '../../utils/utils'
+import { customize, isInOut } from '../../utils'
 import {
   createCamundaIn,
   createCamundaInWithBusinessKey,

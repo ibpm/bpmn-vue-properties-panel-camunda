@@ -83,7 +83,7 @@ import areaHelper from '../../../mixins/areaHelper'
 import dialogHelper from '../../../mixins/dialogHelper'
 import { VARIABLE_TYPES } from '../../../utils/constants'
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '../../../utils/utils'
+import { customize } from '../../../utils'
 import { addAndRemoveElementsFromExtensionElements } from '../../../utils/creators'
 
 export default {
