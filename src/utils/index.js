@@ -34,6 +34,12 @@ export const
   getFlowElements = (element, type) => {
     return filterElementsByType(element.flowElements, type)
   },
+  getProcessElement = (modeler) => {
+    const rootElements = modeler.getDefinitions().rootElements
+    for (let i = 0; i < rootElements.length; i++) {
+      if (is(rootElements[i], 'bpmn:Process')) return rootElements[i]
+    }
+  },
   isInOut = (element, binding) => {
     if (binding.type === 'camunda:in') {
       // find based on target attribute

@@ -3,7 +3,7 @@
   <div ref="container">
     <el-container>
       <el-main>
-        <div ref="canvas" class="canvas" />
+        <div ref="canvas" class="modelering" />
         <ul class="buttons">
           <el-tooltip :content="$customTranslate('Undo')">
             <el-button icon="el-icon-back" @click="modeler.get('commandStack').undo()" />
@@ -46,10 +46,10 @@ import Modeler from 'bpmn-js/lib/Modeler'
 import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
 import miniMapModule from 'diagram-js-minimap'
 import PropertiesPanel from './views/PropertiesPanel'
-import { getTimeStr } from './utils/tools'
-import { is } from 'bpmn-js/lib/util/ModelUtil'
 import CUSTOM_ELEMENT_TEMPLATES from './custom.json'
 import { INITIAL_DIAGRAM } from './utils/constants'
+import { getProcessElement } from './utils'
+import { next } from './utils/tools'
 
 export default {
   name: 'BpmnModeler',
@@ -132,14 +132,8 @@ export default {
       window.URL.revokeObjectURL(url)
     },
     getExportFileName() {
-      const processElement = this.getProcessElement()
-      return (processElement.name || processElement.id || 'undefined') + '-' + getTimeStr()
-    },
-    getProcessElement() {
-      const rootElements = this.modeler.getDefinitions().rootElements
-      for (let i = 0; i < rootElements.length; i++) {
-        if (is(rootElements[i], 'bpmn:Process')) return rootElements[i]
-      }
+      const processElement = getProcessElement(this.modeler)
+      return next((processElement.name || processElement.id))
     },
     async showXML() {
       await this.exportBPMN()
@@ -167,7 +161,7 @@ export default {
     fitViewport() {
       this.zoom = this.modeler.get('canvas').zoom('fit-viewport')
       const
-        bbox = document.querySelector('.canvas .viewport').getBBox(),
+        bbox = document.querySelector('.modelering .viewport').getBBox(),
         currentViewbox = this.modeler.get('canvas').viewbox(),
         elementMid = {
           x: bbox.x + bbox.width / 2 - 65,
@@ -192,5 +186,38 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-@import "./styles/bpmn.scss";
+  @import "./styles/bpmn.scss";
+
+  .modelering {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .panel {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    right: 5px;
+    min-width: 300px;
+    border-left: 1px solid #ccc;
+    overflow: auto;
+    background-color: #F2F6FC;
+    .el-badge__content.is-fixed {
+      top: 15px;
+    }
+  }
+
+  .djs-palette {
+    left: 1px;
+    top: 5px;
+  }
+
+  .buttons {
+    position: absolute;
+    left: 110px;
+    bottom: 5px;
+  }
 </style>
