@@ -1,10 +1,10 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/business-rule-task/ -->
 <template>
-  <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @write="write">
+  <Activity :moddle="moddle" :bo="bo" :templates="templates" @write="write">
     <template #detail>
-      <FormItemInput v-model="businessObject.decisionRef" :label="$customTranslate('Decision Ref')" prop="decisionRef" />
+      <FormItemInput v-model="bo.decisionRef" :label="$customTranslate('Decision Ref')" prop="decisionRef" />
       <el-form-item :label="$customTranslate('Binding')" prop="decisionRefBinding">
-        <el-select v-model="businessObject.decisionRefBinding">
+        <el-select v-model="bo.decisionRefBinding">
           <el-option
             v-for="(item, index) in bindings"
             :key="index"
@@ -14,25 +14,25 @@
         </el-select>
       </el-form-item>
       <FormItemInput
-        v-if="businessObject.decisionRefBinding === 'version'"
-        v-model="businessObject.decisionRefVersion"
+        v-if="bo.decisionRefBinding === 'version'"
+        v-model="bo.decisionRefVersion"
         :label="$customTranslate('Version')"
         prop="decisionRefVersion"
       />
       <FormItemInput
-        v-if="businessObject.decisionRefBinding === 'versionTag'"
-        v-model="businessObject.decisionRefVersionTag"
+        v-if="bo.decisionRefBinding === 'versionTag'"
+        v-model="bo.decisionRefVersionTag"
         :label="$customTranslate('Version Tag')"
         prop="decisionRefVersionTag"
       />
       <FormItemInput
-        v-model="businessObject.decisionRefTenantId"
+        v-model="bo.decisionRefTenantId"
         :label="$customTranslate('Tenant Id')"
         prop="decisionRefTenantId"
       />
-      <FormItemInput v-model="businessObject.resultVariable" :label="$customTranslate('Result Variable')" prop="resultVariable" />
-      <el-form-item v-if="businessObject.resultVariable" :label="$customTranslate('Map Decision Result')" prop="mapDecisionResult">
-        <el-select v-model="businessObject.mapDecisionResult">
+      <FormItemInput v-model="bo.resultVariable" :label="$customTranslate('Result Variable')" prop="resultVariable" />
+      <el-form-item v-if="bo.resultVariable" :label="$customTranslate('Map Decision Result')" prop="mapDecisionResult">
+        <el-select v-model="bo.mapDecisionResult">
           <el-option
             v-for="(item, index) in mapDecisionResults"
             :key="index"
@@ -65,28 +65,28 @@ export default {
     }
   },
   watch: {
-    'businessObject.decisionRef'(val) {
+    'bo.decisionRef'(val) {
       this.write({ decisionRef: val })
     },
-    'businessObject.decisionRefBinding'(val) {
+    'bo.decisionRefBinding'(val) {
       this.write({ decisionRefBinding: val })
     },
-    'businessObject.decisionRefVersion'(val) {
+    'bo.decisionRefVersion'(val) {
       this.write({ decisionRefVersion: val })
     },
-    'businessObject.decisionRefVersionTag'(val) {
+    'bo.decisionRefVersionTag'(val) {
       this.write({ decisionRefVersionTag: val })
     },
-    'businessObject.decisionRefTenantId'(val) {
+    'bo.decisionRefTenantId'(val) {
       this.write({ decisionRefTenantId: val })
     },
-    'businessObject.resultVariable'(val) {
+    'bo.resultVariable'(val) {
       if (!val) {
         this.write({ mapDecisionResult: undefined })
       }
       this.write({ resultVariable: val })
     },
-    'businessObject.mapDecisionResult'(val) {
+    'bo.mapDecisionResult'(val) {
       this.write({ mapDecisionResult: val })
     }
   }

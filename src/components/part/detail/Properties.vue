@@ -93,7 +93,7 @@ export default {
               })
           })
       }
-      this.$emit('write-properties', propertiesElement)
+      this.$emit('save-properties', propertiesElement)
     },
     save() {
       this.$refs['form'].validate().then(() => {

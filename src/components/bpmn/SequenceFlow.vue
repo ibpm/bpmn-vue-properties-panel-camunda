@@ -1,14 +1,14 @@
 <template>
-  <Base :moddle="moddle" :business-object="businessObject" :templates="templates" @write="write">
+  <Base :moddle="moddle" :bo="bo" :templates="templates" @write="write">
     <template v-if="visible" #custom>
       <el-form-item :label="$customTranslate('Condition Type')" prop="conditionType">
-        <el-select v-model="businessObject.conditionType" @change="changeCondition">
+        <el-select v-model="conditionType" @change="changeCondition">
           <el-option :label="$customTranslate('Expression')" value="expression" />
           <el-option :label="$customTranslate('Script')" value="script" />
           <el-option label="" value="" />
         </el-select>
       </el-form-item>
-      <Condition v-model="businessObject" @update="update" />
+      <Condition v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
     </template>
   </Base>
 </template>
@@ -27,6 +27,11 @@ export default {
     Condition
   },
   mixins: [elementHelper],
+  data() {
+    return {
+      conditionType: ''
+    }
+  },
   computed: {
     visible() {
       return isConditionalSource(this.element.source)
@@ -37,24 +42,24 @@ export default {
   },
   methods: {
     sync() {
-      if (this.businessObject.conditionExpression) {
-        if (this.businessObject.conditionExpression.language) {
-          this.businessObject.conditionType = 'script'
-          this.businessObject.scriptFormat = this.businessObject.conditionExpression.language
-          if (this.businessObject.conditionExpression.body) {
-            this.businessObject.scriptType = 'script'
-            this.businessObject.config = this.businessObject.conditionExpression.body
+      if (this.bo.conditionExpression) {
+        if (this.bo.conditionExpression.language) {
+          this.conditionType = 'script'
+          this.bo.scriptFormat = this.bo.conditionExpression.language
+          if (this.bo.conditionExpression.body) {
+            this.bo.scriptType = 'script'
+            this.bo.config = this.bo.conditionExpression.body
           } else {
-            this.businessObject.scriptType = 'resource'
-            this.businessObject.config = this.businessObject.conditionExpression.resource
+            this.bo.scriptType = 'resource'
+            this.bo.config = this.bo.conditionExpression.resource
           }
         } else {
-          this.businessObject.conditionType = 'expression'
-          this.businessObject.config = this.businessObject.conditionExpression.body
+          this.conditionType = 'expression'
+          this.bo.config = this.bo.conditionExpression.body
         }
       }
     },
-    update(obj) {
+    writeCondition(obj) {
       let props
       if ('expression' in obj) {
         props = obj.expression ? createFormalExpression(this.moddle, { body: obj.expression }) : null
@@ -68,13 +73,11 @@ export default {
           language: obj.scriptFormat,
           [ customize('resource') ]: obj.resource
         }) : null
-      } else {
-        props = null
       }
       this.write({ conditionExpression: props })
     },
     changeCondition() {
-      this.update({})
+      this.writeCondition({})
     }
   }
 }

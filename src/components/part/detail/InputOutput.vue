@@ -51,7 +51,12 @@
               :prop="'ios.' + scope.$index + '.value'"
               :placeholder="$customTranslate('Variable Assignment Value')"
             />
-            <Condition v-if="scope.row.type === 'script'" v-model="scope.row.condition" @update="scope.row.condition_ = $event" />
+            <Condition
+              v-if="scope.row.type === 'script'"
+              v-model="scope.row.condition"
+              :condition-type="scope.row.type"
+              @save-condition="scope.row.condition_ = $event"
+            />
             <template v-if="scope.row.type === 'list'">
               <el-form-item>
                 <el-button type="primary" size="mini" icon="el-icon-plus" @click="scope.row.items.push({value: ''})" />
@@ -148,7 +153,6 @@ export default {
           if (is(io.definition, customize('Script'))) {
             target.type = 'script'
             target.condition = {
-              conditionType: 'script',
               scriptFormat: io.definition.scriptFormat,
               scriptType: io.definition.resource ? 'resource' : 'script',
               config: io.definition.value || io.definition.resource
@@ -213,7 +217,7 @@ export default {
               parameterProps))
         })
       }
-      this.$emit('update', io)
+      this.$emit('save-io', io)
     },
     read() {
       if (this.io) {

@@ -2,17 +2,17 @@
   <div>
     <el-tabs v-if="templates.length" v-model="tabName" type="card" @tab-click="clickTab">
       <el-tab-pane :label="$customTranslate('General')" name="general">
-        <General ref="general" :moddle="moddle" :business-object="businessObject" :rules="rules" @write="write">
+        <General ref="general" :moddle="moddle" :bo="bo" :rules="rules" @write="write">
           <template #custom>
             <slot name="custom" />
           </template>
         </General>
       </el-tab-pane>
       <el-tab-pane :label="$customTranslate('Template')" name="templates">
-        <Templates ref="templates" :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write" />
+        <Templates ref="templates" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write" />
       </el-tab-pane>
     </el-tabs>
-    <General v-else ref="general" :moddle="moddle" :business-object="businessObject" :rules="rules">
+    <General v-else ref="general" :moddle="moddle" :bo="bo" :rules="rules" @write="write">
       <template #custom>
         <slot name="custom" />
       </template>

@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Common :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
+    <Common :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <slot name="detail" />
         <el-form-item :label="$customTranslate('Multi Instance')">
-          <el-badge :is-dot="Boolean(businessObject.loopCharacteristics)">
+          <el-badge :is-dot="Boolean(bo.loopCharacteristics)">
             <el-button @click="showMultiInstance = true">
               {{ $customTranslate('Update') }}
             </el-button>
@@ -12,7 +12,7 @@
         </el-form-item>
       </template>
     </Common>
-    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :business-object="businessObject" @close="showMultiInstance = false" />
+    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :bo="bo" @write="write" @close="showMultiInstance = false" />
   </div>
 </template>
 

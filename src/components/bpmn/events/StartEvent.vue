@@ -1,7 +1,7 @@
 <template>
-  <Common :moddle="moddle" :business-object="businessObject" :templates="templates" :rules="rules" @write="write">
+  <Common :moddle="moddle" :bo="bo" :templates="templates" :rules="rules" @write="write">
     <template #detail>
-      <FormItemInput v-model="businessObject.initiator" :label="$customTranslate('Initiator')" prop="initiator" />
+      <FormItemInput v-model="bo.initiator" :label="$customTranslate('Initiator')" prop="initiator" />
     </template>
   </Common>
 </template>
@@ -28,7 +28,7 @@ export default {
     }
   },
   watch: {
-    'businessObject.initiator'(val) {
+    'bo.initiator'(val) {
       this.write({ initiator: val })
     }
   }

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-form ref="form" :model="businessObject" :rules="rules_" label-width="100px" size="mini">
-      <FormItemInput v-model="businessObject.id" :label="$customTranslate('Id')" prop="id" />
-      <FormItemTextArea v-model="businessObject.name" :label="$customTranslate('Name')" prop="name" />
+    <el-form ref="form" :model="bo" :rules="rules_" label-width="100px" size="mini">
+      <FormItemInput v-model="bo.id" :label="$customTranslate('Id')" prop="id" />
+      <FormItemTextArea v-model="bo.name" :label="$customTranslate('Name')" prop="name" />
       <slot name="custom" />
       <el-form-item :label="$customTranslate('Properties')">
         <el-badge :value="properties.length">
@@ -12,13 +12,13 @@
         </el-badge>
       </el-form-item>
       <FormItemTextArea
-        v-model="businessObject.doc"
+        v-model="bo.doc"
         :label="$customTranslate('Documentation')"
         :placeholder="$customTranslate('Element Documentation')"
         prop="doc"
       />
     </el-form>
-    <Properties v-if="showProperty" v-model="properties" :moddle="moddle" :is-form="false" @write-properties="update" @close="showProperty = false" />
+    <Properties v-if="showProperty" v-model="properties" :moddle="moddle" :is-form="false" @save-properties="writeProperties" @close="showProperty = false" />
   </div>
 </template>
 <script>
@@ -61,13 +61,13 @@ export default {
     }
   },
   watch: {
-    'businessObject.id': function(val) {
+    'bo.id': function(val) {
       this.write({ id: val })
     },
-    'businessObject.name': function(val) {
+    'bo.name': function(val) {
       this.write({ name: val })
     },
-    'businessObject.doc'(val) {
+    'bo.doc'(val) {
       this.write({
         documentation: val ? [this.moddle.create('bpmn:Documentation', { text: val })] : []
       })
@@ -78,19 +78,21 @@ export default {
   },
   methods: {
     read() {
-      if (this.businessObject.documentation?.length) {
-        this.businessObject.doc = this.businessObject.documentation[0].text
+      if (this.bo.documentation?.length) {
+        this.bo.doc = this.bo.documentation[0].text
       }
       this.properties =
-        this.businessObject.extensionElements?.values.find(item => is(item, customize('Properties')))?.values ?? []
+        this.bo.extensionElements?.values.find(item => is(item, customize('Properties')))?.values ?? []
     },
-    update(propertiesElement) {
+    writeProperties(propertiesElement) {
       this.showProperty = false
       this.properties = propertiesElement?.values || []
       const
         matcher = item => !is(item, customize('Properties')),
         objectsToAdd = propertiesElement ? [propertiesElement] : undefined
-      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
+      this.write({ extensionElements:
+          this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, objectsToAdd, matcher)
+      })
     }
   }
 }

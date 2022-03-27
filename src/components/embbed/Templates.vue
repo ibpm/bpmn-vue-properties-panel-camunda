@@ -89,12 +89,13 @@ export default {
   mixins: [areaHelper],
   data() {
     return {
-      selectedTemplate: null,
+      selectedTemplate: undefined,
       templateProperties: []
     }
   },
   watch: {
-    selectedTemplate() {
+    selectedTemplate(newVal, oldVal) {
+      if (oldVal === newVal) return
       this.templateProperties = []
       if (this.selectedTemplate?.properties) {
         this.selectedTemplate.properties.forEach(property => {
@@ -103,7 +104,7 @@ export default {
           })
         })
       }
-      this.businessObject.modelerTemplate = this.selectedTemplate?.id
+      this.bo.modelerTemplate = this.selectedTemplate?.id
       this.write({ modelerTemplate: this.selectedTemplate?.id })
     },
     templateProperties: {
@@ -126,8 +127,8 @@ export default {
   },
   methods: {
     read() {
-      if (this.businessObject.modelerTemplate) {
-        this.selectedTemplate = this.templates.find(template => template.id === this.businessObject.modelerTemplate)
+      if (this.bo.modelerTemplate) {
+        this.selectedTemplate = this.templates.find(template => template.id === this.bo.modelerTemplate)
       } else {
         this.selectedTemplate = this.templates.find(template => template.isDefault)
       }
@@ -138,7 +139,7 @@ export default {
         const binding = property.binding,
           bindingType = binding.type
         let values
-        if ((values = this.businessObject.extensionElements?.values)?.length) {
+        if ((values = this.bo.extensionElements?.values)?.length) {
           if (bindingType === CAMUNDA_PROPERTY_TYPE) {
             const propertiesElement = values.find(item => is(item, customize('Properties')))
             if (propertiesElement?.values) {
@@ -247,10 +248,10 @@ export default {
       }
       updateProperties.extensionElements = extensionElements.values.length ? extensionElements : undefined
     },
-    resolveList(businessObject, propertyName, value, createFunction, binding, matcher) {
-      businessObject[propertyName] = businessObject[propertyName]?.filter(matcher) ?? [] // delete
+    resolveList(bo, propertyName, value, createFunction, binding, matcher) {
+      bo[propertyName] = bo[propertyName]?.filter(matcher) ?? [] // delete
       if (value) { // create & update
-        businessObject[propertyName].push(createFunction(this.moddle, binding, value))
+        bo[propertyName].push(createFunction(this.moddle, binding, value))
       }
     }
   }

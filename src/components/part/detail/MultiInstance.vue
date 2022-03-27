@@ -88,10 +88,10 @@ export default {
   methods: {
     read() {
       this.form = {
-        ...this.businessObject.loopCharacteristics,
-        loopCardinality: this.businessObject.loopCharacteristics?.loopCardinality?.body,
-        completionCondition: this.businessObject.loopCharacteristics?.completionCondition?.body,
-        failedJobRetryTimeCycle: this.businessObject.loopCharacteristics?.extensionElements?.values[0]?.body
+        ...this.bo.loopCharacteristics,
+        loopCardinality: this.bo.loopCharacteristics?.loopCardinality?.body,
+        completionCondition: this.bo.loopCharacteristics?.completionCondition?.body,
+        failedJobRetryTimeCycle: this.bo.loopCharacteristics?.extensionElements?.values[0]?.body
       }
     },
     update() {
@@ -115,7 +115,9 @@ export default {
           })] : undefined
       loopCharacteristics.extensionElements =
         addAndRemoveElementsFromExtensionElements(this.moddle, loopCharacteristics, objectsToAdd, matcher)
-      this.businessObject.loopCharacteristics = loopCharacteristics
+      this.write({ loopCharacteristics:
+        this.bo.loopCharacteristics = loopCharacteristics
+      })
     },
     save() {
       if (this.form.loopCardinality || this.form.collection) {
@@ -124,7 +126,7 @@ export default {
           this.close()
         }).catch(e => console.error(e))
       } else {
-        this.businessObject.loopCharacteristics = undefined
+        this.bo.loopCharacteristics = undefined
         this.close()
       }
     }

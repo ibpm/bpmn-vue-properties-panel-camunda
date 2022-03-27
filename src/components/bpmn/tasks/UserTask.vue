@@ -1,11 +1,11 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
+    <Activity :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
       <template #detail>
-        <FormItemInput v-model="businessObject.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
-        <FormItemInput v-model="businessObject.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
-        <FormItemInput v-model="businessObject.priority" :label="$customTranslate('Priority')" prop="priority" />
+        <FormItemInput v-model="bo.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
+        <FormItemInput v-model="bo.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
+        <FormItemInput v-model="bo.priority" :label="$customTranslate('Priority')" prop="priority" />
         <el-form-item :label="$customTranslate('Task Listener')">
           <el-badge :value="listenerLength">
             <el-button @click="showListener = true">
@@ -15,7 +15,7 @@
         </el-form-item>
       </template>
     </Activity>
-    <TaskListener v-if="showListener" :moddle="moddle" :business-object="businessObject" @close="finishListener" />
+    <TaskListener v-if="showListener" :moddle="moddle" :bo="bo" @write="write" @close="finishListener" />
   </div>
 </template>
 
@@ -42,13 +42,13 @@ export default {
     }
   },
   watch: {
-    'businessObject.dueDate'(val) {
+    'bo.dueDate'(val) {
       this.write({ dueDate: val })
     },
-    'businessObject.followUpDate'(val) {
+    'bo.followUpDate'(val) {
       this.write({ followUpDate: val })
     },
-    'businessObject.priority'(val) {
+    'bo.priority'(val) {
       this.write({ priority: val })
     }
   },
@@ -64,7 +64,7 @@ export default {
       this.showListener = false
     },
     computeLength() {
-      this.listenerLength = this.businessObject.extensionElements?.values
+      this.listenerLength = this.bo.extensionElements?.values
         ?.filter(item => is(item, customize('TaskListener'))).length ?? 0
     }
   }

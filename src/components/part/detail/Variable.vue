@@ -105,7 +105,7 @@ export default {
     read() {
       this.form.records = []
       let values
-      if ((values = this.businessObject.extensionElements?.values)?.length) {
+      if ((values = this.bo.extensionElements?.values)?.length) {
         this.readIO(values, true)
         this.readIO(values, false)
       }
@@ -129,7 +129,9 @@ export default {
           return data
         })
       }
-      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
+      this.write({ extensionElements:
+          this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, objectsToAdd, matcher)
+      })
     },
     save() {
       this.$refs['form'].validate().then(() => {

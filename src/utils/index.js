@@ -1,12 +1,12 @@
-import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil'
+import { is, isAny } from 'bpmn-js/lib/util/ModelUtil'
 import { CONDITIONAL_SOURCES, ENGINE } from './constants'
 
 export const
   customize = (suffix) => {
     return ENGINE + ':' + suffix
   },
-  isConditionalSource = (element) => {
-    return isAny(element, CONDITIONAL_SOURCES)
+  isConditionalSource = (bo) => {
+    return isAny(bo, CONDITIONAL_SOURCES)
   },
   isExpression = (conditionType) => {
     return conditionType && conditionType === 'expression'
@@ -17,8 +17,8 @@ export const
   isResource = (scriptType) => {
     return scriptType && scriptType === 'resource'
   },
-  getRoot = (element) => {
-    let parent = getBusinessObject(element)
+  getRoot = (bo) => {
+    let parent = bo
     while (parent.$parent) {
       parent = parent.$parent
     }

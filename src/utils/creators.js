@@ -179,7 +179,9 @@ export const
       currentObject[propertyName] = listCopy
     } else if (currentPropertyName) {
       // remove the list when it is empty
-      currentObject.$parent.set(currentPropertyName, undefined)
+      if (currentObject.$parent.currentPropertyName) {
+        currentObject.$parent.set(currentPropertyName, undefined)
+      }
       currentObject = undefined
     }
     return currentObject

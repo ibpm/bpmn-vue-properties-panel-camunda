@@ -35,20 +35,24 @@ export default {
       type: Object,
       default: null,
       required: true
+    },
+    conditionType: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       scriptTypes: SCRIPT_TYPES,
-      form: Object.assign({}, this.value)
+      form: Object.assign({ scriptType: 'script' }, this.value)
     }
   },
   computed: {
     showExpression() {
-      return isExpression(this.value.conditionType)
+      return isExpression(this.conditionType)
     },
     showScript() {
-      return isScript(this.value.conditionType)
+      return isScript(this.conditionType)
     },
     showResource() {
       return isResource(this.form.scriptType)
@@ -56,6 +60,9 @@ export default {
   },
   watch: {
     'form.scriptFormat'() {
+      this.update()
+    },
+    'form.scriptType'() {
       this.update()
     },
     'form.config'() {
@@ -76,7 +83,7 @@ export default {
       } else {
         props = {}
       }
-      this.$emit('update', props)
+      this.$emit('save-condition', props)
     }
   }
 }

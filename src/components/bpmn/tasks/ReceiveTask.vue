@@ -1,9 +1,9 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/receive-task/ -->
 <template>
-  <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @write="write">
+  <Activity :moddle="moddle" :bo="bo" :templates="templates" @write="write">
     <template #detail>
       <el-form-item :label="$customTranslate('Global Message referenced')" prop="messageRef">
-        <el-select v-model="businessObject.messageRef" filterable allow-create @visible-change="changeVisible">
+        <el-select v-model="bo.messageRef" filterable allow-create @visible-change="changeVisible">
           <el-option
             v-for="item in messages"
             :key="item.id"
@@ -27,7 +27,6 @@ import elementHelper from '../../../mixins/elementHelper'
 import { next } from '../../../utils/tools'
 import { getRoot, findRootElementsByType, getFlowElements } from '../../../utils'
 import { BPMN_MESSAGE } from '../../../utils/constants'
-import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil'
 
 export default {
   name: 'ReceiveTask',
@@ -41,12 +40,12 @@ export default {
     }
   },
   watch: {
-    'businessObject.messageRef'(val) {
+    'bo.messageRef'(val) {
       if (!val) return
       let message = this.messages.find(item => item.id === val)
       if (!message) { // 新增下拉选项
         message = this.moddle.create(BPMN_MESSAGE, { id: next('message'), name: val })
-        const root = getRoot(this.element)
+        const root = getRoot(this.bo)
         message.$parent = root
         root.rootElements = (root.rootElements || []).concat([message])
         this.messages.push(message)
@@ -64,14 +63,14 @@ export default {
         }
         index++
       }
-      if (this.businessObject.messageRef === id || this.businessObject.messageRef === name) {
-        this.write({ messageRef: this.businessObject.messageRef = undefined })
+      if (this.bo.messageRef === id || this.bo.messageRef === name) {
+        this.write({ messageRef: this.bo.messageRef = undefined })
         this.delete(index, id)
         return
       }
       const
-        receiveTasks = getFlowElements(getBusinessObject(this.element).$parent, 'bpmn:ReceiveTask'),
-        task = receiveTasks.find(rt => getBusinessObject(rt).messageRef?.id === id)
+        receiveTasks = getFlowElements(this.bo.$parent, 'bpmn:ReceiveTask'),
+        task = receiveTasks.find(rt => rt.businessObject.messageRef?.id === id)
       if (task) { // 如果是其他ReceiveTask的messageRef
         this.$message.warning(
           this.$customTranslate('Can not remove the message which used by other ReceiveTask:') +
@@ -81,13 +80,13 @@ export default {
       this.delete(index, id)
     },
     delete(index, id) {
-      const root = getRoot(this.element)
+      const root = getRoot(this.bo)
       root.rootElements = root.rootElements.filter(ele => ele.id !== id) // 移除对应id的Message
       this.messages.splice(index, 1)
     },
     changeVisible(show) {
       if (show) {
-        this.messages = findRootElementsByType(this.element, BPMN_MESSAGE)
+        this.messages = findRootElementsByType(this.bo, BPMN_MESSAGE)
       }
     }
   }

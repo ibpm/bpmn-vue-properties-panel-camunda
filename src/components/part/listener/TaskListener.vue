@@ -174,7 +174,7 @@ export default {
   },
   methods: {
     read() {
-      this.form.records = this.businessObject.extensionElements?.values
+      this.form.records = this.bo.extensionElements?.values
         .filter(item => is(item, customize(ELEMENT_NAME)))
         .map(row => {
           const data = {
@@ -270,7 +270,9 @@ export default {
           return data
         })
       }
-      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
+      this.write({ extensionElements:
+          this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, objectsToAdd, matcher)
+      })
     },
     initRow() {
       return {

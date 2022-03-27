@@ -1,5 +1,5 @@
 <template>
-  <Common :moddle="moddle" :business-object="businessObject" :templates="templates" @write="write" />
+  <Common :moddle="moddle" :bo="bo" :templates="templates" @write="write" />
 </template>
 
 <script>

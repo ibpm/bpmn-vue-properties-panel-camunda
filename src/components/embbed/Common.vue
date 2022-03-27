@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Base :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
+    <Base :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
       <template #custom>
         <slot name="detail" />
         <el-form-item :label="$customTranslate('Execution Listener')">
@@ -10,12 +10,12 @@
             </el-button>
           </el-badge>
         </el-form-item>
-        <FormItemSwitch v-model="businessObject.asyncBefore" :label="$customTranslate('Asynchronous Before')" prop="asyncBefore" />
-        <FormItemSwitch v-model="businessObject.asyncAfter" :label="$customTranslate('Asynchronous After')" prop="asyncAfter" />
-        <template v-if="businessObject.asyncBefore || businessObject.asyncAfter">
-          <FormItemSwitch v-model="businessObject.exclusive" :label="$customTranslate('Exclusive')" prop="exclusive" />
-          <FormItemInput v-model="businessObject.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
-          <FormItemInput v-model="businessObject.failedJobRetryTimeCycle" :label="$customTranslate('Retry Time Cycle')" prop="failedJobRetryTimeCycle" />
+        <FormItemSwitch v-model="bo.asyncBefore" :label="$customTranslate('Asynchronous Before')" prop="asyncBefore" />
+        <FormItemSwitch v-model="bo.asyncAfter" :label="$customTranslate('Asynchronous After')" prop="asyncAfter" />
+        <template v-if="bo.asyncBefore || bo.asyncAfter">
+          <FormItemSwitch v-model="bo.exclusive" :label="$customTranslate('Exclusive')" prop="exclusive" />
+          <FormItemInput v-model="bo.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
+          <FormItemInput v-model="bo.failedJobRetryTimeCycle" :label="$customTranslate('Retry Time Cycle')" prop="failedJobRetryTimeCycle" />
         </template>
         <el-form-item v-if="isInputOutputSupported" :label="$customTranslate('Input/Output')">
           <el-badge :value="ioLength">
@@ -26,8 +26,8 @@
         </el-form-item>
       </template>
     </Base>
-    <ExecutionListener v-if="showListener" :moddle="moddle" :business-object="businessObject" @close="finishListener" />
-    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" @close="showIO = false" />
+    <ExecutionListener v-if="showListener" :moddle="moddle" :bo="bo" @write="write" @close="finishListener" />
+    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @save-io="saveIO" @close="showIO = false" />
   </div>
 </template>
 
@@ -74,19 +74,19 @@ export default {
     }
   },
   watch: {
-    'businessObject.asyncBefore': function(val) {
+    'bo.asyncBefore': function(val) {
       this.write({ asyncBefore: val })
     },
-    'businessObject.asyncAfter': function(val) {
+    'bo.asyncAfter': function(val) {
       this.write({ asyncAfter: val })
     },
-    'businessObject.exclusive': function(val) {
+    'bo.exclusive': function(val) {
       this.write({ exclusive: val })
     },
-    'businessObject.jobPriority': function(val) {
+    'bo.jobPriority': function(val) {
       this.write({ jobPriority: val })
     },
-    'businessObject.failedJobRetryTimeCycle': function(val) {
+    'bo.failedJobRetryTimeCycle': function(val) {
       this.write({ failedJobRetryTimeCycle: val })
     }
   },
@@ -99,15 +99,15 @@ export default {
       this.init()
     },
     init() {
-      this.io = this.businessObject.extensionElements?.values
+      this.io = this.bo.extensionElements?.values
         .find(item => is(item, customize(ELEMENT_NAME)))
-      this.isInputOutputSupported = is(this.businessObject, 'bpmn:FlowNode') &&
+      this.isInputOutputSupported = is(this.bo, 'bpmn:FlowNode') &&
         !(
-          is(this.businessObject, 'bpmn:StartEvent') ||
-          is(this.businessObject, 'bpmn:Gateway') ||
-          is(this.businessObject, 'bpmn:BoundaryEvent') ||
+          is(this.bo, 'bpmn:StartEvent') ||
+          is(this.bo, 'bpmn:Gateway') ||
+          is(this.bo, 'bpmn:BoundaryEvent') ||
           (
-            is(this.businessObject, 'bpmn:SubProcess') && this.businessObject.get('triggeredByEvent')
+            is(this.bo, 'bpmn:SubProcess') && this.bo.get('triggeredByEvent')
           )
         )
       this.computeLength()
@@ -117,16 +117,18 @@ export default {
       this.showListener = false
     },
     computeLength() {
-      this.listenerLength = this.businessObject.extensionElements?.values
+      this.listenerLength = this.bo.extensionElements?.values
         ?.filter(item => is(item, customize('ExecutionListener'))).length ?? 0
     },
-    update(io) {
+    saveIO(io) {
       this.showIO = false
       this.io = io
       const
         matcher = item => !is(item, customize(ELEMENT_NAME)),
         objectsToAdd = io ? [io] : undefined
-      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
+      this.write({ extensionElements:
+          this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, objectsToAdd, matcher)
+      })
     }
   }
 }

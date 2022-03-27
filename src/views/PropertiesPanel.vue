@@ -2,20 +2,17 @@
 <template>
   <div>
     <div v-if="element" class="titleStyle">
-      {{ businessObject.name || businessObject.id || element.id }}
+      {{ bo.name || bo.id || element.id }}
     </div>
-    <keep-alive>
-      <component
-        :is="getComponent"
-        v-if="element"
-        :key="element.eid"
-        :element="element"
-        :modeling="modeling"
-        :moddle="moddle"
-        :business-object="businessObject"
-        :templates="templates"
-      />
-    </keep-alive>
+    <component
+      :is="getComponent"
+      v-if="element"
+      :element="element"
+      :modeling="modeling"
+      :moddle="moddle"
+      :bo="bo"
+      :templates="templates"
+    />
   </div>
 </template>
 
@@ -33,7 +30,7 @@ import BusinessRuleTask from '../components/bpmn/tasks/BusinessRuleTask'
 import ReceiveTask from '../components/bpmn/tasks/ReceiveTask'
 import CallActivity from '../components/bpmn/subprocess/CallActivity'
 import { isAny } from 'bpmn-js/lib/util/ModelUtil'
-import { next } from '../utils/tools'
+// import { next } from '../utils/tools'
 
 export default {
   name: 'PropertiesPanel',
@@ -84,7 +81,7 @@ export default {
   data() {
     return {
       element: null,
-      businessObject: null
+      bo: null
     }
   },
   computed: {
@@ -129,10 +126,9 @@ export default {
       this.element = null
       this.$nextTick().then(() => {
         this.element = newElement
-        if (!this.element.eid) {
-          this.element.eid = next()
+        this.bo = {
+          ...this.element.businessObject
         }
-        this.businessObject = this.element.businessObject
       })
     }
   }
@@ -141,6 +137,8 @@ export default {
 
 <style scoped>
   .titleStyle {
-    margin: 10px 0 5px 0;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 </style>

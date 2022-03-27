@@ -1,7 +1,7 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/service-task/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
+    <Activity :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <el-form-item :label="$customTranslate('Implementation')" prop="implementation">
           <el-select v-model="implementation" filterable>
@@ -16,40 +16,40 @@
         <template v-if="implementation">
           <FormItemInput
             v-if="implementation === 'class'"
-            v-model="businessObject.class"
+            v-model="bo.class"
             prop="class"
             :label="$customTranslate('Java Class')"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
           />
           <template v-if="implementation === 'expression'">
             <FormItemInput
-              v-model="businessObject.expression"
+              v-model="bo.expression"
               prop="expression"
               :label="$customTranslate('Expression')"
               :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
             />
             <FormItemInput
-              v-model="businessObject.resultVariable"
+              v-model="bo.resultVariable"
               prop="resultVariable"
               :label="$customTranslate('Result Variable')"
             />
           </template>
           <FormItemInput
             v-if="implementation === 'delegateExpression'"
-            v-model="businessObject.delegateExpression"
+            v-model="bo.delegateExpression"
             prop="delegateExpression"
             :label="$customTranslate('Delegate Expression')"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
           />
           <template v-if="implementation === 'external'">
             <FormItemInput
-              v-model="businessObject.topic"
+              v-model="bo.topic"
               prop="topic"
               :label="$customTranslate('Topic')"
               :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
             />
             <FormItemInput
-              v-model="businessObject.taskPriority"
+              v-model="bo.taskPriority"
               :label="$customTranslate('Task Priority')"
               :placeholder="$customTranslate('External Task Configuration')"
             />
@@ -61,11 +61,11 @@
           >
             <el-col :span="12">
               <el-input
-                v-model="businessObject.connectorId"
+                v-model="bo.connectorId"
                 :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
               />
             </el-col>
-            <el-col v-if="businessObject.connectorId" :span="4" :offset="1">
+            <el-col v-if="bo.connectorId" :span="4" :offset="1">
               <el-badge :value="ioLength">
                 <el-button @click="showIO = true">
                   {{ $customTranslate('Input/Output') }}
@@ -83,7 +83,7 @@
         </el-form-item>
       </template>
     </Activity>
-    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @update="update" @close="showIO = false" />
+    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @save-io="saveIO" @close="showIO = false" />
     <Field v-if="showField" v-model="fields" @save-fields="saveFields" @close="showField = false" />
   </div>
 </template>
@@ -137,7 +137,9 @@ export default {
           this.write({ type: null, topic: null, taskPriority: null })
         } else if (oldVal === 'connector') {
           const matcher = item => !is(item, customize(CONNECTOR_NAME))
-          this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, undefined, matcher)
+          this.write({ extensionElements:
+              this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, undefined, matcher)
+          })
         } else {
           if (oldVal === 'expression') {
             this.updateResultVariable(null)
@@ -148,36 +150,36 @@ export default {
       if (newVal) {
         if (newVal === 'external') {
           this.updateExternal()
-          this.updateTaskPriority(this.businessObject.taskPriority)
+          this.updateTaskPriority(this.bo.taskPriority)
         } else if (newVal === 'connector') {
           this.updateConnector()
         } else {
           if (newVal === 'expression') {
-            this.updateResultVariable(this.businessObject.resultVariable)
+            this.updateResultVariable(this.bo.resultVariable)
           }
           this.updateImplementation()
         }
       }
     },
-    'businessObject.class'() {
+    'bo.class'() {
       this.updateImplementation()
     },
-    'businessObject.expression'() {
+    'bo.expression'() {
       this.updateImplementation()
     },
-    'businessObject.delegateExpression'() {
+    'bo.delegateExpression'() {
       this.updateImplementation()
     },
-    'businessObject.topic'() {
+    'bo.topic'() {
       this.updateExternal()
     },
-    'businessObject.connectorId'() {
+    'bo.connectorId'() {
       this.updateConnector()
     },
-    'businessObject.resultVariable'(val) {
+    'bo.resultVariable'(val) {
       this.updateResultVariable(val)
     },
-    'businessObject.taskPriority'(val) {
+    'bo.taskPriority'(val) {
       this.updateTaskPriority(val)
     }
   },
@@ -186,34 +188,38 @@ export default {
   },
   methods: {
     sync() {
-      if ('expression' in this.businessObject && this.businessObject.expression) {
+      let connector
+      if ('expression' in this.bo && this.bo.expression) {
         this.implementation = 'expression'
-      } else if ('delegateExpression' in this.businessObject && this.businessObject.delegateExpression) {
+      } else if ('delegateExpression' in this.bo && this.bo.delegateExpression) {
         this.implementation = 'delegateExpression'
-      } else if ('external' in this.businessObject && this.businessObject.external) {
+      } else if ('external' in this.bo && this.bo.external) {
         this.implementation = 'external'
-      } else if ('connector' in this.businessObject && this.businessObject.connector) {
+      } else if ((connector = this.bo.extensionElements?.values?.find(item => is(item, customize(CONNECTOR_NAME)))) !== undefined) {
         this.implementation = 'connector'
-        this.io = this.businessObject.extensionElements?.values?.find(item => is(item, customize(CONNECTOR_NAME)))?.inputOutput
+        this.bo.connectorId = connector.connectorId
+        this.io = connector.inputOutput
       } else {
         this.implementation = 'class'
       }
     },
     updateImplementation() {
       if (this.implementation) {
-        this.write({ [this.implementation]: this.businessObject[this.implementation] })
+        this.write({ [this.implementation]: this.bo[this.implementation] })
       }
     },
     updateExternal() {
-      this.write({ type: 'external', topic: this.businessObject.topic })
+      this.write({ type: 'external', topic: this.bo.topic })
     },
     updateConnector() {
       const
         matcher = item => !is(item, customize(CONNECTOR_NAME)),
-        objectsToAdd = this.businessObject.connectorId ? [this.moddle.create(customize(CONNECTOR_NAME), {
-          connectorId: this.businessObject.connectorId
+        objectsToAdd = this.bo.connectorId ? [this.moddle.create(customize(CONNECTOR_NAME), {
+          connectorId: this.bo.connectorId
         })] : undefined
-      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
+      this.write({ extensionElements:
+          this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, objectsToAdd, matcher)
+      })
     },
     updateResultVariable(val) {
       this.write({ resultVariable: val })
@@ -221,12 +227,13 @@ export default {
     updateTaskPriority(val) {
       this.write({ taskPriority: val })
     },
-    update(io) {
+    saveIO(io) {
       this.showIO = false
       this.io = io
-      this.businessObject.extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
+      this.bo.extensionElements?.values?.filter(item => is(item, customize(CONNECTOR_NAME)))
         .forEach(connector => {
           connector['inputOutput'] = io
+          this.write({ extensionElements: this.bo.extensionElements })
         })
     },
     saveFields(fields) {
@@ -240,7 +247,9 @@ export default {
           fieldElement[field.type] = field.value
           return fieldElement
         })
-      this.businessObject.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.businessObject, objectsToAdd, matcher)
+      this.write({ extensionElements:
+          this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, objectsToAdd, matcher)
+      })
     }
   }
 }

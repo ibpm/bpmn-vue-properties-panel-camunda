@@ -4,7 +4,7 @@ export default {
       type: Object,
       required: true
     },
-    businessObject: {
+    bo: {
       type: Object,
       required: true
     },

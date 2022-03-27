@@ -1,14 +1,14 @@
 <template>
-  <Base :moddle="moddle" :business-object="businessObject" :templates="templates" :rules="rules" @sync="sync" @write="write">
+  <Base :moddle="moddle" :bo="bo" :templates="templates" :rules="rules" @sync="sync" @write="write">
     <template #custom>
-      <FormItemInput v-model="businessObject.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
-      <FormItemSwitch v-model="businessObject.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />
-      <FormItemInput v-model="businessObject.candidateStarterGroups" :label="$customTranslate('Candidate Starter Groups')" prop="candidateStarterGroups" />
-      <FormItemInput v-model="businessObject.candidateStarterUsers" :label="$customTranslate('Candidate Starter Users')" prop="candidateStarterUsers" />
-      <FormItemInput v-model="businessObject.historyTimeToLive" :label="$customTranslate('History Time To Live')" prop="historyTimeToLive" />
-      <FormItemInput v-model="businessObject.taskPriority" :label="$customTranslate('Task Priority')" prop="taskPriority" />
-      <FormItemInput v-model="businessObject.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
-      <FormItemSwitch v-model="businessObject.isStartableInTasklist" :label="$customTranslate('Startable')" prop="isStartableInTasklist" />
+      <FormItemInput v-model="bo.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
+      <FormItemSwitch v-model="bo.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />
+      <FormItemInput v-model="bo.candidateStarterGroups" :label="$customTranslate('Candidate Starter Groups')" prop="candidateStarterGroups" />
+      <FormItemInput v-model="bo.candidateStarterUsers" :label="$customTranslate('Candidate Starter Users')" prop="candidateStarterUsers" />
+      <FormItemInput v-model="bo.historyTimeToLive" :label="$customTranslate('History Time To Live')" prop="historyTimeToLive" />
+      <FormItemInput v-model="bo.taskPriority" :label="$customTranslate('Task Priority')" prop="taskPriority" />
+      <FormItemInput v-model="bo.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
+      <FormItemSwitch v-model="bo.isStartableInTasklist" :label="$customTranslate('Startable')" prop="isStartableInTasklist" />
     </template>
   </Base>
 </template>
@@ -37,28 +37,28 @@ export default {
     }
   },
   watch: {
-    'businessObject.versionTag'(val) {
+    'bo.versionTag'(val) {
       this.write({ versionTag: val })
     },
-    'businessObject.isExecutable'(val) {
+    'bo.isExecutable'(val) {
       this.write({ isExecutable: val })
     },
-    'businessObject.candidateStarterGroups'(val) {
+    'bo.candidateStarterGroups'(val) {
       this.write({ candidateStarterGroups: val })
     },
-    'businessObject.candidateStarterUsers'(val) {
+    'bo.candidateStarterUsers'(val) {
       this.write({ candidateStarterUsers: val })
     },
-    'businessObject.historyTimeToLive'(val) {
+    'bo.historyTimeToLive'(val) {
       this.write({ historyTimeToLive: val })
     },
-    'businessObject.taskPriority'(val) {
+    'bo.taskPriority'(val) {
       this.write({ taskPriority: val })
     },
-    'businessObject.jobPriority'(val) {
+    'bo.jobPriority'(val) {
       this.write({ jobPriority: val })
     },
-    'businessObject.isStartableInTasklist'(val) {
+    'bo.isStartableInTasklist'(val) {
       this.write({ isStartableInTasklist: val })
     }
   },
@@ -67,8 +67,8 @@ export default {
   },
   methods: {
     sync() {
-      if (!this.businessObject.isStartableInTasklist) {
-        this.businessObject.isStartableInTasklist = true
+      if (!this.bo.isStartableInTasklist) {
+        this.bo.isStartableInTasklist = true
       }
     }
   }

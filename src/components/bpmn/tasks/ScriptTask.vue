@@ -1,8 +1,8 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/script-task/ -->
 <template>
-  <Activity :moddle="moddle" :business-object="businessObject" :templates="templates" @sync="sync" @write="write">
+  <Activity :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
     <template #detail>
-      <Condition v-model="businessObject" @update="update" />
+      <Condition v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
     </template>
   </Activity>
 </template>
@@ -20,21 +20,25 @@ export default {
     Condition
   },
   mixins: [elementHelper],
+  data() {
+    return {
+      conditionType: 'script'
+    }
+  },
   created() {
     this.sync()
   },
   methods: {
     sync() {
-      this.businessObject.conditionType = 'script'
-      if ('script' in this.businessObject) {
-        this.businessObject.scriptType = 'script'
-        this.businessObject.config = this.businessObject.script
-      } else if ('resource' in this.businessObject) {
-        this.businessObject.scriptType = 'resource'
-        this.businessObject.config = this.businessObject.resource
+      if ('script' in this.bo) {
+        this.bo.scriptType = 'script'
+        this.bo.config = this.bo.script
+      } else if ('resource' in this.bo) {
+        this.bo.scriptType = 'resource'
+        this.bo.config = this.bo.resource
       }
     },
-    update(obj) {
+    writeCondition(obj) {
       if (obj.scriptFormat) {
         this.write({
           scriptFormat: obj.scriptFormat,

@@ -60,7 +60,6 @@ export default {
       element: null,
       xml: INITIAL_DIAGRAM,
       drawer: false,
-      zoom: 1,
       elementTemplates: CUSTOM_ELEMENT_TEMPLATES
     }
   },
@@ -89,10 +88,7 @@ export default {
     },
     async openDiagram(xml) {
       try {
-        const
-          result = await this.modeler.importXML(xml),
-          { warnings } = result
-        this.modeler.get('canvas').zoom('fit-viewport')
+        const { warnings } = await this.modeler.importXML(xml)
         if (warnings.length) {
           this.$message.warning(warnings)
         }
@@ -145,21 +141,18 @@ export default {
         e.preventDefault()
         e.dataTransfer.dropEffect = 'copy' // Explicitly show this is a copy.
       }
-      this.$refs.container.ondrop = (e) => {
+      this.$refs.container.ondrop = e => {
         e.stopPropagation()
         e.preventDefault()
-        const
-          files = e.dataTransfer.files,
-          file = files[0],
-          reader = new FileReader()
-        reader.onload = (e) => {
+        const reader = new FileReader()
+        reader.onload = e => {
           this.openDiagram(e.target.result)
         }
-        reader.readAsText(file)
+        reader.readAsText(e.dataTransfer.files[0])
       }
     },
     fitViewport() {
-      this.zoom = this.modeler.get('canvas').zoom('fit-viewport')
+      this.modeler.get('canvas').zoom(1)
       const
         bbox = document.querySelector('.modelering .viewport').getBBox(),
         currentViewbox = this.modeler.get('canvas').viewbox(),
@@ -168,18 +161,16 @@ export default {
           y: bbox.y + bbox.height / 2
         }
       this.modeler.get('canvas').viewbox({
-        x: elementMid.x - currentViewbox.width / 2,
+        x: elementMid.x - currentViewbox.width / 3,
         y: elementMid.y - currentViewbox.height / 2,
         width: currentViewbox.width,
         height: currentViewbox.height
       })
-      this.zoom = bbox.width / currentViewbox.width * 1.8
     },
     zoomViewport(zoomIn = true) {
-      this.zoom = this.modeler.get('canvas').zoom()
-      this.zoom += (zoomIn ? 0.1 : -0.1)
-      this.modeler.get('canvas').zoom(this.zoom)
-      this.$message.info(Number(this.zoom * 100).toFixed(0) + '%')
+      const nextZoom = this.modeler.get('canvas').zoom() + (zoomIn ? 0.1 : -0.1)
+      this.modeler.get('canvas').zoom(nextZoom)
+      this.$message.info(Number(nextZoom * 100).toFixed(0) + '%')
     }
   }
 }
