@@ -1,7 +1,7 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/service-task/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
+    <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <el-form-item :label="$customTranslate('Implementation')" prop="implementation">
           <el-select v-model="implementation" filterable>
@@ -193,7 +193,7 @@ export default {
         this.implementation = 'expression'
       } else if ('delegateExpression' in this.bo && this.bo.delegateExpression) {
         this.implementation = 'delegateExpression'
-      } else if ('external' in this.bo && this.bo.external) {
+      } else if ('topic' in this.bo && this.bo.topic) {
         this.implementation = 'external'
       } else if ((connector = this.bo.extensionElements?.values?.find(item => is(item, customize(CONNECTOR_NAME)))) !== undefined) {
         this.implementation = 'connector'
@@ -202,6 +202,16 @@ export default {
       } else {
         this.implementation = 'class'
       }
+      this.fields = this.bo.extensionElements?.values?.filter(item => is(item, customize('Field'))).map(field => {
+        let fieldType
+        if ('string' in field) fieldType = 'string'
+        else fieldType = 'expression'
+        return {
+          name: field.name,
+          type: fieldType,
+          value: field[fieldType]
+        }
+      }) ?? []
     },
     updateImplementation() {
       if (this.implementation) {

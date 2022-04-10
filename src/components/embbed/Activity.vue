@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Common :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
+    <Common :element="element" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <slot name="detail" />
         <el-form-item :label="$customTranslate('Multi Instance')">

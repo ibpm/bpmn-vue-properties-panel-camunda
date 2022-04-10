@@ -64,6 +64,8 @@ import {
   createFormalExpression,
   createExtensionElements, createCamundaExecutionListenerScript
 } from '../../utils/creators'
+import { splitColon } from '@/utils/tools'
+
 const
   PROPERTY_TYPE = 'property',
   CAMUNDA_PROPERTY_TYPE = 'camunda:property',
@@ -104,7 +106,6 @@ export default {
           })
         })
       }
-      this.bo.modelerTemplate = this.selectedTemplate?.id
       this.write({ modelerTemplate: this.selectedTemplate?.id })
     },
     templateProperties: {
@@ -114,19 +115,19 @@ export default {
           this.handleProperty(updateProperties, property)
         })
         newVal?.forEach(property => {
-          this.handleProperty(updateProperties, property, property.value)
+          const readOne = this.readOne(property)
+          this.handleProperty(updateProperties, property, readOne || property.value)
         })
         this.write(updateProperties)
-        this.$emit('sync')
       },
       deep: true
     }
   },
   created() {
-    this.read()
+    this.init()
   },
   methods: {
-    read() {
+    init() {
       if (this.bo.modelerTemplate) {
         this.selectedTemplate = this.templates.find(template => template.id === this.bo.modelerTemplate)
       } else {
@@ -134,50 +135,62 @@ export default {
       }
     },
     // 当General面板变更时，调用本方法同步数据
-    align() {
+    read() {
       this.templateProperties.forEach(property => {
-        const binding = property.binding,
-          bindingType = binding.type
-        let values
-        if ((values = this.bo.extensionElements?.values)?.length) {
-          if (bindingType === CAMUNDA_PROPERTY_TYPE) {
-            const propertiesElement = values.find(item => is(item, customize('Properties')))
-            if (propertiesElement?.values) {
-              const propertyElement = propertiesElement.values?.find(item => item.name === binding.name)
-              if (propertyElement) {
-                property.value = propertyElement.value
-              }
+        let value
+        if ((value = this.readOne(property)) !== undefined) {
+          property.value = value
+        }
+      })
+    },
+    readOne(property) {
+      const binding = property.binding,
+        bindingType = binding.type
+      let value, values
+      if (bindingType === PROPERTY_TYPE) {
+        const key = splitColon(binding.name)
+        if (key in this.bo) {
+          value = this.bo[key]
+        }
+      } else if ((values = this.bo.extensionElements?.values)?.length) {
+        if (bindingType === CAMUNDA_PROPERTY_TYPE) {
+          const propertiesElement = values.find(item => is(item, customize('Properties')))
+          if (propertiesElement?.values) {
+            const propertyElement = propertiesElement.values?.find(item => item.name === binding.name)
+            if (propertyElement) {
+              value = propertyElement.value
             }
-          } else if (IO_BINDING_TYPES.indexOf(bindingType) !== -1) {
-            const ioElement = values.find(item => is(item, customize('InputOutput')))
-            if (ioElement?.inputParameters) {
-              const parameterElement = ioElement.inputParameters?.find(item => item.name === binding.name)
-              if (parameterElement) {
-                property.value = (parameterElement.definition || parameterElement).value
-              }
+          }
+        } else if (IO_BINDING_TYPES.indexOf(bindingType) !== -1) {
+          const ioElement = values.find(item => is(item, customize('InputOutput')))
+          if (ioElement?.inputParameters) {
+            const parameterElement = ioElement.inputParameters?.find(item => item.name === binding.name)
+            if (parameterElement) {
+              value = (parameterElement.definition || parameterElement).value
             }
-            // TODO OutputParameter先跳过
-          } else if (IN_OUT_BINDING_TYPES.indexOf(bindingType) !== -1) {
-            let matcher, ioElement
-            if (bindingType === CAMUNDA_IN_TYPE) {
-              matcher = item => is(item, customize('In')) && isInOut(item, binding)
-              if ((ioElement = values.find(matcher)) !== undefined) {
-                property.value = 'sourceExpression' in property ? ioElement.sourceExpression : ioElement.source
-              }
-            } else if (bindingType === CAMUNDA_OUT_TYPE) {
-              matcher = item => is(item, customize('Out')) && isInOut(item, binding)
-              if ((ioElement = values.find(matcher)) !== undefined) {
-                property.value = ioElement.target
-              }
-            } else {
-              matcher = item => is(item, customize('In')) && 'businessKey' in item
-              if ((ioElement = values.find(matcher)) !== undefined) {
-                property.value = ioElement.businessKey
-              }
+          }
+          // TODO OutputParameter先跳过
+        } else if (IN_OUT_BINDING_TYPES.indexOf(bindingType) !== -1) {
+          let matcher, ioElement
+          if (bindingType === CAMUNDA_IN_TYPE) {
+            matcher = item => is(item, customize('In')) && isInOut(item, binding)
+            if ((ioElement = values.find(matcher)) !== undefined) {
+              value = 'sourceExpression' in property ? ioElement.sourceExpression : ioElement.source
+            }
+          } else if (bindingType === CAMUNDA_OUT_TYPE) {
+            matcher = item => is(item, customize('Out')) && isInOut(item, binding)
+            if ((ioElement = values.find(matcher)) !== undefined) {
+              value = ioElement.target
+            }
+          } else {
+            matcher = item => is(item, customize('In')) && 'businessKey' in item
+            if ((ioElement = values.find(matcher)) !== undefined) {
+              value = ioElement.businessKey
             }
           }
         }
-      })
+      }
+      return value
     },
     handleProperty(updateProperties, property, value) {
       const binding = property.binding,

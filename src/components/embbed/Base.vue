@@ -9,7 +9,7 @@
         </General>
       </el-tab-pane>
       <el-tab-pane :label="$customTranslate('Template')" name="templates">
-        <Templates ref="templates" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write" />
+        <Templates ref="templates" :moddle="moddle" :bo="bo" :templates="templates" @write="write" />
       </el-tab-pane>
     </el-tabs>
     <General v-else ref="general" :moddle="moddle" :bo="bo" :rules="rules" @write="write">
@@ -36,15 +36,12 @@ export default {
     }
   },
   methods: {
-    sync() {
-      this.$refs.general.read()
-      this.$emit('sync')
-    },
     clickTab(tab) {
       if (tab.name === 'general') {
+        this.$emit('sync')
         this.$refs.general.read()
       } else if (tab.name === 'templates') {
-        this.$refs.templates.align()
+        this.$refs.templates.read()
       }
     }
   }

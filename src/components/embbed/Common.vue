@@ -17,7 +17,7 @@
           <FormItemInput v-model="bo.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
           <FormItemInput v-model="bo.failedJobRetryTimeCycle" :label="$customTranslate('Retry Time Cycle')" prop="failedJobRetryTimeCycle" />
         </template>
-        <el-form-item v-if="isInputOutputSupported" :label="$customTranslate('Input/Output')">
+        <el-form-item v-if="ioSupported" :label="$customTranslate('Input/Output')">
           <el-badge :value="ioLength">
             <el-button @click="showIO = true">
               {{ $customTranslate('Update') }}
@@ -39,7 +39,7 @@ import FormItemInput from '../../components/ui/FormItemInput'
 import FormItemSwitch from '../../components/ui/FormItemSwitch'
 import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize } from '../../utils'
+import { customize, isInputOutputSupported } from '../../utils'
 import { addAndRemoveElementsFromExtensionElements } from '../../utils/creators'
 
 const ELEMENT_NAME = 'InputOutput'
@@ -60,7 +60,7 @@ export default {
       showListener: false,
       io: null,
       showIO: false,
-      isInputOutputSupported: false
+      ioSupported: isInputOutputSupported(this.element.businessObject)
     }
   },
   computed: {
@@ -101,15 +101,6 @@ export default {
     init() {
       this.io = this.bo.extensionElements?.values
         .find(item => is(item, customize(ELEMENT_NAME)))
-      this.isInputOutputSupported = is(this.bo, 'bpmn:FlowNode') &&
-        !(
-          is(this.bo, 'bpmn:StartEvent') ||
-          is(this.bo, 'bpmn:Gateway') ||
-          is(this.bo, 'bpmn:BoundaryEvent') ||
-          (
-            is(this.bo, 'bpmn:SubProcess') && this.bo.get('triggeredByEvent')
-          )
-        )
       this.computeLength()
     },
     finishListener() {

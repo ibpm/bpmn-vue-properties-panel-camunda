@@ -1,6 +1,6 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/business-rule-task/ -->
 <template>
-  <Activity :moddle="moddle" :bo="bo" :templates="templates" @write="write">
+  <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @write="write">
     <template #detail>
       <FormItemInput v-model="bo.decisionRef" :label="$customTranslate('Decision Ref')" prop="decisionRef" />
       <el-form-item :label="$customTranslate('Binding')" prop="decisionRefBinding">

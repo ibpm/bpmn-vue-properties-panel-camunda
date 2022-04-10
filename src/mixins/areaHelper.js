@@ -1,5 +1,10 @@
 export default {
   props: {
+    element: {
+      type: Object,
+      required: false,
+      readOnly: true
+    },
     moddle: {
       type: Object,
       required: true

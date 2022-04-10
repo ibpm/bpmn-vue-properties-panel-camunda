@@ -1,5 +1,5 @@
 <template>
-  <Common :moddle="moddle" :bo="bo" :templates="templates" :rules="rules" @write="write">
+  <Common :element="element" :moddle="moddle" :bo="bo" :templates="templates" :rules="rules" @write="write">
     <template #detail>
       <FormItemInput v-model="bo.initiator" :label="$customTranslate('Initiator')" prop="initiator" />
     </template>

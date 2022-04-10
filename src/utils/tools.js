@@ -29,11 +29,10 @@ export const
       (min < 10 ? '0' + min : min) +
       (sec < 10 ? '0' + sec : sec)
   },
-  /*
-  isBlank = (str) => {
-    return !str || str.trim() === ''
+  splitColon = (str) => {
+    const array = str.split(':')
+    return array.length === 1 ? array[0] : array[1]
   },
-  */
   addZero = (key) => {
     return key < 10 ? '0' + key : '' + key
   },

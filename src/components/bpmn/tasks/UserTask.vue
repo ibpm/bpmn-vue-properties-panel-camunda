@@ -1,7 +1,7 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/ -->
 <template>
   <div>
-    <Activity :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
+    <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
       <template #detail>
         <FormItemInput v-model="bo.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
         <FormItemInput v-model="bo.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />

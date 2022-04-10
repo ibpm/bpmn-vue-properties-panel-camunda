@@ -65,6 +65,14 @@ export const
         binding.variables !== 'local' || element.local
       )
     }
+  },
+  isInputOutputSupported = (businessObject) => {
+    return (
+      is(businessObject, 'bpmn:FlowNode') && !(
+        isAny(businessObject, ['bpmn:StartEvent', 'bpmn:BoundaryEvent', 'bpmn:Gateway']) ||
+        is(businessObject, 'bpmn:SubProcess') && businessObject.get('triggeredByEvent')
+      )
+    )
   }
   /*
   ,findElementById = (element, type, id) => {

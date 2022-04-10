@@ -2,7 +2,7 @@
 <template>
   <div>
     <div v-if="element" class="titleStyle">
-      {{ bo.name || bo.id || element.id }}
+      {{ element.businessObject.name || element.businessObject.id || element.id }}
     </div>
     <component
       :is="getComponent"
@@ -10,7 +10,6 @@
       :element="element"
       :modeling="modeling"
       :moddle="moddle"
-      :bo="bo"
       :templates="templates"
     />
   </div>
@@ -30,7 +29,7 @@ import BusinessRuleTask from '../components/bpmn/tasks/BusinessRuleTask'
 import ReceiveTask from '../components/bpmn/tasks/ReceiveTask'
 import CallActivity from '../components/bpmn/subprocess/CallActivity'
 import { isAny } from 'bpmn-js/lib/util/ModelUtil'
-// import { next } from '../utils/tools'
+import { splitColon } from '@/utils/tools'
 
 export default {
   name: 'PropertiesPanel',
@@ -86,7 +85,7 @@ export default {
   },
   computed: {
     getComponent() {
-      const type = this.element?.type.split(':')[1]
+      const type = splitColon(this.element?.type)
       if (type.endsWith('Gateway')) {
         return 'Gateway'
       }
@@ -116,20 +115,16 @@ export default {
       this.reset(e.element)
     })
     this.modeler.on('selection.changed', e => {
-      if (e.newSelection && e.newSelection[0]) {
+      if (e['newSelection'] && e['newSelection'][0]) {
         this.reset(e.newSelection[0])
       }
     })
   },
   methods: {
     reset(newElement) {
-      this.element = null
-      this.$nextTick().then(() => {
+      if (!this.element || this.element.id !== newElement.id || this.element.type !== newElement.type) {
         this.element = newElement
-        this.bo = {
-          ...this.element.businessObject
-        }
-      })
+      }
     }
   }
 }
