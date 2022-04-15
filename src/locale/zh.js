@@ -308,5 +308,6 @@ export default {
   'Export as BPMN': '以.bpmn文件导出',
   'Export as SVG': '以.svg图片导出',
 
+  'Length not more than {max}': '长度不大于{max}',
   'Can not remove the message which used by other ReceiveTask:': '不能删除被其他接收任务引用的消息：'
 }

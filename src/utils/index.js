@@ -1,5 +1,7 @@
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil'
 import { CONDITIONAL_SOURCES, ENGINE } from './constants'
+import store from '../store'
+import { splitColon } from './tools'
 
 export const
   customize = (suffix) => {
@@ -73,6 +75,39 @@ export const
         is(businessObject, 'bpmn:SubProcess') && businessObject.get('triggeredByEvent')
       )
     )
+  },
+  isPropertyVisible = (nodeType, entryId, templateId) => {
+    if (!nodeType || !templateId) {
+      return true
+    }
+    const template = store.state.templateMap[nodeType]?.find(t => t.id === templateId)
+    if (template) {
+      const property = template.properties?.find(property => {
+        const binding = property['binding']
+        if (!binding) {
+          return false
+        }
+        return binding.type === 'property' && splitColon(binding.name) === entryId
+      })
+      return property === undefined && !isEntryVisible(entryId, template)
+    }
+    return true
+  },
+  isEntryVisible = (entryId, template) => {
+    const
+      entriesVisible = template && template['entriesVisible'] || { _all: false },
+      defaultVisible = entriesVisible._all || false,
+      entryVisible = entriesVisible[ entryId ]
+
+    if (typeof entriesVisible === 'boolean') {
+      return entriesVisible
+    }
+
+    if (defaultVisible) {
+      return entryVisible !== false
+    } else {
+      return entryVisible === true
+    }
   }
   /*
   ,findElementById = (element, type, id) => {

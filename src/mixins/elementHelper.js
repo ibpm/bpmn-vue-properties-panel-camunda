@@ -11,15 +11,12 @@ export default {
     moddle: {
       type: Object,
       required: true
-    },
-    templates: {
-      type: Array,
-      default: () => []
     }
   },
   data() {
     return {
-      bo: this.getBO()
+      bo: this.getBO(),
+      templates: this.$store.state.templateMap[this.bo?.$type]
     }
   },
   methods: {

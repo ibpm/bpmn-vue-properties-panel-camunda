@@ -1,6 +1,6 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/ -->
 <template>
-  <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @write="write" />
+  <Activity :element="element" :moddle="moddle" :bo="bo" @write="write" />
 </template>
 
 <script>

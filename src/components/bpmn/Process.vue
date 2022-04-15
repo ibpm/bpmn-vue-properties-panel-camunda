@@ -1,14 +1,41 @@
 <template>
-  <Base :moddle="moddle" :bo="bo" :templates="templates" :rules="rules" @sync="sync" @write="write">
+  <Base :moddle="moddle" :bo="bo" @write="write">
     <template #custom>
-      <FormItemInput v-model="bo.versionTag" :label="$customTranslate('Version Tag')" prop="versionTag" />
-      <FormItemSwitch v-model="bo.isExecutable" :label="$customTranslate('Executable')" prop="isExecutable" />
-      <FormItemInput v-model="bo.candidateStarterGroups" :label="$customTranslate('Candidate Starter Groups')" prop="candidateStarterGroups" />
-      <FormItemInput v-model="bo.candidateStarterUsers" :label="$customTranslate('Candidate Starter Users')" prop="candidateStarterUsers" />
-      <FormItemInput v-model="bo.historyTimeToLive" :label="$customTranslate('History Time To Live')" prop="historyTimeToLive" />
-      <FormItemInput v-model="bo.taskPriority" :label="$customTranslate('Task Priority')" prop="taskPriority" />
-      <FormItemInput v-model="bo.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
-      <FormItemSwitch v-model="bo.isStartableInTasklist" :label="$customTranslate('Startable')" prop="isStartableInTasklist" />
+      <FormItemInput
+        v-model="bo.versionTag"
+        :label="$customTranslate('Version Tag')"
+        :rules="[{ message: $customTranslate('Length not more than {max}', { max: 64 }), trigger: 'blur', max: 64 }]"
+        prop="versionTag"
+      />
+      <FormItemSwitch
+        v-model="bo.isExecutable"
+        :label="$customTranslate('Executable')"
+      />
+      <FormItemInput
+        v-model="bo.candidateStarterGroups"
+        :label="$customTranslate('Candidate Starter Groups')"
+        prop="candidateStarterGroups"
+      />
+      <FormItemInput
+        v-model="bo.candidateStarterUsers"
+        :label="$customTranslate('Candidate Starter Users')"
+        prop="candidateStarterUsers"
+      />
+      <FormItemInput
+        v-model="bo.historyTimeToLive"
+        :label="$customTranslate('History Time To Live')"
+        prop="historyTimeToLive"
+      />
+      <FormItemInput
+        v-model="bo.taskPriority"
+        :label="$customTranslate('Task Priority')"
+        prop="taskPriority"
+      />
+      <FormItemInput
+        v-model="bo.jobPriority"
+        :label="$customTranslate('Job Priority')"
+        prop="jobPriority"
+      />
     </template>
   </Base>
 </template>
@@ -27,15 +54,6 @@ export default {
     FormItemInput
   },
   mixins: [elementHelper],
-  computed: {
-    rules() {
-      return {
-        versionTag: [
-          { message: this.$customTranslate('Version Tag'), trigger: 'blur', max: 64 }
-        ]
-      }
-    }
-  },
   watch: {
     'bo.versionTag'(val) {
       this.write({ versionTag: val })
@@ -57,19 +75,6 @@ export default {
     },
     'bo.jobPriority'(val) {
       this.write({ jobPriority: val })
-    },
-    'bo.isStartableInTasklist'(val) {
-      this.write({ isStartableInTasklist: val })
-    }
-  },
-  created() {
-    this.sync()
-  },
-  methods: {
-    sync() {
-      if (!this.bo.isStartableInTasklist) {
-        this.bo.isStartableInTasklist = true
-      }
     }
   }
 }

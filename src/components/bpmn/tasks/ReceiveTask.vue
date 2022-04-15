@@ -1,6 +1,6 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/receive-task/ -->
 <template>
-  <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @write="write">
+  <Activity :element="element" :moddle="moddle" :bo="bo" @write="write">
     <template #detail>
       <el-form-item :label="$customTranslate('Global Message referenced')" prop="messageRef">
         <el-select v-model="bo.messageRef" filterable allow-create @visible-change="changeVisible">

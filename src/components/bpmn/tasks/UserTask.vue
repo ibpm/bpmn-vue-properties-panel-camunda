@@ -1,11 +1,23 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/ -->
 <template>
   <div>
-    <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
+    <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #detail>
-        <FormItemInput v-model="bo.dueDate" :label="$customTranslate('Due Date')" prop="dueDate" />
-        <FormItemInput v-model="bo.followUpDate" :label="$customTranslate('Follow Up Date')" prop="followUpDate" />
-        <FormItemInput v-model="bo.priority" :label="$customTranslate('Priority')" prop="priority" />
+        <FormItemInput
+          v-model="bo.dueDate"
+          :label="$customTranslate('Due Date')"
+          prop="dueDate"
+        />
+        <FormItemInput
+          v-model="bo.followUpDate"
+          :label="$customTranslate('Follow Up Date')"
+          prop="followUpDate"
+        />
+        <FormItemInput
+          v-model="bo.priority"
+          :label="$customTranslate('Priority')"
+          prop="priority"
+        />
         <el-form-item :label="$customTranslate('Task Listener')">
           <el-badge :value="listenerLength">
             <el-button @click="showListener = true">

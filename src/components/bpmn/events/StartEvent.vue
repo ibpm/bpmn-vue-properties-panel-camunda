@@ -1,7 +1,12 @@
 <template>
-  <Common :element="element" :moddle="moddle" :bo="bo" :templates="templates" :rules="rules" @write="write">
+  <Common :element="element" :moddle="moddle" :bo="bo" @write="write">
     <template #detail>
-      <FormItemInput v-model="bo.initiator" :label="$customTranslate('Initiator')" prop="initiator" />
+      <FormItemInput
+        v-model="bo.initiator"
+        :label="$customTranslate('Initiator')"
+        :rules="[{ message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }]"
+        prop="initiator"
+      />
     </template>
   </Common>
 </template>
@@ -18,15 +23,6 @@ export default {
     FormItemInput
   },
   mixins: [elementHelper],
-  computed: {
-    rules() {
-      return {
-        initiator: [
-          { message: this.$customTranslate('Initiator'), trigger: 'blur', max: 255 }
-        ]
-      }
-    }
-  },
   watch: {
     'bo.initiator'(val) {
       this.write({ initiator: val })

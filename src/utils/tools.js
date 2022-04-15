@@ -30,6 +30,7 @@ export const
       (sec < 10 ? '0' + sec : sec)
   },
   splitColon = (str) => {
+    if (!str) return ''
     const array = str.split(':')
     return array.length === 1 ? array[0] : array[1]
   },

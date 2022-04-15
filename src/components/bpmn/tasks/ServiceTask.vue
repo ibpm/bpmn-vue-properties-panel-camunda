@@ -1,7 +1,7 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/service-task/ -->
 <template>
   <div>
-    <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
+    <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #detail>
         <el-form-item :label="$customTranslate('Implementation')" prop="implementation">
           <el-select v-model="implementation" filterable>
@@ -17,36 +17,36 @@
           <FormItemInput
             v-if="implementation === 'class'"
             v-model="bo.class"
-            prop="class"
             :label="$customTranslate('Java Class')"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
+            prop="class"
           />
           <template v-if="implementation === 'expression'">
             <FormItemInput
               v-model="bo.expression"
-              prop="expression"
               :label="$customTranslate('Expression')"
               :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
+              prop="expression"
             />
             <FormItemInput
               v-model="bo.resultVariable"
-              prop="resultVariable"
               :label="$customTranslate('Result Variable')"
+              prop="resultVariable"
             />
           </template>
           <FormItemInput
             v-if="implementation === 'delegateExpression'"
             v-model="bo.delegateExpression"
-            prop="delegateExpression"
             :label="$customTranslate('Delegate Expression')"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
+            prop="delegateExpression"
           />
           <template v-if="implementation === 'external'">
             <FormItemInput
               v-model="bo.topic"
-              prop="topic"
               :label="$customTranslate('Topic')"
               :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
+              prop="topic"
             />
             <FormItemInput
               v-model="bo.taskPriority"

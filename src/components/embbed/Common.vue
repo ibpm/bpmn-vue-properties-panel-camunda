@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Base :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
+    <Base :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #custom>
         <slot name="detail" />
         <el-form-item :label="$customTranslate('Execution Listener')">
@@ -10,12 +10,31 @@
             </el-button>
           </el-badge>
         </el-form-item>
-        <FormItemSwitch v-model="bo.asyncBefore" :label="$customTranslate('Asynchronous Before')" prop="asyncBefore" />
-        <FormItemSwitch v-model="bo.asyncAfter" :label="$customTranslate('Asynchronous After')" prop="asyncAfter" />
+        <FormItemSwitch
+          v-if="propertyVisible('asyncBefore')"
+          v-model="bo.asyncBefore"
+          :label="$customTranslate('Asynchronous Before')"
+        />
+        <FormItemSwitch
+          v-if="propertyVisible('asyncAfter')"
+          v-model="bo.asyncAfter"
+          :label="$customTranslate('Asynchronous After')"
+        />
         <template v-if="bo.asyncBefore || bo.asyncAfter">
-          <FormItemSwitch v-model="bo.exclusive" :label="$customTranslate('Exclusive')" prop="exclusive" />
-          <FormItemInput v-model="bo.jobPriority" :label="$customTranslate('Job Priority')" prop="jobPriority" />
-          <FormItemInput v-model="bo.failedJobRetryTimeCycle" :label="$customTranslate('Retry Time Cycle')" prop="failedJobRetryTimeCycle" />
+          <FormItemSwitch
+            v-model="bo.exclusive"
+            :label="$customTranslate('Exclusive')"
+          />
+          <FormItemInput
+            v-model="bo.jobPriority"
+            :label="$customTranslate('Job Priority')"
+            prop="jobPriority"
+          />
+          <FormItemInput
+            v-model="bo.failedJobRetryTimeCycle"
+            :label="$customTranslate('Retry Time Cycle')"
+            prop="failedJobRetryTimeCycle"
+          />
         </template>
         <el-form-item v-if="ioSupported" :label="$customTranslate('Input/Output')">
           <el-badge :value="ioLength">

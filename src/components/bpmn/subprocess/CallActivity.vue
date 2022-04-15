@@ -1,7 +1,7 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/subprocesses/call-activity/ -->
 <template>
   <div>
-    <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
+    <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #detail>
         <el-form-item :label="$customTranslate('CallActivity Type')">
           <el-select v-model="bo.callActivityType">

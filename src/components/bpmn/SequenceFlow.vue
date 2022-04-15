@@ -1,5 +1,5 @@
 <template>
-  <Base :moddle="moddle" :bo="bo" :templates="templates" @write="write">
+  <Base :moddle="moddle" :bo="bo" @write="write">
     <template v-if="visible" #custom>
       <el-form-item :label="$customTranslate('Condition Type')" prop="conditionType">
         <el-select v-model="conditionType" @change="changeCondition">

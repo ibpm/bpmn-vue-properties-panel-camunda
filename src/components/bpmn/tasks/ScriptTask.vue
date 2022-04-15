@@ -1,6 +1,6 @@
 <!-- https://docs.camunda.org/manual/latest/reference/bpmn20/tasks/script-task/ -->
 <template>
-  <Activity :element="element" :moddle="moddle" :bo="bo" :templates="templates" @sync="sync" @write="write">
+  <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
     <template #detail>
       <Condition v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
     </template>

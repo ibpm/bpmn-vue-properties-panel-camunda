@@ -2,7 +2,7 @@
 <template>
   <div>
     <div v-if="element" class="titleStyle">
-      {{ element.businessObject.name || element.businessObject.id || element.id }}
+      {{ $store.state.nodeTitle }}
     </div>
     <component
       :is="getComponent"
@@ -10,7 +10,6 @@
       :element="element"
       :modeling="modeling"
       :moddle="moddle"
-      :templates="templates"
     />
   </div>
 </template>
@@ -79,8 +78,7 @@ export default {
   },
   data() {
     return {
-      element: null,
-      bo: null
+      element: null
     }
   },
   computed: {
@@ -102,9 +100,6 @@ export default {
     },
     moddle() {
       return this.modeler.get('moddle')
-    },
-    templates() {
-      return this.elementTemplates?.filter(template => isAny(this.element, template.appliesTo))
     }
   },
   mounted() {
@@ -124,7 +119,16 @@ export default {
     reset(newElement) {
       if (!this.element || this.element.id !== newElement.id || this.element.type !== newElement.type) {
         this.element = newElement
+        this.postHandle()
       }
+    },
+    postHandle() {
+      this.$store.commit('PUT_TEMPLATE', {
+        nodeType: this.element.type,
+        templates: this.elementTemplates.filter(t => isAny(this.element, t.appliesTo))
+      })
+      this.$store.commit('SET_NODE_TITLE',
+        this.element.businessObject?.name || this.element.businessObject?.id || this.element.id)
     }
   }
 }

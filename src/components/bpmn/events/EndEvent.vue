@@ -1,5 +1,5 @@
 <template>
-  <Common :element="element" :moddle="moddle" :bo="bo" :templates="templates" @write="write" />
+  <Common :element="element" :moddle="moddle" :bo="bo" @write="write" />
 </template>
 
 <script>
