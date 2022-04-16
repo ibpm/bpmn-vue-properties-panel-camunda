@@ -150,11 +150,11 @@ export default {
   },
   watch: {
     'bo.id': function(val) {
-      this.$store.commit('SET_NODE_TITLE', this.bo.name || this.bo.id)
+      this.setTitle()
       this.write({ id: val })
     },
     'bo.name': function(val) {
-      this.$store.commit('SET_NODE_TITLE', this.bo.name || this.bo.id)
+      this.setTitle()
       this.write({ name: val })
     },
     'bo.doc'(val) {
@@ -172,7 +172,7 @@ export default {
           })
         })
       }
-      this.bo.modelerTemplate = this.selectedTemplate?.id
+      // this.bo.modelerTemplate = this.selectedTemplate?.id
       this.write({ modelerTemplate: this.selectedTemplate?.id })
     },
     templateProperties: {
@@ -182,8 +182,7 @@ export default {
           this.handleProperty(updateProperties, property)
         })
         newVal?.forEach(property => {
-          const readOne = this.readOne(property)
-          this.handleProperty(updateProperties, property, readOne || property.value)
+          this.handleProperty(updateProperties, property, property.value)
         })
         this.write(updateProperties)
       },
@@ -359,6 +358,9 @@ export default {
       if (value) { // create & update
         bo[propertyName].push(createFunction(this.moddle, binding, value))
       }
+    },
+    setTitle() {
+      this.$store.commit('SET_NODE_TITLE', this.bo.name || this.bo.id)
     }
   }
 }

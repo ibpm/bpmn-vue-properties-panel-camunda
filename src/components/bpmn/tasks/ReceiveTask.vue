@@ -73,8 +73,8 @@ export default {
         task = receiveTasks.find(rt => rt.businessObject.messageRef?.id === id)
       if (task) { // 如果是其他ReceiveTask的messageRef
         this.$message.warning(
-          this.$customTranslate('Can not remove the message which used by other ReceiveTask:') +
-          'activityId=' + task.id)
+          this.$customTranslate('Can not remove the message which used by other ReceiveTask:',
+            { activityId: task.id }))
         return
       }
       this.delete(index, id)
