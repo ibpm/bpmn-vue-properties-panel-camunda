@@ -5,17 +5,17 @@
       <template #detail>
         <FormItemInput
           v-model="bo.dueDate"
-          :label="$customTranslate('Due Date')"
+          label="Due Date"
           prop="dueDate"
         />
         <FormItemInput
           v-model="bo.followUpDate"
-          :label="$customTranslate('Follow Up Date')"
+          label="Follow Up Date"
           prop="followUpDate"
         />
         <FormItemInput
           v-model="bo.priority"
-          :label="$customTranslate('Priority')"
+          label="Priority"
           prop="priority"
         />
         <el-form-item :label="$customTranslate('Task Listener')">

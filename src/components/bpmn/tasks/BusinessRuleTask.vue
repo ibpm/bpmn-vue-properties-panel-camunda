@@ -4,51 +4,42 @@
     <template #detail>
       <FormItemInput
         v-model="bo.decisionRef"
-        :label="$customTranslate('Decision Ref')"
+        label="Decision Ref"
         prop="decisionRef"
       />
-      <el-form-item :label="$customTranslate('Binding')" prop="decisionRefBinding">
-        <el-select v-model="bo.decisionRefBinding">
-          <el-option
-            v-for="(item, index) in bindings"
-            :key="index"
-            :label="$customTranslate(item)"
-            :value="item"
-          />
-        </el-select>
-      </el-form-item>
+      <FormItemSelect
+        v-model="bo.decisionRefBinding"
+        :options="bindings"
+        label="Binding"
+      />
       <FormItemInput
         v-if="bo.decisionRefBinding === 'version'"
         v-model="bo.decisionRefVersion"
-        :label="$customTranslate('Version')"
+        label="Version"
         prop="decisionRefVersion"
       />
       <FormItemInput
         v-if="bo.decisionRefBinding === 'versionTag'"
         v-model="bo.decisionRefVersionTag"
-        :label="$customTranslate('Version Tag')"
+        label="Version Tag"
         prop="decisionRefVersionTag"
       />
       <FormItemInput
         v-model="bo.decisionRefTenantId"
-        :label="$customTranslate('Tenant Id')"
+        label="Tenant Id"
         prop="decisionRefTenantId"
       />
       <FormItemInput
         v-model="bo.resultVariable"
-        :label="$customTranslate('Result Variable')"
+        label="Result Variable"
         prop="resultVariable"
       />
-      <el-form-item v-if="bo.resultVariable" :label="$customTranslate('Map Decision Result')" prop="mapDecisionResult">
-        <el-select v-model="bo.mapDecisionResult">
-          <el-option
-            v-for="(item, index) in mapDecisionResults"
-            :key="index"
-            :label="$customTranslate(item.name)"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
+      <FormItemSelect
+        v-if="bo.resultVariable"
+        v-model="bo.mapDecisionResult"
+        :options="mapDecisionResults"
+        label="Map Decision Result"
+      />
     </template>
   </Activity>
 </template>
@@ -56,6 +47,7 @@
 <script>
 import Activity from '../../embbed/Activity'
 import FormItemInput from '../../ui/FormItemInput'
+import FormItemSelect from '../../ui/FormItemSelect'
 import elementHelper from '../../../mixins/elementHelper'
 import { BINDINGS, MAP_DECISION_RESULTS } from '../../../utils/constants'
 
@@ -63,7 +55,8 @@ export default {
   name: 'BusinessRuleTask',
   components: {
     Activity,
-    FormItemInput
+    FormItemInput,
+    FormItemSelect
   },
   mixins: [elementHelper],
   data() {

@@ -3,7 +3,7 @@
     <el-form ref="form" :model="bo" label-width="100px" size="mini">
       <FormItemInput
         v-model="bo.id"
-        :label="$customTranslate('Id')"
+        label="Id"
         :rules="[
           { message: $customTranslate('Element must have an unique id.'), trigger: 'blur', required: true},
           { message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }
@@ -12,7 +12,7 @@
       />
       <FormItemTextArea
         v-model="bo.name"
-        :label="$customTranslate('Name')"
+        label="Name"
         :rules="[{ message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }]"
         prop="name"
       />
@@ -72,7 +72,7 @@
       </el-form-item>
       <FormItemTextArea
         v-model="bo.doc"
-        :label="$customTranslate('Documentation')"
+        label="Documentation"
         :placeholder="$customTranslate('Element Documentation')"
         :rules="[{ message: $customTranslate('Length not more than {max}', { max: 4000 }), trigger: 'blur', max: 4000 }]"
         prop="documentation"
@@ -107,7 +107,7 @@ import {
   createFormalExpression,
   createExtensionElements, createCamundaExecutionListenerScript
 } from '../../utils/creators'
-import { splitColon } from '@/utils/tools'
+import { splitColon } from '../../utils/tools'
 
 const
   PROPERTY_TYPE = 'property',

@@ -3,55 +3,50 @@
   <div>
     <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #detail>
-        <el-form-item :label="$customTranslate('Implementation')" prop="implementation">
-          <el-select v-model="implementation" filterable>
-            <el-option
-              v-for="(item, index) in implementations"
-              :key="index"
-              :label="$customTranslate(item.name)"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
+        <FormItemSelect
+          v-model="implementation"
+          :options="implementations"
+          label="Implementation"
+        />
         <template v-if="implementation">
           <FormItemInput
             v-if="implementation === 'class'"
             v-model="bo.class"
-            :label="$customTranslate('Java Class')"
+            label="Java Class"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
             prop="class"
           />
           <template v-if="implementation === 'expression'">
             <FormItemInput
               v-model="bo.expression"
-              :label="$customTranslate('Expression')"
+              label="Expression"
               :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
               prop="expression"
             />
             <FormItemInput
               v-model="bo.resultVariable"
-              :label="$customTranslate('Result Variable')"
+              label="Result Variable"
               prop="resultVariable"
             />
           </template>
           <FormItemInput
             v-if="implementation === 'delegateExpression'"
             v-model="bo.delegateExpression"
-            :label="$customTranslate('Delegate Expression')"
+            label="Delegate Expression"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
             prop="delegateExpression"
           />
           <template v-if="implementation === 'external'">
             <FormItemInput
               v-model="bo.topic"
-              :label="$customTranslate('Topic')"
+              label="Topic"
               :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
               prop="topic"
             />
             <FormItemInput
               v-model="bo.taskPriority"
-              :label="$customTranslate('Task Priority')"
-              :placeholder="$customTranslate('External Task Configuration')"
+              label="Task Priority"
+              placeholder="External Task Configuration"
             />
           </template>
           <el-form-item
@@ -61,11 +56,11 @@
           >
             <el-col :span="12">
               <el-input
-                v-model="bo.connectorId"
+                v-model="connectorId"
                 :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
               />
             </el-col>
-            <el-col v-if="bo.connectorId" :span="4" :offset="1">
+            <el-col v-if="connectorId" :span="4" :offset="1">
               <el-badge :value="ioLength">
                 <el-button @click="showIO = true">
                   {{ $customTranslate('Input/Output') }}
@@ -93,6 +88,7 @@ import Activity from '../../embbed/Activity'
 import Field from '../../part/detail/Field'
 import InputOutput from '../../part/detail/InputOutput'
 import FormItemInput from '../../ui/FormItemInput'
+import FormItemSelect from '../../ui/FormItemSelect'
 import elementHelper from '../../../mixins/elementHelper'
 import { IMPLEMENTATIONS } from '../../../utils/constants'
 import { customize } from '../../../utils'
@@ -107,13 +103,15 @@ export default {
     Activity,
     Field,
     InputOutput,
-    FormItemInput
+    FormItemInput,
+    FormItemSelect
   },
   mixins: [elementHelper],
   data() {
     return {
       implementation: null,
       implementations: IMPLEMENTATIONS,
+      connectorId: null,
       io: {},
       showIO: false,
       fields: [],
@@ -140,6 +138,8 @@ export default {
           this.write({ extensionElements:
               this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, undefined, matcher)
           })
+          this.connectorId = null
+          this.io = {}
         } else {
           if (oldVal === 'expression') {
             this.updateResultVariable(null)
@@ -173,7 +173,7 @@ export default {
     'bo.topic'() {
       this.updateExternal()
     },
-    'bo.connectorId'() {
+    'connectorId'() {
       this.updateConnector()
     },
     'bo.resultVariable'(val) {
@@ -197,7 +197,7 @@ export default {
         this.implementation = 'external'
       } else if ((connector = this.bo.extensionElements?.values?.find(item => is(item, customize(CONNECTOR_NAME)))) !== undefined) {
         this.implementation = 'connector'
-        this.bo.connectorId = connector.connectorId
+        this.connectorId = connector.connectorId
         this.io = connector.inputOutput
       } else {
         this.implementation = 'class'
@@ -224,8 +224,8 @@ export default {
     updateConnector() {
       const
         matcher = item => !is(item, customize(CONNECTOR_NAME)),
-        objectsToAdd = this.bo.connectorId ? [this.moddle.create(customize(CONNECTOR_NAME), {
-          connectorId: this.bo.connectorId
+        objectsToAdd = this.connectorId ? [this.moddle.create(customize(CONNECTOR_NAME), {
+          connectorId: this.connectorId
         })] : undefined
       this.write({ extensionElements:
           this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, objectsToAdd, matcher)

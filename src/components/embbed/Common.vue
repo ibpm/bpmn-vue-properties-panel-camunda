@@ -13,26 +13,26 @@
         <FormItemSwitch
           v-if="propertyVisible('asyncBefore')"
           v-model="bo.asyncBefore"
-          :label="$customTranslate('Asynchronous Before')"
+          label="Asynchronous Before"
         />
         <FormItemSwitch
           v-if="propertyVisible('asyncAfter')"
           v-model="bo.asyncAfter"
-          :label="$customTranslate('Asynchronous After')"
+          label="Asynchronous After"
         />
         <template v-if="bo.asyncBefore || bo.asyncAfter">
           <FormItemSwitch
             v-model="bo.exclusive"
-            :label="$customTranslate('Exclusive')"
+            label="Exclusive"
           />
           <FormItemInput
             v-model="bo.jobPriority"
-            :label="$customTranslate('Job Priority')"
+            label="Job Priority"
             prop="jobPriority"
           />
           <FormItemInput
             v-model="bo.failedJobRetryTimeCycle"
-            :label="$customTranslate('Retry Time Cycle')"
+            label="Retry Time Cycle"
             prop="failedJobRetryTimeCycle"
           />
         </template>

@@ -3,37 +3,33 @@
     <template v-if="showScript">
       <FormItemInput
         v-model="form.scriptFormat"
-        :label="$customTranslate('Script Format')"
+        label="Script Format"
         prop="scriptFormat"
       />
-      <el-form-item :label="$customTranslate('Script Type')" prop="scriptType">
-        <el-select v-model="form.scriptType">
-          <el-option
-            v-for="(item, index) in scriptTypes"
-            :key="index"
-            :label="$customTranslate(item.name)"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
+      <FormItemSelect
+        v-model="form.scriptType"
+        :options="scriptTypes"
+        label="Script Type"
+      />
     </template>
     <FormItemTextArea
       v-if="showExpression || showScript"
       v-model="form.config"
-      :label=" $customTranslate(showExpression ? 'Expression': showResource ? 'Resource' : 'Script')"
+      :label="showExpression ? 'Expression': showResource ? 'Resource' : 'Script'"
       prop="config"
     />
   </div>
 </template>
 <script>
 import FormItemInput from '../../ui/FormItemInput'
+import FormItemSelect from '../../ui/FormItemSelect'
 import FormItemTextArea from '../../ui/FormItemTextArea'
 import { isExpression, isScript, isResource } from '../../../utils'
 import { SCRIPT_TYPES } from '../../../utils/constants'
 
 export default {
   name: 'Condition',
-  components: { FormItemInput, FormItemTextArea },
+  components: { FormItemInput, FormItemSelect, FormItemTextArea },
   props: {
     value: {
       type: Object,

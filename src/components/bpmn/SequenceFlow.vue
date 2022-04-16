@@ -1,34 +1,43 @@
 <template>
   <Base :moddle="moddle" :bo="bo" @write="write">
     <template v-if="visible" #custom>
-      <el-form-item :label="$customTranslate('Condition Type')" prop="conditionType">
-        <el-select v-model="conditionType" @change="changeCondition">
-          <el-option :label="$customTranslate('Expression')" value="expression" />
-          <el-option :label="$customTranslate('Script')" value="script" />
-          <el-option label="" value="" />
-        </el-select>
-      </el-form-item>
+      <FormItemSelect
+        v-model="conditionType"
+        :options="conditionTypes"
+        label="Condition Type"
+        @change="changeCondition"
+      />
       <Condition v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
     </template>
   </Base>
 </template>
 
 <script>
-import Base from '../../components/embbed/Base'
-import Condition from '../../components/part/detail/Condition'
+import Base from '../embbed/Base'
+import Condition from '../part/detail/Condition'
+import FormItemSelect from '../ui/FormItemSelect'
 import elementHelper from '../../mixins/elementHelper'
 import { customize, isConditionalSource } from '../../utils'
 import { createFormalExpression } from '../../utils/creators'
+import { CONDITION_TYPES } from '../../utils/constants'
 
 export default {
   name: 'SequenceFlow',
   components: {
     Base,
-    Condition
+    Condition,
+    FormItemSelect
   },
   mixins: [elementHelper],
   data() {
     return {
+      conditionTypes: [
+        ...CONDITION_TYPES,
+        {
+          value: '',
+          name: ''
+        }
+      ],
       conditionType: ''
     }
   },

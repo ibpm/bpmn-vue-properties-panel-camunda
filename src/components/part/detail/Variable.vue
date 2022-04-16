@@ -21,16 +21,11 @@
         </el-table-column>
         <el-table-column :label="$customTranslate('Type')" prop="type">
           <template v-slot="scope">
-            <el-form-item :prop="'records.' + scope.$index + '.type'">
-              <el-select v-model="scope.row.type">
-                <el-option
-                  v-for="(item, index) in variableTypes"
-                  :key="index"
-                  :label="$customTranslate(item.name)"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
+            <FormItemSelect
+              v-model="scope.row.type"
+              :options="variableTypes"
+              :prop="'records.' + scope.$index + '.type'"
+            />
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Source')" prop="source">

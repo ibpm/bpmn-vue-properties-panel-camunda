@@ -1,6 +1,6 @@
 <template>
-  <el-form-item :label="label" :prop="prop" :rules="rules">
-    <el-input v-model="value_" clearable :placeholder="placeholder" @input="input" />
+  <el-form-item :label="$customTranslate(label)" :prop="prop" :rules="rules">
+    <el-input v-model="value_" :placeholder="$customTranslate(placeholder)" clearable @input="input" />
   </el-form-item>
 </template>
 

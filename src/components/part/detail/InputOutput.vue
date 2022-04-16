@@ -31,16 +31,11 @@
         </el-table-column>
         <el-table-column :label="$customTranslate('Variable Assignment Type')" prop="type">
           <template v-slot="scope">
-            <el-form-item :prop="'ios.' + scope.$index + '.type'">
-              <el-select v-model="scope.row.type">
-                <el-option
-                  v-for="(item, index) in variableAssignmentTypes"
-                  :key="index"
-                  :label="$customTranslate(item.name)"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
+            <FormItemSelect
+              v-model="scope.row.type"
+              :options="variableAssignmentTypes"
+              :prop="'ios.' + scope.$index + '.type'"
+            />
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Config')">
@@ -49,7 +44,7 @@
               v-if="scope.row.type === 'text'"
               v-model="scope.row.value"
               :prop="'ios.' + scope.$index + '.value'"
-              :placeholder="$customTranslate('Variable Assignment Value')"
+              placeholder="Variable Assignment Value"
             />
             <Condition
               v-if="scope.row.type === 'script'"
@@ -107,6 +102,7 @@
 </template>
 <script>
 import Condition from './Condition'
+import FormItemSelect from '../../ui/FormItemSelect'
 import FormItemTextArea from '../../ui/FormItemTextArea'
 import FormItemGeneratedInput from '../../ui/FormItemGeneratedInput'
 import dialogHelper from '../../../mixins/dialogHelper'
@@ -119,7 +115,7 @@ const ELEMENT_NAME = 'InputOutput'
 
 export default {
   name: ELEMENT_NAME,
-  components: { Condition, FormItemTextArea, FormItemGeneratedInput },
+  components: { Condition, FormItemSelect, FormItemTextArea, FormItemGeneratedInput },
   mixins: [dialogHelper],
   props: {
     moddle: {

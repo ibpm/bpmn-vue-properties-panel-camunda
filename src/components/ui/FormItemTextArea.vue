@@ -1,6 +1,13 @@
 <template>
-  <el-form-item :label="label" :prop="prop" :rules="rules">
-    <el-input v-model="value_" :autosize="{ maxRows: maxRows }" type="textarea" :placeholder="placeholder" clearable @input="input" />
+  <el-form-item :label="$customTranslate(label)" :prop="prop" :rules="rules">
+    <el-input
+      v-model="value_"
+      :autosize="{ maxRows: maxRows }"
+      type="textarea"
+      :placeholder="$customTranslate(placeholder)"
+      clearable
+      @input="input"
+    />
   </el-form-item>
 </template>
 

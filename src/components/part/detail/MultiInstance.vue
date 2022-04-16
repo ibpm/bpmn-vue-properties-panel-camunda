@@ -15,22 +15,22 @@
       </el-form-item>
       <FormItemInput
         v-model="form.loopCardinality"
-        :label="$customTranslate('Loop Cardinality')"
+        label="Loop Cardinality"
         prop="loopCardinality"
       />
       <FormItemInput
         v-model="form.collection"
-        :label="$customTranslate('Collection')"
+        label="Collection"
         prop="collection"
       />
       <FormItemInput
         v-model="form.elementVariable"
-        :label="$customTranslate('Element Variable')"
+        label="Element Variable"
         prop="elementVariable"
       />
       <FormItemInput
         v-model="form.completionCondition"
-        :label="$customTranslate('Completion Condition')"
+        label="Completion Condition"
         prop="completionCondition"
       />
       <FormItemSwitch

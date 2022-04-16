@@ -28,7 +28,7 @@ import BusinessRuleTask from '../components/bpmn/tasks/BusinessRuleTask'
 import ReceiveTask from '../components/bpmn/tasks/ReceiveTask'
 import CallActivity from '../components/bpmn/subprocess/CallActivity'
 import { isAny } from 'bpmn-js/lib/util/ModelUtil'
-import { splitColon } from '@/utils/tools'
+import { splitColon } from '../utils/tools'
 
 export default {
   name: 'PropertiesPanel',

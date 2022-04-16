@@ -26,6 +26,16 @@ export const
     'bpmn:InclusiveGateway',
     'bpmn:ComplexGateway'
   ],
+  CONDITION_TYPES = [
+    {
+      value: 'expression',
+      name: 'Expression'
+    },
+    {
+      value: 'script',
+      name: 'Script'
+    }
+  ],
   BPMN_IMPLEMENTATIONS = [
     {
       value: 'class',
@@ -104,13 +114,10 @@ export const
       name: 'Expression'
     }
   ],
-  BINDINGS_CMMN = [
+  BINDINGS = [
     'latest',
     'deployment',
-    'version'
-  ],
-  BINDINGS = [
-    ...BINDINGS_CMMN,
+    'version',
     'versionTag'
   ],
   MAP_DECISION_RESULTS = [
@@ -148,10 +155,6 @@ export const
       value: 'map',
       name: 'Map'
     }
-  ],
-  CALL_ACTIVITY_TYPES = [
-    'BPMN',
-    'CMMN'
   ],
   VARIABLE_MAPPINGS = [
     'variableMappingClass',

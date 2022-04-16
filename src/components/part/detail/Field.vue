@@ -19,16 +19,11 @@
         </el-table-column>
         <el-table-column :label="$customTranslate('Type')" prop="type">
           <template v-slot="scope">
-            <el-form-item :prop="'records.' + scope.$index + '.type'">
-              <el-select v-model="scope.row.type">
-                <el-option
-                  v-for="(item, index) in fieldTypes"
-                  :key="index"
-                  :label="$customTranslate(item.name)"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
+            <FormItemSelect
+              v-model="scope.row.type"
+              :options="fieldTypes"
+              :prop="'records.' + scope.$index + '.type'"
+            />
           </template>
         </el-table-column>
         <el-table-column :label="$customTranslate('Value')">
@@ -36,7 +31,7 @@
             <FormItemTextArea
               v-model="scope.row.value"
               :prop="'records.' + scope.$index + '.value'"
-              :placeholder="$customTranslate(fieldTypes.find(item => item.value === scope.row.type).name)"
+              :placeholder="fieldTypes.find(item => item.value === scope.row.type).name"
               :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
             />
           </template>
@@ -59,13 +54,14 @@
 </template>
 <script>
 import FormItemInput from '../../ui/FormItemInput'
+import FormItemSelect from '../../ui/FormItemSelect'
 import FormItemTextArea from '../../ui/FormItemTextArea'
 import { FIELD_TYPES } from '../../../utils/constants'
 import dialogHelper from '../../../mixins/dialogHelper'
 
 export default {
   name: 'Field',
-  components: { FormItemInput, FormItemTextArea },
+  components: { FormItemInput, FormItemSelect, FormItemTextArea },
   mixins: [dialogHelper],
   props: {
     value: {

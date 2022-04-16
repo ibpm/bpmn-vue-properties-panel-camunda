@@ -11,30 +11,25 @@
         <el-table :data="form.records" border>
           <el-table-column :label="$customTranslate('Event Type')" prop="event">
             <template v-slot="scope">
-              <el-form-item :prop="'records.' + scope.$index + '.event'">
-                <el-select v-model="scope.row.event">
-                  <el-option v-for="(item, index) in events" :key="index" :label="$customTranslate(item)" :value="item" />
-                </el-select>
-              </el-form-item>
+              <FormItemSelect
+                v-model="scope.row.event"
+                :options="events"
+                :prop="'records.' + scope.$index + '.event'"
+              />
             </template>
           </el-table-column>
           <el-table-column :label="$customTranslate('Listener Type')" prop="listenerType">
             <template v-slot="scope">
-              <el-form-item :prop="'records.' + scope.$index + '.listenerType'">
-                <el-select v-model="scope.row.listenerType">
-                  <el-option
-                    v-for="(item, index) in listenerTypes"
-                    :key="index"
-                    :label="$customTranslate(item.name)"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
+              <FormItemSelect
+                v-model="scope.row.listenerType"
+                :options="listenerTypes"
+                :prop="'records.' + scope.$index + '.listenerType'"
+              />
               <FormItemInput
                 v-if="showScript(scope.row.listenerType)"
                 v-model="scope.row.scriptFormat"
                 :prop="'records.' + scope.$index + '.scriptFormat'"
-                :placeholder="$customTranslate('Script Format')"
+                placeholder="Script Format"
                 :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
               />
             </template>
@@ -45,31 +40,27 @@
                 v-if="!showScript(scope.row.listenerType)"
                 v-model="scope.row.config"
                 :prop="'records.' + scope.$index + '.config'"
-                :placeholder="$customTranslate(listenerTypes.find(item => item.value === scope.row.listenerType).name)"
+                :placeholder="listenerTypes.find(item => item.value === scope.row.listenerType).name"
                 :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
               />
               <template v-else>
-                <el-form-item :prop="'records.' + scope.$index + '.scriptType'">
-                  <el-select v-model="scope.row.scriptType" :placeholder="$customTranslate('Script Type')">
-                    <el-option
-                      v-for="(item, index) in scriptTypes"
-                      :key="index"
-                      :label="$customTranslate(item.name)"
-                      :value="item.value"
-                    />
-                  </el-select>
-                </el-form-item>
+                <FormItemSelect
+                  v-model="scope.row.scriptType"
+                  :options="scriptTypes"
+                  :prop="'records.' + scope.$index + '.scriptType'"
+                  placeholder="Script Type"
+                />
                 <FormItemTextArea
                   v-if="!showResource(scope.row.scriptType)"
                   v-model="scope.row.config"
                   :prop="'records.' + scope.$index + '.config'"
-                  :placeholder="$customTranslate('Script')"
+                  placeholder="Script"
                 />
                 <FormItemInput
                   v-else
                   v-model="scope.row.config"
                   :prop="'records.' + scope.$index + '.config'"
-                  :placeholder="$customTranslate('Resource')"
+                  placeholder="Resource"
                 />
               </template>
             </template>
@@ -108,6 +99,7 @@
 <script>
 import Field from '../detail/Field'
 import FormItemInput from '../../ui/FormItemInput'
+import FormItemSelect from '../../ui/FormItemSelect'
 import FormItemTextArea from '../../ui/FormItemTextArea'
 import areaHelper from '../../../mixins/areaHelper'
 import dialogHelper from '../../../mixins/dialogHelper'
@@ -121,7 +113,7 @@ const ELEMENT_NAME = 'ExecutionListener'
 
 export default {
   name: ELEMENT_NAME,
-  components: { Field, FormItemInput, FormItemTextArea },
+  components: { Field, FormItemInput, FormItemSelect, FormItemTextArea },
   mixins: [areaHelper, dialogHelper],
   data() {
     return {

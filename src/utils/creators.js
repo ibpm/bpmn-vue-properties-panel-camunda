@@ -146,41 +146,23 @@ export const
     return properties
   },
   addAndRemoveElementsFromExtensionElements = (moddle, parent, objectsToAdd, matcher) => {
-    return addAndRemoveElementsFromList(createExtensionElements(moddle, parent), 'values', 'extensionElements', objectsToAdd, matcher)
-  },
-  /**
-   *
-   * @param currentObject 当前操作的对象，比如root/extensionElements/Properties/InputOutput
-   * @param propertyName 当前对象的某个数组属性，比如'rootElements'/'values'/inputParameters/outputParameters
-   * @param currentPropertyName 当前对象自身在父对象中的属性名称，比如'extensionElements'
-   * @param objectsToAdd 需向集合中添加的元素
-   * @param matcher 需从集合里删除的元素的匹配函数
-   */
-  addAndRemoveElementsFromList = (currentObject, propertyName, currentPropertyName, objectsToAdd, matcher) => {
+    let currentObject = createExtensionElements(moddle, parent)
     const listCopy = objectsToAdd || [] // add all objects which should be added
 
     // remove all objects which should be removed
     if (matcher) {
-      listCopy.push(...currentObject[propertyName].filter(matcher))
+      listCopy.push(...currentObject['values'].filter(matcher))
     } else {
-      listCopy.push(...currentObject[propertyName])
+      listCopy.push(...currentObject['values'])
     }
-    /* if (objectsToRemove?.length) {
-      currentObject[propertyName].forEach(object => {
-        if (objectsToRemove.indexOf(object) === -1) {
-          listCopy.push(object)
-        }
-      })
-    } */
-
     // set property to new list
-    if (listCopy.length > 0 || !currentPropertyName) {
+    if (listCopy.length > 0) {
       // as long as there are elements in the list update the list
-      currentObject[propertyName] = listCopy
-    } else if (currentPropertyName) {
+      currentObject.values = listCopy
+    } else {
       // remove the list when it is empty
-      if (currentObject.$parent.currentPropertyName) {
-        currentObject.$parent.set(currentPropertyName, undefined)
+      if (currentObject.$parent.extensionElements) {
+        currentObject.$parent.extensionElements = undefined
       }
       currentObject = undefined
     }

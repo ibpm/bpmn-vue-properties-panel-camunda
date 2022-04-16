@@ -3,37 +3,37 @@
     <template #custom>
       <FormItemInput
         v-model="bo.versionTag"
-        :label="$customTranslate('Version Tag')"
+        label="Version Tag"
         :rules="[{ message: $customTranslate('Length not more than {max}', { max: 64 }), trigger: 'blur', max: 64 }]"
         prop="versionTag"
       />
       <FormItemSwitch
         v-model="bo.isExecutable"
-        :label="$customTranslate('Executable')"
+        label="Executable"
       />
       <FormItemInput
         v-model="bo.candidateStarterGroups"
-        :label="$customTranslate('Candidate Starter Groups')"
+        label="Candidate Starter Groups"
         prop="candidateStarterGroups"
       />
       <FormItemInput
         v-model="bo.candidateStarterUsers"
-        :label="$customTranslate('Candidate Starter Users')"
+        label="Candidate Starter Users"
         prop="candidateStarterUsers"
       />
       <FormItemInput
         v-model="bo.historyTimeToLive"
-        :label="$customTranslate('History Time To Live')"
+        label="History Time To Live"
         prop="historyTimeToLive"
       />
       <FormItemInput
         v-model="bo.taskPriority"
-        :label="$customTranslate('Task Priority')"
+        label="Task Priority"
         prop="taskPriority"
       />
       <FormItemInput
         v-model="bo.jobPriority"
-        :label="$customTranslate('Job Priority')"
+        label="Job Priority"
         prop="jobPriority"
       />
     </template>

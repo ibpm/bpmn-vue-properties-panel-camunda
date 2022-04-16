@@ -1,5 +1,5 @@
 <template>
-  <el-form-item :label="label" :prop="prop" :rules="rules">
+  <el-form-item :label="$customTranslate(label)" :prop="prop" :rules="rules">
     <el-switch v-model="value_" @input="input" />
   </el-form-item>
 </template>

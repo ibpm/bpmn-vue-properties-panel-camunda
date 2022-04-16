@@ -3,7 +3,7 @@
     <template #detail>
       <FormItemInput
         v-model="bo.initiator"
-        :label="$customTranslate('Initiator')"
+        label="Initiator"
         :rules="[{ message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }]"
         prop="initiator"
       />
