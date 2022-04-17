@@ -93,19 +93,19 @@ export default {
     }
   },
   watch: {
-    'bo.asyncBefore': function(val) {
+    'bo.asyncBefore'(val) {
       this.write({ asyncBefore: val })
     },
-    'bo.asyncAfter': function(val) {
+    'bo.asyncAfter'(val) {
       this.write({ asyncAfter: val })
     },
-    'bo.exclusive': function(val) {
+    'bo.exclusive'(val) {
       this.write({ exclusive: val })
     },
-    'bo.jobPriority': function(val) {
+    'bo.jobPriority'(val) {
       this.write({ jobPriority: val })
     },
-    'bo.failedJobRetryTimeCycle': function(val) {
+    'bo.failedJobRetryTimeCycle'(val) {
       this.write({ failedJobRetryTimeCycle: val })
     }
   },

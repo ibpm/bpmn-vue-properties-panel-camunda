@@ -149,11 +149,11 @@ export default {
     }
   },
   watch: {
-    'bo.id': function(val) {
+    'bo.id'(val) {
       this.setTitle()
       this.write({ id: val })
     },
-    'bo.name': function(val) {
+    'bo.name'(val) {
       this.setTitle()
       this.write({ name: val })
     },
