@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import Common from '../../components/embbed/Common'
-import MultiInstance from '../../components/part/detail/MultiInstance'
+import Common from '../embbed/Common'
+import MultiInstance from '../part/detail/MultiInstance'
 import areaHelper from '../../mixins/areaHelper'
 
 export default {

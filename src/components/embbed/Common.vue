@@ -52,10 +52,10 @@
 
 <script>
 import Base from './Base'
-import ExecutionListener from '../../components/part/listener/ExecutionListener'
-import InputOutput from '../../components/part/detail/InputOutput'
-import FormItemInput from '../../components/ui/FormItemInput'
-import FormItemSwitch from '../../components/ui/FormItemSwitch'
+import ExecutionListener from '../part/listener/ExecutionListener'
+import InputOutput from '../part/detail/InputOutput'
+import FormItemInput from '../ui/FormItemInput'
+import FormItemSwitch from '../ui/FormItemSwitch'
 import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 import { customize, isInputOutputSupported } from '../../utils'

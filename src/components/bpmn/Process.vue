@@ -41,10 +41,10 @@
 </template>
 
 <script>
-import Base from '../../components/embbed/Base'
-import FormItemInput from '../../components/ui/FormItemInput'
+import Base from '../embbed/Base'
+import FormItemInput from '../ui/FormItemInput'
+import FormItemSwitch from '../ui/FormItemSwitch'
 import elementHelper from '../../mixins/elementHelper'
-import FormItemSwitch from '../../components/ui/FormItemSwitch'
 
 export default {
   name: 'Process',
