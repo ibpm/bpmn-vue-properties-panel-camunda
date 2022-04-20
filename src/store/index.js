@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { splitColon } from '../utils/tools'
 
 Vue.use(Vuex)
 
@@ -10,9 +9,8 @@ export default new Vuex.Store({
     templateMap: {} // key=bpmn:xxx,value=templates array
   },
   getters: {
-    bindingNames: state => (nodeType, tId) => {
-      return !nodeType || !tId ? []
-        : state.templateMap[nodeType].find(t => t.id === tId)?.properties?.map(p => splitColon(p['binding']?.name))
+    getTemplates: state => (nodeType) => {
+      return state.templateMap[nodeType] ?? []
     }
   },
   mutations: {

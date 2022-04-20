@@ -76,20 +76,17 @@ export const
       )
     )
   },
-  isPropertyVisible = (nodeType, entryId, templateId) => {
-    if (!nodeType || !templateId) {
+  isPropertyVisible = (entryId, bo) => {
+    if (!bo || !bo['modelerTemplate']) {
       return true
     }
-    const template = store.state.templateMap[nodeType]?.find(t => t.id === templateId)
+    const template = store.getters.getTemplates(bo.$type).find(t => t.id === bo['modelerTemplate'])
     if (template) {
       const property = template.properties?.find(property => {
         const binding = property['binding']
-        if (!binding) {
-          return false
-        }
-        return binding.type === 'property' && splitColon(binding.name) === entryId
+        return binding && binding.type === 'property' && splitColon(binding.name) === entryId
       })
-      return property === undefined && !isEntryVisible(entryId, template)
+      return property === undefined && isEntryVisible(entryId, template)
     }
     return true
   },

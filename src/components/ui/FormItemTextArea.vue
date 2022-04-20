@@ -5,8 +5,10 @@
       :autosize="{ maxRows: maxRows }"
       type="textarea"
       :placeholder="$customTranslate(placeholder)"
+      :disabled="disabled"
       clearable
       @input="input"
+      @change="change"
     />
   </el-form-item>
 </template>

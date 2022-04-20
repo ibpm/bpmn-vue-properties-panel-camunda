@@ -2,6 +2,7 @@
   <Common :element="element" :moddle="moddle" :bo="bo" @write="write">
     <template #detail>
       <FormItemInput
+        v-if="propertyVisible('initiator')"
         v-model="bo.initiator"
         label="Initiator"
         :rules="[{ message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }]"

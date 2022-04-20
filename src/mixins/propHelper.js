@@ -12,6 +12,10 @@ export default {
       type: String,
       default: null
     },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     rules: {
       type: Array,
       default: null
@@ -30,6 +34,9 @@ export default {
   methods: {
     input(val) {
       this.$emit('input', val)
+    },
+    change(val) {
+      this.$emit('change', val)
     }
   }
 }

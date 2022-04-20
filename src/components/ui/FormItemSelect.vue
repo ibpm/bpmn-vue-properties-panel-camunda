@@ -3,10 +3,11 @@
     <el-select
       v-model="value_"
       :placeholder="$customTranslate(placeholder)"
+      :disabled="disabled"
       clearable
       filterable
       @input="input"
-      @change="$emit('change', $event)"
+      @change="change"
     >
       <el-option
         v-for="(item, index) in options"

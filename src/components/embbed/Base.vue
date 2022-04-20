@@ -2,6 +2,7 @@
   <div>
     <el-form ref="form" :model="bo" label-width="100px" size="mini">
       <FormItemInput
+        v-if="propertyVisible('id')"
         v-model="bo.id"
         label="Id"
         :rules="[
@@ -11,6 +12,7 @@
         prop="id"
       />
       <FormItemTextArea
+        v-if="propertyVisible('name')"
         v-model="bo.name"
         label="Name"
         :rules="[{ message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }]"
@@ -31,35 +33,16 @@
           <span style="color: #8492a6;">{{ $customTranslate(selectedTemplate.description) }}</span>
         </el-form-item>
         <template v-for="(item, index) in templateProperties">
-          <el-form-item v-if="item.type !== 'Hidden'" :key="index" :label="$customTranslate(item.label)">
-            <el-input
-              v-if="item.type === 'String'"
-              v-model="item.value"
-              clearable
-              :disabled="item.editable === false"
-            />
-            <el-input
-              v-if="item.type === 'Text'"
-              v-model="item.value"
-              type="textarea"
-              clearable
-              :disabled="item.editable === false"
-              :autosize="{ maxRows: 5 }"
-            />
-            <el-select v-if="item.type === 'Dropdown'" v-model="item.value">
-              <el-option
-                v-for="(choice, idx) in item.choices"
-                :key="idx"
-                :label="$customTranslate(choice.name)"
-                :value="choice.value"
-              />
-            </el-select>
-            <el-switch
-              v-if="item.type === 'Boolean'"
-              v-model="item.value"
-              :disabled="item.editable === false"
-            />
-          </el-form-item>
+          <component
+            :is="propertyComponents[item.type]"
+            v-if="item.type !== 'Hidden'"
+            :key="index"
+            v-model="item.value"
+            :options="item.choices"
+            :label="item.label"
+            :disabled="item.editable === false"
+            @change="change($event, item)"
+          />
         </template>
       </template>
       <slot name="custom" />
@@ -71,6 +54,7 @@
         </el-badge>
       </el-form-item>
       <FormItemTextArea
+        v-if="propertyVisible('documentation')"
         v-model="bo.doc"
         label="Documentation"
         :placeholder="$customTranslate('Element Documentation')"
@@ -89,9 +73,11 @@
   </div>
 </template>
 <script>
-import Properties from '../../components/part/detail/Properties'
-import FormItemInput from '../../components/ui/FormItemInput'
-import FormItemTextArea from '../../components/ui/FormItemTextArea'
+import Properties from '../part/detail/Properties'
+import FormItemInput from '../ui/FormItemInput'
+import FormItemSelect from '../ui/FormItemSelect'
+import FormItemSwitch from '../ui/FormItemSwitch'
+import FormItemTextArea from '../ui/FormItemTextArea'
 import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 import { customize, isInOut } from '../../utils'
@@ -105,7 +91,8 @@ import {
   createInputParameter,
   createCamundaProperty,
   createFormalExpression,
-  createExtensionElements, createCamundaExecutionListenerScript
+  createExtensionElements,
+  createCamundaExecutionListenerScript
 } from '../../utils/creators'
 import { splitColon } from '../../utils/tools'
 
@@ -135,12 +122,20 @@ export default {
   components: {
     Properties,
     FormItemInput,
+    FormItemSelect,
+    FormItemSwitch,
     FormItemTextArea
   },
   mixins: [areaHelper],
   data() {
     return {
-      templates: this.$store.state.templateMap[this.bo?.$type],
+      propertyComponents: {
+        'String': 'FormItemInput',
+        'Text': 'FormItemTextArea',
+        'Dropdown': 'FormItemSelect',
+        'Boolean': 'FormItemSwitch'
+      },
+      templates: this.$store.getters.getTemplates(this.bo?.$type),
       showProperty: false,
       properties: [],
       tabName: 'general',
@@ -164,37 +159,32 @@ export default {
     },
     selectedTemplate(newVal, oldVal) {
       if (oldVal === newVal) return
+      const updateProperties = {}
+      this.templateProperties.forEach(property => {
+        this.handleProperty(updateProperties, property)
+      })
       this.templateProperties = []
       if (this.selectedTemplate?.properties) {
         this.selectedTemplate.properties.forEach(property => {
+          property.value = this.readProperty(property) || property.value
+          this.handleProperty(updateProperties, property, property.value)
           this.templateProperties.push({
             ...property
           })
         })
       }
-      // this.bo.modelerTemplate = this.selectedTemplate?.id
-      this.write({ modelerTemplate: this.selectedTemplate?.id })
-    },
-    templateProperties: {
-      handler(newVal, oldVal) {
-        const updateProperties = {}
-        oldVal?.forEach(property => {
-          this.handleProperty(updateProperties, property)
-        })
-        newVal?.forEach(property => {
-          this.handleProperty(updateProperties, property, property.value)
-        })
-        this.write(updateProperties)
-      },
-      deep: true
+      this.bo.modelerTemplate = this.selectedTemplate?.id
+      updateProperties.modelerTemplate = this.selectedTemplate?.id
+      this.write(updateProperties)
+      this.refresh()
     }
   },
   created() {
-    this.read()
     this.init()
+    this.load()
   },
   methods: {
-    read() {
+    init() {
       if (this.bo.documentation?.length) {
         this.bo.doc = this.bo.documentation[0].text
       }
@@ -211,32 +201,18 @@ export default {
           this.bo.extensionElements = addAndRemoveElementsFromExtensionElements(this.moddle, this.bo, objectsToAdd, matcher)
       })
     },
-    /* clickTab(tab) {
-      if (tab.name === 'general') {
-        this.$emit('sync')
-        this.read()
-      } else if (tab.name === 'templates') {
-        this.read1()
-      }
-    }, */
-    init() {
+    setTitle() {
+      this.$store.commit('SET_NODE_TITLE', this.bo.name || this.bo.id)
+    },
+    load() {
       if (this.bo.modelerTemplate) {
         this.selectedTemplate = this.templates.find(template => template.id === this.bo.modelerTemplate)
       } else {
         this.selectedTemplate = this.templates.find(template => template.isDefault)
       }
     },
-    // 当General面板变更时，调用本方法同步数据
-    read1() {
-      this.templateProperties.forEach(property => {
-        let value
-        if ((value = this.readOne(property)) !== undefined) {
-          property.value = value
-        }
-      })
-    },
-    readOne(property) {
-      const binding = property.binding,
+    readProperty(property) {
+      const binding = property['binding'],
         bindingType = binding.type
       let value, values
       if (bindingType === PROPERTY_TYPE) {
@@ -285,7 +261,7 @@ export default {
       return value
     },
     handleProperty(updateProperties, property, value) {
-      const binding = property.binding,
+      const binding = property['binding'],
         bindingType = binding.type,
         extensionElements = createExtensionElements(this.moddle, updateProperties)
       if (bindingType === PROPERTY_TYPE) {
@@ -298,7 +274,9 @@ export default {
         } else {
           propertyValue = value
         }
-        updateProperties[binding.name] = propertyValue
+        if (propertyValue || binding.name !== 'id') { // id是必填项，需要做特殊处理
+          updateProperties[binding.name] = propertyValue
+        }
       } else if (bindingType === CAMUNDA_PROPERTY_TYPE) {
         let propertiesElement = extensionElements.values?.find(item => is(item, customize('Properties')))
         if (!propertiesElement) {
@@ -359,8 +337,16 @@ export default {
         bo[propertyName].push(createFunction(this.moddle, binding, value))
       }
     },
-    setTitle() {
-      this.$store.commit('SET_NODE_TITLE', this.bo.name || this.bo.id)
+    change(value, property) {
+      const updateProperties = { extensionElements: this.bo.extensionElements }
+      this.handleProperty(updateProperties, property, value)
+      this.write(updateProperties)
+    },
+    refresh() {
+      this.$nextTick(() => {
+        this.init()
+        this.$emit('sync')
+      })
     }
   }
 }

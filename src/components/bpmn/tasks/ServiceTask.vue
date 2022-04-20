@@ -4,19 +4,26 @@
     <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #detail>
         <FormItemSelect
+          v-if="
+            (propertyVisible('class') && implementation === 'class') ||
+              (propertyVisible('expression') && implementation === 'expression') ||
+              (propertyVisible('delegateExpression') && implementation === 'delegateExpression') ||
+              (propertyVisible('external') && implementation === 'external') ||
+              (propertyVisible('connector') && implementation === 'connector')
+          "
           v-model="implementation"
           :options="implementations"
           label="Implementation"
         />
         <template v-if="implementation">
           <FormItemInput
-            v-if="implementation === 'class'"
+            v-if="propertyVisible('class') && implementation === 'class'"
             v-model="bo.class"
             label="Java Class"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
             prop="class"
           />
-          <template v-if="implementation === 'expression'">
+          <template v-if="propertyVisible('expression') && implementation === 'expression'">
             <FormItemInput
               v-model="bo.expression"
               label="Expression"
@@ -30,13 +37,13 @@
             />
           </template>
           <FormItemInput
-            v-if="implementation === 'delegateExpression'"
+            v-if="propertyVisible('delegateExpression') && implementation === 'delegateExpression'"
             v-model="bo.delegateExpression"
             label="Delegate Expression"
             :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
             prop="delegateExpression"
           />
-          <template v-if="implementation === 'external'">
+          <template v-if="propertyVisible('external') && implementation === 'external'">
             <FormItemInput
               v-model="bo.topic"
               label="Topic"
@@ -50,7 +57,7 @@
             />
           </template>
           <el-form-item
-            v-if="implementation === 'connector'"
+            v-if="propertyVisible('connector') && implementation === 'connector'"
             :label="$customTranslate('Connector Id')"
             prop="connectorId"
           >

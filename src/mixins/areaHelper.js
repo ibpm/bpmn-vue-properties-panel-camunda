@@ -21,7 +21,7 @@ export default {
       this.$emit('write', properties)
     },
     propertyVisible(prop) {
-      return isPropertyVisible(this.bo?.$type, prop, this.bo?.modelerTemplate)
+      return isPropertyVisible(prop, this.bo)
     }
   }
 }

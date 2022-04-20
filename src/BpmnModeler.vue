@@ -47,6 +47,7 @@ import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
 import miniMapModule from 'diagram-js-minimap'
 import PropertiesPanel from './views/PropertiesPanel'
 import CUSTOM_ELEMENT_TEMPLATES from './custom.json'
+import SAMPLE_ELEMENT_TEMPLATES from './samples.json'
 import { INITIAL_DIAGRAM } from './utils/constants'
 import { getProcessElement } from './utils'
 import { next } from './utils/tools'
@@ -60,7 +61,10 @@ export default {
       element: null,
       xml: INITIAL_DIAGRAM,
       drawer: false,
-      elementTemplates: CUSTOM_ELEMENT_TEMPLATES
+      elementTemplates: [
+        ...CUSTOM_ELEMENT_TEMPLATES,
+        ...SAMPLE_ELEMENT_TEMPLATES
+      ]
     }
   },
   mounted() {

@@ -118,8 +118,11 @@ export default {
   methods: {
     reset(newElement) {
       if (!this.element || this.element.id !== newElement.id || this.element.type !== newElement.type) {
-        this.element = newElement
-        this.postHandle()
+        this.element = null
+        this.$nextTick(() => {
+          this.element = newElement
+          this.postHandle()
+        })
       }
     },
     postHandle() {

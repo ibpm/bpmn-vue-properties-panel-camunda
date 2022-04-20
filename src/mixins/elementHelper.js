@@ -1,3 +1,5 @@
+import { isPropertyVisible } from '../utils'
+
 export default {
   props: {
     element: {
@@ -15,8 +17,7 @@ export default {
   },
   data() {
     return {
-      bo: this.getBO(),
-      templates: this.$store.state.templateMap[this.bo?.$type]
+      bo: this.getBO()
     }
   },
   methods: {
@@ -26,6 +27,9 @@ export default {
     },
     getBO() {
       return { ...this.element.businessObject }
+    },
+    propertyVisible(prop) {
+      return isPropertyVisible(prop, this.bo)
     }
   }
 }
