@@ -1,4 +1,5 @@
 import { customize } from './index'
+import eventBus, { ExtensionElements_Changed } from './eventBus'
 
 export const
   createElement = (moddle, elementType, parent, properties) => {
@@ -166,5 +167,6 @@ export const
       }
       currentObject = undefined
     }
+    eventBus.$emit(ExtensionElements_Changed)
     return currentObject
   }

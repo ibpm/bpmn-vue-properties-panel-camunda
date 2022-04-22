@@ -105,6 +105,17 @@ export const
     } else {
       return entryVisible === true
     }
+  },
+  findOutputParameter = (inputOutput, binding) => {
+    return inputOutput.get('outputParameters')?.find(p => {
+      if (!binding.scriptFormat) {
+        return p.value === binding.source
+      }
+      if (!p.definition || binding.scriptFormat !== p.definition.scriptFormat) {
+        return false
+      }
+      return p.definition.value === binding.source
+    })
   }
   /*
   ,findElementById = (element, type, id) => {

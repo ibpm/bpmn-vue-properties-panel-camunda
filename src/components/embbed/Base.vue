@@ -80,7 +80,7 @@ import FormItemSwitch from '../ui/FormItemSwitch'
 import FormItemTextArea from '../ui/FormItemTextArea'
 import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize, isInOut } from '../../utils'
+import { customize, findOutputParameter, isInOut } from '../../utils'
 import { addAndRemoveElementsFromExtensionElements } from '../../utils/creators'
 import {
   createCamundaIn,
@@ -95,6 +95,7 @@ import {
   createCamundaExecutionListenerScript
 } from '../../utils/creators'
 import { splitColon } from '../../utils/tools'
+import eventBus, { ExtensionElements_Changed } from '../../utils/eventBus'
 
 const
   PROPERTY_TYPE = 'property',
@@ -183,6 +184,9 @@ export default {
     this.init()
     this.load()
   },
+  beforeDestroy() {
+    eventBus.$off(ExtensionElements_Changed)
+  },
   methods: {
     init() {
       if (this.bo.documentation?.length) {
@@ -210,6 +214,18 @@ export default {
       } else {
         this.selectedTemplate = this.templates.find(template => template.isDefault)
       }
+      // 当extensionElements发生变更时，刷新模板的配置项
+      eventBus.$on(ExtensionElements_Changed, () => {
+        this.templateProperties = []
+        if (this.selectedTemplate?.properties) {
+          this.selectedTemplate.properties.forEach(property => {
+            property.value = this.readProperty(property) || property.value
+            this.templateProperties.push({
+              ...property
+            })
+          })
+        }
+      })
     },
     readProperty(property) {
       const binding = property['binding'],
@@ -231,13 +247,20 @@ export default {
           }
         } else if (IO_BINDING_TYPES.indexOf(bindingType) !== -1) {
           const ioElement = values.find(item => is(item, customize('InputOutput')))
-          if (ioElement?.inputParameters) {
-            const parameterElement = ioElement.inputParameters?.find(item => item.name === binding.name)
-            if (parameterElement) {
-              value = (parameterElement.definition || parameterElement).value
+          if (ioElement) {
+            if (bindingType === CAMUNDA_INPUT_PARAMETER_TYPE) {
+              const inputParameterElement = ioElement.get('inputParameters')?.find(item => item.name === binding.name)
+              if (inputParameterElement) {
+                value = (inputParameterElement.definition || inputParameterElement).value
+              }
+            }
+            if (bindingType === CAMUNDA_OUTPUT_PARAMETER_TYPE) {
+              const outputParameterElement = findOutputParameter(ioElement, binding)
+              if (outputParameterElement) {
+                value = outputParameterElement.name
+              }
             }
           }
-          // TODO OutputParameter先跳过
         } else if (IN_OUT_BINDING_TYPES.indexOf(bindingType) !== -1) {
           let matcher, ioElement
           if (bindingType === CAMUNDA_IN_TYPE) {
