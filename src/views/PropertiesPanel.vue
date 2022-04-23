@@ -2,7 +2,7 @@
 <template>
   <div>
     <div v-if="element" class="titleStyle">
-      {{ $store.state.nodeTitle }}
+      {{ nodeTitle }}
     </div>
     <component
       :is="getComponent"
@@ -101,6 +101,9 @@ export default {
     },
     moddle() {
       return this.modeler.get('moddle')
+    },
+    nodeTitle() {
+      return store.state.nodeTitle
     }
   },
   mounted() {
