@@ -95,6 +95,7 @@ import {
   createCamundaExecutionListenerScript
 } from '../../utils/creators'
 import { splitColon } from '../../utils/tools'
+import store from '../../store'
 import eventBus, { ExtensionElements_Changed } from '../../utils/eventBus'
 
 const
@@ -136,7 +137,7 @@ export default {
         'Dropdown': 'FormItemSelect',
         'Boolean': 'FormItemSwitch'
       },
-      templates: this.$store.getters.getTemplates(this.bo?.$type),
+      templates: store.getters.getTemplates(this.bo?.$type),
       showProperty: false,
       properties: [],
       tabName: 'general',
@@ -206,7 +207,7 @@ export default {
       })
     },
     setTitle() {
-      this.$store.commit('SET_NODE_TITLE', this.bo.name || this.bo.id)
+      store.commit('SET_NODE_TITLE', this.bo.name || this.bo.id)
     },
     load() {
       if (this.bo.modelerTemplate) {

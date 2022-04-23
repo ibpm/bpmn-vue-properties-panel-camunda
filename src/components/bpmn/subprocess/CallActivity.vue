@@ -4,41 +4,46 @@
     <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #detail>
         <FormItemInput
+          v-if="propertyVisible('calledElement')"
           v-model="bo.calledElement"
           label="Called Element"
           prop="calledElement"
           :rules="[{ required: true, message: $customTranslate('Must provide a value'), trigger: 'blur' }]"
         />
         <FormItemSelect
+          v-if="propertyVisible('calledElementBinding')"
           v-model="bo.calledElementBinding"
           :options="bindings"
           label="Binding"
         />
         <FormItemInput
-          v-if="bo.calledElementBinding === 'version'"
+          v-if="propertyVisible('calledElementVersion') && bo.calledElementBinding === 'version'"
           v-model="bo.calledElementVersion"
           label="Version"
         />
         <FormItemInput
-          v-if="bo.calledElementBinding === 'versionTag'"
+          v-if="propertyVisible('calledElementVersionTag') && bo.calledElementBinding === 'versionTag'"
           v-model="bo.calledElementVersionTag"
           label="Version Tag"
         />
         <FormItemInput
+          v-if="propertyVisible('calledElementTenantId')"
           v-model="bo.calledElementTenantId"
           label="Tenant Id"
         />
         <FormItemInput
+          v-if="propertyVisible('businessKeyExpression')"
           v-model="businessKeyExpression"
           label="Business Key Expression"
-          placeholder="#{execution.processBusinessKey}"
         />
         <FormItemSelect
+          v-if="propertyVisible('delegateVariableMapping')"
           v-model="delegateVariableMapping"
           :options="variableMappings"
           label="Delegate Variable Mapping"
         />
         <FormItemInput
+          v-if="propertyVisible('variableMapping')"
           v-model="variableMapping"
           :label="delegateVariableMapping === 'variableMappingDelegateExpression' ? 'Delegate Expression' : 'Class'"
         />

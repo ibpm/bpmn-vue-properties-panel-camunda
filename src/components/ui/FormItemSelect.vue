@@ -32,7 +32,7 @@ export default {
     },
     options: {
       type: Array,
-      default: null
+      default: () => []
     }
   },
   methods: {

@@ -1,7 +1,6 @@
 'use strict'
 
-const path = require('path'),
-  name = 'bpmn-vue-properties-panel-camunda', // page title
+const name = 'bpmn-vue-properties-panel-camunda', // page title
   port = process.env.port || process.env.npm_config_port || 9000 // dev port
 
 module.exports = {

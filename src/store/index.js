@@ -10,7 +10,7 @@ export default new Vuex.Store({
   },
   getters: {
     getTemplates: state => (nodeType) => {
-      return state.templateMap[nodeType] ?? []
+      return state.templateMap[nodeType] || []
     }
   },
   mutations: {

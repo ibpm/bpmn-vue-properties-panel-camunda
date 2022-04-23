@@ -81,8 +81,8 @@ export const
       return true
     }
     const template = store.getters.getTemplates(bo.$type).find(t => t.id === bo['modelerTemplate'])
-    if (template) {
-      const property = template.properties?.find(property => {
+    if (template && template.properties) {
+      const property = template.properties.find(property => {
         const binding = property['binding']
         return binding && binding.type === 'property' && splitColon(binding.name) === entryId
       })
@@ -107,7 +107,8 @@ export const
     }
   },
   findOutputParameter = (inputOutput, binding) => {
-    return inputOutput.get('outputParameters')?.find(p => {
+    const outputParameters = inputOutput.get('outputParameters')
+    return outputParameters && outputParameters.find(p => {
       if (!binding.scriptFormat) {
         return p.value === binding.source
       }

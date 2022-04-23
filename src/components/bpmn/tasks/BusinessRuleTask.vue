@@ -3,39 +3,43 @@
   <Activity :element="element" :moddle="moddle" :bo="bo" @write="write">
     <template #detail>
       <FormItemInput
+        v-if="propertyVisible('decisionRef')"
         v-model="bo.decisionRef"
         label="Decision Ref"
         prop="decisionRef"
       />
       <FormItemSelect
+        v-if="propertyVisible('decisionRefBinding')"
         v-model="bo.decisionRefBinding"
         :options="bindings"
         label="Binding"
       />
       <FormItemInput
-        v-if="bo.decisionRefBinding === 'version'"
+        v-if="propertyVisible('decisionRefVersion') && bo.decisionRefBinding === 'version'"
         v-model="bo.decisionRefVersion"
         label="Version"
         prop="decisionRefVersion"
       />
       <FormItemInput
-        v-if="bo.decisionRefBinding === 'versionTag'"
+        v-if="propertyVisible('decisionRefVersionTag') && bo.decisionRefBinding === 'versionTag'"
         v-model="bo.decisionRefVersionTag"
         label="Version Tag"
         prop="decisionRefVersionTag"
       />
       <FormItemInput
+        v-if="propertyVisible('decisionRefTenantId')"
         v-model="bo.decisionRefTenantId"
         label="Tenant Id"
         prop="decisionRefTenantId"
       />
       <FormItemInput
+        v-if="propertyVisible('resultVariable')"
         v-model="bo.resultVariable"
         label="Result Variable"
         prop="resultVariable"
       />
       <FormItemSelect
-        v-if="bo.resultVariable"
+        v-if="propertyVisible('mapDecisionResult') && bo.resultVariable"
         v-model="bo.mapDecisionResult"
         :options="mapDecisionResults"
         label="Map Decision Result"

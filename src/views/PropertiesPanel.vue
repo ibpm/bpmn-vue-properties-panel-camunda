@@ -27,6 +27,7 @@ import ScriptTask from '../components/bpmn/tasks/ScriptTask'
 import BusinessRuleTask from '../components/bpmn/tasks/BusinessRuleTask'
 import ReceiveTask from '../components/bpmn/tasks/ReceiveTask'
 import CallActivity from '../components/bpmn/subprocess/CallActivity'
+import store from '../store'
 import { isAny } from 'bpmn-js/lib/util/ModelUtil'
 import { splitColon } from '../utils/tools'
 
@@ -126,11 +127,11 @@ export default {
       }
     },
     postHandle() {
-      this.$store.commit('PUT_TEMPLATE', {
+      store.commit('PUT_TEMPLATE', {
         nodeType: this.element.type,
         templates: this.elementTemplates.filter(t => isAny(this.element, t.appliesTo))
       })
-      this.$store.commit('SET_NODE_TITLE',
+      store.commit('SET_NODE_TITLE',
         this.element.businessObject?.name || this.element.businessObject?.id || this.element.id)
     }
   }

@@ -31,13 +31,7 @@ export default {
   mixins: [elementHelper],
   data() {
     return {
-      conditionTypes: [
-        ...CONDITION_TYPES,
-        {
-          value: '',
-          name: ''
-        }
-      ],
+      conditionTypes: CONDITION_TYPES,
       conditionType: ''
     }
   },

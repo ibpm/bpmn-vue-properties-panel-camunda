@@ -22,15 +22,18 @@
         />
         <template v-if="bo.asyncBefore || bo.asyncAfter">
           <FormItemSwitch
+            v-if="propertyVisible('exclusive')"
             v-model="bo.exclusive"
             label="Exclusive"
           />
           <FormItemInput
+            v-if="propertyVisible('jobPriority')"
             v-model="bo.jobPriority"
             label="Job Priority"
             prop="jobPriority"
           />
           <FormItemInput
+            v-if="propertyVisible('failedJobRetryTimeCycle')"
             v-model="bo.failedJobRetryTimeCycle"
             label="Retry Time Cycle"
             prop="failedJobRetryTimeCycle"

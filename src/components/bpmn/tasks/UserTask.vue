@@ -4,16 +4,19 @@
     <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #detail>
         <FormItemInput
+          v-if="propertyVisible('dueDate')"
           v-model="bo.dueDate"
           label="Due Date"
           prop="dueDate"
         />
         <FormItemInput
+          v-if="propertyVisible('followUpDate')"
           v-model="bo.followUpDate"
           label="Follow Up Date"
           prop="followUpDate"
         />
         <FormItemInput
+          v-if="propertyVisible('priority')"
           v-model="bo.priority"
           label="Priority"
           prop="priority"
