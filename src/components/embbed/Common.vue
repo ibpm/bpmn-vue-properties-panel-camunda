@@ -3,7 +3,7 @@
     <Base :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #custom>
         <slot name="detail" />
-        <el-form-item :label="$customTranslate('Execution Listener')">
+        <el-form-item v-if="executionListenerVisible" :label="$customTranslate('Execution Listener')">
           <el-badge :value="listenerLength">
             <el-button @click="showListener = true">
               {{ $customTranslate('Update') }}
@@ -39,7 +39,10 @@
             prop="failedJobRetryTimeCycle"
           />
         </template>
-        <el-form-item v-if="ioSupported" :label="$customTranslate('Input/Output')">
+        <el-form-item
+          v-if="ioVisible && ioSupported"
+          :label="$customTranslate('Input/Output')"
+        >
           <el-badge :value="ioLength">
             <el-button @click="showIO = true">
               {{ $customTranslate('Update') }}
@@ -48,8 +51,14 @@
         </el-form-item>
       </template>
     </Base>
-    <ExecutionListener v-if="showListener" :moddle="moddle" :bo="bo" @write="write" @close="finishListener" />
-    <InputOutput v-if="showIO" :moddle="moddle" :io="io" @save-io="saveIO" @close="showIO = false" />
+    <ExecutionListener
+      v-if="showListener && executionListenerVisible"
+      :moddle="moddle"
+      :bo="bo"
+      @write="write"
+      @close="finishListener"
+    />
+    <InputOutput v-if="showIO && ioVisible" :moddle="moddle" :io="io" @save-io="saveIO" @close="showIO = false" />
   </div>
 </template>
 
@@ -93,6 +102,12 @@ export default {
       set(newValue) {
         return newValue
       }
+    },
+    ioVisible() {
+      return this.propertyVisible('io')
+    },
+    executionListenerVisible() {
+      return this.propertyVisible('executionListener')
     }
   },
   watch: {

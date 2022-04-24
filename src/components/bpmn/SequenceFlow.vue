@@ -1,15 +1,17 @@
 <template>
-  <Base :moddle="moddle" :bo="bo" @write="write">
-    <template v-if="visible" #custom>
-      <FormItemSelect
-        v-model="conditionType"
-        :options="conditionTypes"
-        label="Condition Type"
-        @change="changeCondition"
-      />
-      <Condition v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
-    </template>
-  </Base>
+  <div>
+    <Base :moddle="moddle" :bo="bo" @write="write">
+      <template v-if="typeVisible && conditionVisible" #custom>
+        <FormItemSelect
+          v-model="conditionType"
+          :options="conditionTypes"
+          label="Condition Type"
+          @change="changeCondition"
+        />
+      </template>
+    </Base>
+    <Condition v-if="conditionVisible" v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
+  </div>
 </template>
 
 <script>
@@ -36,8 +38,11 @@ export default {
     }
   },
   computed: {
-    visible() {
+    typeVisible() {
       return isConditionalSource(this.element.source)
+    },
+    conditionVisible() {
+      return this.propertyVisible('conditionExpression')
     }
   },
   created() {

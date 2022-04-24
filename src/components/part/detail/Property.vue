@@ -47,7 +47,7 @@ import { VARIABLE_ASSIGNMENT_TYPES } from '../../../utils/constants'
 import { customize } from '../../../utils'
 import { next } from '../../../utils/tools'
 
-const ELEMENT_NAME = 'Properties'
+const ELEMENT_NAME = 'Property'
 
 export default {
   name: ELEMENT_NAME,
@@ -79,7 +79,7 @@ export default {
     writeProperties() {
       let propertiesElement
       if (this.form.properties.length) {
-        propertiesElement = this.moddle.create(customize(ELEMENT_NAME),
+        propertiesElement = this.moddle.create(customize('Properties'),
           {
             'values':
               this.form.properties.map(property => {
@@ -89,7 +89,7 @@ export default {
                 } else {
                   item.name = property.name
                 }
-                return this.moddle.create(customize('Property'), item)
+                return this.moddle.create(customize(ELEMENT_NAME), item)
               })
           })
       }

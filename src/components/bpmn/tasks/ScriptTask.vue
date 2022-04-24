@@ -2,7 +2,12 @@
 <template>
   <Activity :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
     <template #detail>
-      <Condition v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
+      <Condition
+        v-if="conditionVisible"
+        v-model="bo"
+        :condition-type="conditionType"
+        @save-condition="writeCondition"
+      />
     </template>
   </Activity>
 </template>
@@ -23,6 +28,11 @@ export default {
   data() {
     return {
       conditionType: 'script'
+    }
+  },
+  computed: {
+    conditionVisible() {
+      return this.propertyVisible('conditionExpression')
     }
   },
   created() {

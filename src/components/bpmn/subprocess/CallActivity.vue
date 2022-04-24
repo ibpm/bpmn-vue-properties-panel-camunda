@@ -47,7 +47,7 @@
           v-model="variableMapping"
           :label="delegateVariableMapping === 'variableMappingDelegateExpression' ? 'Delegate Expression' : 'Class'"
         />
-        <el-form-item :label="$customTranslate('Variables')">
+        <el-form-item v-if="variableVisible" :label="$customTranslate('Variables')">
           <el-badge :value="variableLength">
             <el-button @click="showVariable = true">
               {{ $customTranslate('Update') }}
@@ -56,7 +56,7 @@
         </el-form-item>
       </template>
     </Activity>
-    <Variable v-if="showVariable" :moddle="moddle" :bo="bo" @write="write" @close="finishVariable" />
+    <Variable v-if="showVariable && variableVisible" :moddle="moddle" :bo="bo" @write="write" @close="finishVariable" />
   </div>
 </template>
 
@@ -89,6 +89,11 @@ export default {
       businessKeyExpression: '#{execution.processBusinessKey}',
       delegateVariableMapping: null,
       variableMapping: null
+    }
+  },
+  computed: {
+    variableVisible() {
+      return this.propertyVisible('variable')
     }
   },
   watch: {

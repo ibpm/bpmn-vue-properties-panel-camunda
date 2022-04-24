@@ -34,7 +34,7 @@ export const
     return filterElementsByType(root.rootElements, referencedType)
   },
   getFlowElements = (element, type) => {
-    return filterElementsByType(element.flowElements, type)
+    return filterElementsByType(element['flowElements'], type)
   },
   getProcessElement = (modeler) => {
     const rootElements = modeler.getDefinitions().rootElements
@@ -86,14 +86,14 @@ export const
         const binding = property['binding']
         return binding && binding.type === 'property' && splitColon(binding.name) === entryId
       })
-      return property === undefined && isEntryVisible(entryId, template)
+      return property === undefined && isEntryVisible(entryId, template['entriesVisible'])
     }
     return true
   },
-  isEntryVisible = (entryId, template) => {
+  isEntryVisible = (entryId, _entriesVisible) => {
     const
-      entriesVisible = template && template['entriesVisible'] || { _all: false },
-      defaultVisible = entriesVisible._all || false,
+      entriesVisible = _entriesVisible || { _all: true },
+      defaultVisible = entriesVisible._all || true,
       entryVisible = entriesVisible[ entryId ]
 
     if (typeof entriesVisible === 'boolean') {

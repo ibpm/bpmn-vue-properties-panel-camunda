@@ -3,7 +3,7 @@
     <Common :element="element" :moddle="moddle" :bo="bo" @sync="sync" @write="write">
       <template #detail>
         <slot name="detail" />
-        <el-form-item :label="$customTranslate('Multi Instance')">
+        <el-form-item v-if="multiInstanceVisible" :label="$customTranslate('Multi Instance')">
           <el-badge :is-dot="Boolean(bo.loopCharacteristics)">
             <el-button @click="showMultiInstance = true">
               {{ $customTranslate('Update') }}
@@ -12,7 +12,13 @@
         </el-form-item>
       </template>
     </Common>
-    <MultiInstance v-if="showMultiInstance" :moddle="moddle" :bo="bo" @write="write" @close="showMultiInstance = false" />
+    <MultiInstance
+      v-if="showMultiInstance && multiInstanceVisible"
+      :moddle="moddle"
+      :bo="bo"
+      @write="write"
+      @close="showMultiInstance = false"
+    />
   </div>
 </template>
 
@@ -31,6 +37,11 @@ export default {
   data() {
     return {
       showMultiInstance: false
+    }
+  },
+  computed: {
+    multiInstanceVisible() {
+      return this.propertyVisible('multiInstance')
     }
   },
   methods: {

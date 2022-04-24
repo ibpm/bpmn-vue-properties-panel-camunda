@@ -76,7 +76,7 @@
             </el-col>
           </el-form-item>
         </template>
-        <el-form-item :label="$customTranslate('Fields')">
+        <el-form-item v-if="fieldVisible" :label="$customTranslate('Fields')">
           <el-badge :value="fields.length">
             <el-button @click="showField = true">
               {{ $customTranslate('Update') }}
@@ -86,7 +86,7 @@
       </template>
     </Activity>
     <InputOutput v-if="showIO" :moddle="moddle" :io="io" @save-io="saveIO" @close="showIO = false" />
-    <Field v-if="showField" v-model="fields" @save-fields="saveFields" @close="showField = false" />
+    <Field v-if="showField && fieldVisible" v-model="fields" @save-fields="saveFields" @close="showField = false" />
   </div>
 </template>
 
@@ -133,6 +133,9 @@ export default {
       set(newValue) {
         return newValue
       }
+    },
+    fieldVisible() {
+      return this.propertyVisible('field')
     }
   },
   watch: {

@@ -2,36 +2,43 @@
   <Base :moddle="moddle" :bo="bo" @write="write">
     <template #custom>
       <FormItemInput
+        v-if="propertyVisible('versionTag')"
         v-model="bo.versionTag"
         label="Version Tag"
         :rules="[{ message: $customTranslate('Length not more than {max}', { max: 64 }), trigger: 'blur', max: 64 }]"
         prop="versionTag"
       />
       <FormItemSwitch
+        v-if="propertyVisible('isExecutable')"
         v-model="bo.isExecutable"
         label="Executable"
       />
       <FormItemInput
+        v-if="propertyVisible('candidateStarterGroups')"
         v-model="bo.candidateStarterGroups"
         label="Candidate Starter Groups"
         prop="candidateStarterGroups"
       />
       <FormItemInput
+        v-if="propertyVisible('candidateStarterUsers')"
         v-model="bo.candidateStarterUsers"
         label="Candidate Starter Users"
         prop="candidateStarterUsers"
       />
       <FormItemInput
+        v-if="propertyVisible('historyTimeToLive')"
         v-model="bo.historyTimeToLive"
         label="History Time To Live"
         prop="historyTimeToLive"
       />
       <FormItemInput
+        v-if="propertyVisible('taskPriority')"
         v-model="bo.taskPriority"
         label="Task Priority"
         prop="taskPriority"
       />
       <FormItemInput
+        v-if="propertyVisible('jobPriority')"
         v-model="bo.jobPriority"
         label="Job Priority"
         prop="jobPriority"

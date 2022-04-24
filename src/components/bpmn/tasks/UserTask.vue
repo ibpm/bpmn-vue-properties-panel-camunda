@@ -21,7 +21,7 @@
           label="Priority"
           prop="priority"
         />
-        <el-form-item :label="$customTranslate('Task Listener')">
+        <el-form-item v-if="taskListenerVisible" :label="$customTranslate('Task Listener')">
           <el-badge :value="listenerLength">
             <el-button @click="showListener = true">
               {{ $customTranslate('Update') }}
@@ -30,7 +30,13 @@
         </el-form-item>
       </template>
     </Activity>
-    <TaskListener v-if="showListener" :moddle="moddle" :bo="bo" @write="write" @close="finishListener" />
+    <TaskListener
+      v-if="showListener && taskListenerVisible"
+      :moddle="moddle"
+      :bo="bo"
+      @write="write"
+      @close="finishListener"
+    />
   </div>
 </template>
 
@@ -54,6 +60,11 @@ export default {
     return {
       showListener: false,
       listenerLength: 0
+    }
+  },
+  computed: {
+    taskListenerVisible() {
+      return this.propertyVisible('taskListener')
     }
   },
   watch: {

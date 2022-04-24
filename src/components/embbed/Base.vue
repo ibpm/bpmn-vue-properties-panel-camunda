@@ -46,7 +46,7 @@
         </template>
       </template>
       <slot name="custom" />
-      <el-form-item :label="$customTranslate('Properties')">
+      <el-form-item v-if="propertiesVisible" :label="$customTranslate('Properties')">
         <el-badge :value="properties.length">
           <el-button @click="showProperty = true">
             {{ $customTranslate('Update') }}
@@ -62,8 +62,8 @@
         prop="documentation"
       />
     </el-form>
-    <Properties
-      v-if="showProperty"
+    <Property
+      v-if="showProperty && propertiesVisible"
       v-model="properties"
       :moddle="moddle"
       :is-form="false"
@@ -73,7 +73,7 @@
   </div>
 </template>
 <script>
-import Properties from '../part/detail/Properties'
+import Property from '../part/detail/Property'
 import FormItemInput from '../ui/FormItemInput'
 import FormItemSelect from '../ui/FormItemSelect'
 import FormItemSwitch from '../ui/FormItemSwitch'
@@ -122,7 +122,7 @@ const
 export default {
   name: 'Base',
   components: {
-    Properties,
+    Property,
     FormItemInput,
     FormItemSelect,
     FormItemSwitch,
@@ -140,9 +140,13 @@ export default {
       templates: store.getters.getTemplates(this.bo?.$type),
       showProperty: false,
       properties: [],
-      tabName: 'general',
       selectedTemplate: undefined,
       templateProperties: []
+    }
+  },
+  computed: {
+    propertiesVisible() {
+      return this.propertyVisible('properties')
     }
   },
   watch: {
@@ -167,12 +171,13 @@ export default {
       })
       this.templateProperties = []
       if (this.selectedTemplate?.properties) {
-        this.selectedTemplate.properties.forEach(property => {
-          property.value = this.readProperty(property) || property.value
-          this.handleProperty(updateProperties, property, property.value)
-          this.templateProperties.push({
-            ...property
-          })
+        this.selectedTemplate.properties.forEach(item => {
+          const property = {
+            ...item,
+            value: this.readProperty(item) || item.value
+          }
+          this.handleProperty(updateProperties, item, property.value)
+          this.templateProperties.push(property)
         })
       }
       this.bo.modelerTemplate = this.selectedTemplate?.id
@@ -217,15 +222,9 @@ export default {
       }
       // 当extensionElements发生变更时，刷新模板的配置项
       eventBus.$on(ExtensionElements_Changed, () => {
-        this.templateProperties = []
-        if (this.selectedTemplate?.properties) {
-          this.selectedTemplate.properties.forEach(property => {
-            property.value = this.readProperty(property) || property.value
-            this.templateProperties.push({
-              ...property
-            })
-          })
-        }
+        this.templateProperties.forEach(property => {
+          property.value = this.readProperty(property) || property.value
+        })
       })
     },
     readProperty(property) {
@@ -233,9 +232,10 @@ export default {
         bindingType = binding.type
       let value, values
       if (bindingType === PROPERTY_TYPE) {
-        const key = splitColon(binding.name)
-        if (key in this.bo) {
-          value = this.bo[key]
+        if (binding.name === 'conditionExpression') {
+          value = this.bo.conditionExpression?.body
+        } else {
+          value = this.bo[splitColon(binding.name)]
         }
       } else if ((values = this.bo.extensionElements?.values)?.length) {
         if (bindingType === CAMUNDA_PROPERTY_TYPE) {
