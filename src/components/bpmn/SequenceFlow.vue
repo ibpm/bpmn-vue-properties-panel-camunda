@@ -1,17 +1,15 @@
 <template>
-  <div>
-    <Base :moddle="moddle" :bo="bo" @write="write">
-      <template v-if="typeVisible && conditionVisible" #custom>
-        <FormItemSelect
-          v-model="conditionType"
-          :options="conditionTypes"
-          label="Condition Type"
-          @change="changeCondition"
-        />
-      </template>
-    </Base>
-    <Condition v-if="conditionVisible" v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
-  </div>
+  <Base :moddle="moddle" :bo="bo" @write="write">
+    <template v-if="typeVisible && conditionVisible" #custom>
+      <FormItemSelect
+        v-model="conditionType"
+        :options="conditionTypes"
+        label="Condition Type"
+        @change="changeCondition"
+      />
+      <Condition v-model="bo" :condition-type="conditionType" @save-condition="writeCondition" />
+    </template>
+  </Base>
 </template>
 
 <script>
