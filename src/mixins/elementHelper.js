@@ -26,7 +26,10 @@ export default {
       this.bo = this.getBO()
     },
     getBO() {
-      return { ...this.element.businessObject }
+      return {
+        ...this.bo,
+        ...this.element.businessObject
+      }
     },
     propertyVisible(prop) {
       return isPropertyVisible(prop, this.bo)

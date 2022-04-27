@@ -6,8 +6,8 @@
         v-model="bo.id"
         label="Id"
         :rules="[
-          { message: $customTranslate('Element must have an unique id.'), trigger: 'blur', required: true},
-          { message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }
+          { message: $customTranslate('Element must have an unique id.'), trigger: 'blur', required: true },
+          { message: $customTranslate('Must have max length {length}', { length: 5 }), trigger: 'blur', max: 255 }
         ]"
         prop="id"
       />
@@ -15,7 +15,7 @@
         v-if="propertyVisible('name')"
         v-model="bo.name"
         label="Name"
-        :rules="[{ message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }]"
+        :rules="[{ message: $customTranslate('Must have max length {length}', { length: 255 }), trigger: 'blur', max: 255 }]"
         prop="name"
       />
       <el-form-item v-if="templates.length" :label="$customTranslate('Template')">
@@ -32,7 +32,7 @@
         <el-form-item v-if="selectedTemplate.description">
           <span style="color: #8492a6;">{{ $customTranslate(selectedTemplate.description) }}</span>
         </el-form-item>
-        <template v-for="(item, index) in templateProperties">
+        <template v-for="(item, index) in bo.templateProperties">
           <component
             :is="propertyComponents[item.type]"
             v-if="item.type !== 'Hidden'"
@@ -41,6 +41,8 @@
             :options="item.choices"
             :label="item.label"
             :disabled="item.editable === false"
+            :rules="convertToRules(item['constraints'])"
+            :prop="'templateProperties.' + index + '.value'"
             @change="change($event, item)"
           />
         </template>
@@ -58,7 +60,7 @@
         v-model="bo.doc"
         label="Documentation"
         :placeholder="$customTranslate('Element Documentation')"
-        :rules="[{ message: $customTranslate('Length not more than {max}', { max: 4000 }), trigger: 'blur', max: 4000 }]"
+        :rules="[{ message: $customTranslate('Must have max length {length}', { length: 4000 }), trigger: 'blur', max: 4000 }]"
         prop="documentation"
       />
     </el-form>
@@ -140,8 +142,7 @@ export default {
       templates: store.getters.getTemplates(this.bo?.$type),
       showProperty: false,
       properties: [],
-      selectedTemplate: undefined,
-      templateProperties: []
+      selectedTemplate: undefined
     }
   },
   computed: {
@@ -166,10 +167,10 @@ export default {
     selectedTemplate(newVal, oldVal) {
       if (oldVal === newVal) return
       const updateProperties = {}
-      this.templateProperties.forEach(property => {
+      this.bo.templateProperties?.forEach(property => {
         this.handleProperty(updateProperties, property)
       })
-      this.templateProperties = []
+      this.bo.templateProperties = []
       if (this.selectedTemplate?.properties) {
         this.selectedTemplate.properties.forEach(item => {
           const property = {
@@ -177,7 +178,7 @@ export default {
             value: this.readProperty(item) || item.value
           }
           this.handleProperty(updateProperties, item, property.value)
-          this.templateProperties.push(property)
+          this.bo.templateProperties.push(property)
         })
       }
       this.bo.modelerTemplate = this.selectedTemplate?.id
@@ -222,7 +223,7 @@ export default {
       }
       // 当extensionElements发生变更时，刷新模板的配置项
       eventBus.$on(ExtensionElements_Changed, () => {
-        this.templateProperties.forEach(property => {
+        this.bo.templateProperties?.forEach(property => {
           property.value = this.readProperty(property) || property.value
         })
       })
@@ -371,6 +372,55 @@ export default {
         this.init()
         this.$emit('sync')
       })
+    },
+    convertToRules(constraints) {
+      if (!constraints) return undefined
+      const rules = []
+      if (constraints['notEmpty']) { // true
+        rules.push({
+          message: this.$customTranslate('Must not be empty'), trigger: 'blur', required: true
+        })
+      }
+      if (constraints.minLength && constraints.maxLength) {
+        rules.push({
+          message: this.$customTranslate('Must between {minLength} and {maxLength}', {
+            minLength: constraints.minLength,
+            maxLength: constraints.maxLength
+          }),
+          trigger: 'blur',
+          min: constraints.minLength,
+          max: constraints.maxLength
+        })
+      } else if (constraints.minLength) {
+        rules.push({
+          message: this.$customTranslate('Must have min length {length}', {
+            length: constraints.minLength
+          }),
+          trigger: 'blur',
+          min: constraints.minLength
+        })
+      } else if (constraints.maxLength) {
+        rules.push({
+          message: this.$customTranslate('Must have max length {length}', {
+            length: constraints.maxLength
+          }),
+          trigger: 'blur',
+          max: constraints.maxLength
+        })
+      }
+      let pattern = constraints.pattern, message
+      if (pattern) {
+        if (typeof pattern !== 'string') {
+          message = pattern.message
+          pattern = pattern.value
+        }
+        rules.push({
+          message: message ?? this.$customTranslate('Must match pattern {pattern}', { pattern: pattern }),
+          trigger: 'blur',
+          pattern: pattern
+        })
+      }
+      return rules.length === 0 ? undefined : rules
     }
   }
 }

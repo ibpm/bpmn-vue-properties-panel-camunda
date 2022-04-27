@@ -5,7 +5,7 @@
         v-if="propertyVisible('versionTag')"
         v-model="bo.versionTag"
         label="Version Tag"
-        :rules="[{ message: $customTranslate('Length not more than {max}', { max: 64 }), trigger: 'blur', max: 64 }]"
+        :rules="[{ message: $customTranslate('Must have max length {length}', { length: 64 }), trigger: 'blur', max: 64 }]"
         prop="versionTag"
       />
       <FormItemSwitch

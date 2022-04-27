@@ -280,6 +280,10 @@ export default {
   'Export as BPMN': '以.bpmn文件导出',
   'Export as SVG': '以.svg图片导出',
 
-  'Length not more than {max}': '长度不大于{max}',
+  'Must not be empty': '不能为空',
+  'Must have min length {length}': '必须不小于{length}',
+  'Must have max length {length}': '必须不大于{length}',
+  'Must between {minLength} and {maxLength}': '必须介于{minLength}和{maxLength}之间',
+  'Must match pattern {pattern}': '必须满足正则表达式 {pattern}',
   'Can not remove the message which used by other ReceiveTask:{activityId}': '不能删除被其他接收任务引用的消息：{activityId}'
 }

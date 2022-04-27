@@ -5,7 +5,7 @@
         v-if="propertyVisible('initiator')"
         v-model="bo.initiator"
         label="Initiator"
-        :rules="[{ message: $customTranslate('Length not more than {max}', { max: 255 }), trigger: 'blur', max: 255 }]"
+        :rules="[{ message: $customTranslate('Must have max length {length}', { length: 255 }), trigger: 'blur', max: 255 }]"
         prop="initiator"
       />
     </template>
