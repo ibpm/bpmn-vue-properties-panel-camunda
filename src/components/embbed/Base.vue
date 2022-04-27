@@ -43,6 +43,7 @@
             :disabled="item.editable === false"
             :rules="convertToRules(item['constraints'])"
             :prop="'templateProperties.' + index + '.value'"
+            :placeholder="item.description"
             @change="change($event, item)"
           />
         </template>
@@ -175,14 +176,13 @@ export default {
         this.selectedTemplate.properties.forEach(item => {
           const property = {
             ...item,
-            value: this.readProperty(item) || item.value
+            value: this.readProperty(updateProperties, item) || item.value // 从现有bo中同步值
           }
           this.handleProperty(updateProperties, item, property.value)
           this.bo.templateProperties.push(property)
         })
       }
-      this.bo.modelerTemplate = this.selectedTemplate?.id
-      updateProperties.modelerTemplate = this.selectedTemplate?.id
+      updateProperties.modelerTemplate = this.bo.modelerTemplate = this.selectedTemplate?.id
       this.write(updateProperties)
       this.refresh()
     }
@@ -223,20 +223,24 @@ export default {
       }
       // 当extensionElements发生变更时，刷新模板的配置项
       eventBus.$on(ExtensionElements_Changed, () => {
+        const updateProperties = {}
         this.bo.templateProperties?.forEach(property => {
-          property.value = this.readProperty(property) || property.value
+          property.value = this.readProperty(updateProperties, property) || property.value
         })
       })
     },
-    readProperty(property) {
+    readProperty(updateProperties, property) {
       const binding = property['binding'],
         bindingType = binding.type
       let value, values
       if (bindingType === PROPERTY_TYPE) {
-        if (binding.name === 'conditionExpression') {
-          value = this.bo.conditionExpression?.body
-        } else {
-          value = this.bo[splitColon(binding.name)]
+        const bindingName = splitColon(binding.name)
+        if (!(bindingName in updateProperties)) { // 不在updateProperties中的，才会读现在的bo
+          if (bindingName === 'conditionExpression') {
+            value = this.bo.conditionExpression?.body
+          } else {
+            value = this.bo[bindingName]
+          }
         }
       } else if ((values = this.bo.extensionElements?.values)?.length) {
         if (bindingType === CAMUNDA_PROPERTY_TYPE) {
@@ -300,7 +304,7 @@ export default {
           propertyValue = value
         }
         if (propertyValue || binding.name !== 'id') { // id是必填项，需要做特殊处理
-          updateProperties[binding.name] = propertyValue
+          updateProperties[splitColon(binding.name)] = propertyValue
         }
       } else if (bindingType === CAMUNDA_PROPERTY_TYPE) {
         let propertiesElement = extensionElements.values?.find(item => is(item, customize('Properties')))
@@ -366,6 +370,7 @@ export default {
       const updateProperties = { extensionElements: this.bo.extensionElements }
       this.handleProperty(updateProperties, property, value)
       this.write(updateProperties)
+      this.refresh()
     },
     refresh() {
       this.$nextTick(() => {
