@@ -27,7 +27,7 @@ export default {
     },
     getBO() {
       return {
-        templateProperties: this.bo?.templateProperties,
+        templateProperties: this.bo ? this.bo.templateProperties : undefined,
         ...this.element.businessObject
       }
     },

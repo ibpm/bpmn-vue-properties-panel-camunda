@@ -68,6 +68,16 @@ export const
       )
     }
   },
+  /**
+   * 不使用value的IO variable
+   * @param binding
+   * @returns {boolean}
+   */
+  isInOutVariable = (binding) => {
+    return (binding.variables === 'local' || binding.variables === 'all') &&
+      ((binding.type === 'camunda:in' && !binding.target && !binding.expression) ||
+        (binding.type === 'camunda:out' && !binding.source && !binding.sourceExpression))
+  },
   isInputOutputSupported = (businessObject) => {
     return (
       is(businessObject, 'bpmn:FlowNode') && !(

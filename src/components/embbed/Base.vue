@@ -83,9 +83,9 @@ import FormItemSwitch from '../ui/FormItemSwitch'
 import FormItemTextArea from '../ui/FormItemTextArea'
 import areaHelper from '../../mixins/areaHelper'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
-import { customize, findOutputParameter, isInOut } from '../../utils'
-import { addAndRemoveElementsFromExtensionElements } from '../../utils/creators'
+import { customize, findOutputParameter, isInOut, isInOutVariable } from '../../utils'
 import {
+  addAndRemoveElementsFromExtensionElements,
   createCamundaIn,
   createCamundaInWithBusinessKey,
   createCamundaOut,
@@ -362,7 +362,7 @@ export default {
     },
     resolveList(bo, propertyName, value, createFunction, binding, matcher) {
       bo[propertyName] = bo[propertyName]?.filter(matcher) ?? [] // delete
-      if (value) { // create & update
+      if (value || isInOutVariable(binding)) { // create & update
         bo[propertyName].push(createFunction(this.moddle, binding, value))
       }
     },
@@ -420,7 +420,8 @@ export default {
           pattern = pattern.value
         }
         rules.push({
-          message: message ?? this.$customTranslate('Must match pattern {pattern}', { pattern: pattern }),
+          message: this.$customTranslate(message) ??
+            this.$customTranslate('Must match pattern {pattern}', { pattern: pattern }),
           trigger: 'blur',
           pattern: pattern
         })
