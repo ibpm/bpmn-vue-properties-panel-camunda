@@ -1,7 +1,7 @@
 {
   "name": "bpmn-vue-properties-panel-camunda",
   "description": "A properties panel using vue and element-ui for camunda.",
-  "version": "0.0.23",
+  "version": "0.0.27",
   "author": "ldang264 <820704815@qq.com>",
   "license": "MIT",
   "private": false,

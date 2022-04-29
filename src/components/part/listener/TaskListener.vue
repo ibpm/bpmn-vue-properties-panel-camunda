@@ -157,7 +157,7 @@ export default {
   methods: {
     read() {
       this.form.records = this.bo.extensionElements?.values
-        .filter(item => is(item, customize(ELEMENT_NAME)))
+        ?.filter(item => is(item, customize(ELEMENT_NAME)))
         .map(row => {
           const data = {
             event: row.event,

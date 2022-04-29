@@ -1,3 +1,4 @@
+<!-- https://docs.camunda.org/manual/latest/reference/bpmn20/gateways/sequence-flow/ -->
 <template>
   <Base :moddle="moddle" :bo="bo" @write="write">
     <template v-if="typeVisible && conditionVisible" #custom>

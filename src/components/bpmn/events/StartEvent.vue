@@ -1,3 +1,4 @@
+<!-- https://docs.camunda.org/manual/latest/reference/bpmn20/events/start-events/ -->
 <template>
   <Common :element="element" :moddle="moddle" :bo="bo" @write="write">
     <template #detail>

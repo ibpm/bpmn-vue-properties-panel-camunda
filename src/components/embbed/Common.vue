@@ -136,8 +136,7 @@ export default {
       this.init()
     },
     init() {
-      this.io = this.bo.extensionElements?.values
-        .find(item => is(item, customize(ELEMENT_NAME)))
+      this.io = this.bo.extensionElements?.values?.find(item => is(item, customize(ELEMENT_NAME)))
       this.computeLength()
     },
     finishListener() {

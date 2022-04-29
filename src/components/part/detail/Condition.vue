@@ -2,18 +2,20 @@
   <div>
     <template v-if="showScript">
       <FormItemInput
+        v-if="scriptFormatVisible"
         v-model="form.scriptFormat"
         label="Script Format"
         prop="scriptFormat"
       />
       <FormItemSelect
+        v-if="scriptVisible"
         v-model="form.scriptType"
         :options="scriptTypes"
         label="Script Type"
       />
     </template>
     <FormItemTextArea
-      v-if="showExpression || showScript"
+      v-if="(showExpression && expressionVisible) || (showScript && scriptVisible)"
       v-model="form.config"
       :label="showExpression ? 'Expression': showResource ? 'Resource' : 'Script'"
       prop="config"
@@ -24,7 +26,7 @@
 import FormItemInput from '../../ui/FormItemInput'
 import FormItemSelect from '../../ui/FormItemSelect'
 import FormItemTextArea from '../../ui/FormItemTextArea'
-import { isExpression, isScript, isResource } from '../../../utils'
+import { isExpression, isScript, isResource, isPropertyVisible } from '../../../utils'
 import { SCRIPT_TYPES } from '../../../utils/constants'
 
 export default {
@@ -56,6 +58,15 @@ export default {
     },
     showResource() {
       return isResource(this.form.scriptType)
+    },
+    scriptFormatVisible() {
+      return isPropertyVisible('scriptFormat', this.value)
+    },
+    scriptVisible() {
+      return isPropertyVisible('script', this.value) && isPropertyVisible('resource', this.value)
+    },
+    expressionVisible() {
+      return isPropertyVisible('expression', this.value)
     }
   },
   watch: {

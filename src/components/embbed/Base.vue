@@ -200,7 +200,7 @@ export default {
         this.bo.doc = this.bo.documentation[0].text
       }
       this.properties =
-        this.bo.extensionElements?.values.find(item => is(item, customize('Properties')))?.values ?? []
+        this.bo.extensionElements?.values?.find(item => is(item, customize('Properties')))?.values ?? []
     },
     writeProperties(propertiesElement) {
       this.showProperty = false
@@ -335,7 +335,7 @@ export default {
           func = createOutputParameter
         }
         this.resolveList(ioElement, propertyName, value, func, binding, matcher)
-        if (ioElement['inputParameters']?.length + ioElement['outputParameters']?.length === 0) {
+        if (!ioElement['inputParameters']?.length && !ioElement['outputParameters']?.length) {
           extensionElements.values = extensionElements.values.filter(item => !is(item, customize('InputOutput')))
         }
       } else if (IN_OUT_BINDING_TYPES.indexOf(bindingType) !== -1) {

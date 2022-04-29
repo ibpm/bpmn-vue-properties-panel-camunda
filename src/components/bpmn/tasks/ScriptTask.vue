@@ -40,12 +40,12 @@ export default {
   },
   methods: {
     sync() {
-      if ('script' in this.bo) {
-        this.bo.scriptType = 'script'
-        this.bo.config = this.bo.script
-      } else if ('resource' in this.bo) {
+      if ('resource' in this.bo) {
         this.bo.scriptType = 'resource'
         this.bo.config = this.bo.resource
+      } else {
+        this.bo.scriptType = 'script'
+        this.bo.config = this.bo.script
       }
     },
     writeCondition(obj) {
