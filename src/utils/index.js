@@ -102,8 +102,8 @@ export const
   },
   isEntryVisible = (entryId, _entriesVisible) => {
     const
-      entriesVisible = _entriesVisible || { _all: true },
-      defaultVisible = entriesVisible._all || true,
+      entriesVisible = _entriesVisible || { _all: false },
+      defaultVisible = entriesVisible._all,
       entryVisible = entriesVisible[ entryId ]
 
     if (typeof entriesVisible === 'boolean') {
